@@ -9,17 +9,19 @@ import pl.uj.passgo.models.Event;
 import pl.uj.passgo.repos.BuildingRepository;
 import pl.uj.passgo.repos.EventRepository;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class EventService {
 
-    private EventRepository eventRepository;
-    private BuildingRepository buildingRepository;
+    private final EventRepository eventRepository;
+    private final BuildingRepository buildingRepository;
 
-    public EventService(EventRepository eventRepository) {
+    public EventService(EventRepository eventRepository, BuildingRepository buildingRepository) {
         this.eventRepository = eventRepository;
+        this.buildingRepository = buildingRepository;
     }
 
     public List<Event> getAllEvents() {
@@ -46,6 +48,20 @@ public class EventService {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     String.format("There is no building with id: %d", buildingId)
+            );
+        }
+    }
+
+    public Event getEventById(Long id) {
+        Optional<Event> eventOptional = eventRepository.findById(String.valueOf(id));
+
+        if(eventOptional.isPresent()){
+            return eventOptional.get();
+        }
+        else{
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    String.format("There is no event with id: %d", id)
             );
         }
     }

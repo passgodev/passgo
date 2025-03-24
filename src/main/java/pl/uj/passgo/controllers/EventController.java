@@ -31,5 +31,11 @@ public class EventController {
         return new ResponseEntity<>(createdEvent, HttpStatus.CREATED);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Event> getEventById(@PathVariable Long id) {
+        Event fetchedEvent = eventService.getEventById(id);
+        return ResponseEntity.ok(fetchedEvent);
+    }
+
 
 }
