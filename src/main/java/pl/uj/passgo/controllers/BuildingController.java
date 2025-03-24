@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.uj.passgo.models.Building;
+import pl.uj.passgo.models.DTOs.BuildingRequest;
 import pl.uj.passgo.models.Event;
 import pl.uj.passgo.services.BuildingService;
 
@@ -26,7 +27,7 @@ public class BuildingController {
     }
 
     @PostMapping
-    public ResponseEntity<Building> createBuilding(@RequestBody Building building) {
+    public ResponseEntity<Building> createBuilding(@RequestBody BuildingRequest building) {
         Building createdBuilding = buildingService.createBuilding(building);
         return new ResponseEntity<>(createdBuilding, HttpStatus.CREATED);
     }

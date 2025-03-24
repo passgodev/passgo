@@ -4,12 +4,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.models.Building;
-import pl.uj.passgo.models.DTOs.EventCreateDTO;
+import pl.uj.passgo.models.DTOs.EventCreateRequest;
 import pl.uj.passgo.models.Event;
 import pl.uj.passgo.repos.BuildingRepository;
 import pl.uj.passgo.repos.EventRepository;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,9 +27,9 @@ public class EventService {
         return eventRepository.findAll();
     }
 
-    public Event createEvent(EventCreateDTO event) {
+    public Event createEvent(EventCreateRequest event) {
         Long buildingId = event.getBuildingId();
-        Optional<Building> buildingOptional = buildingRepository.findById(String.valueOf(buildingId));
+        Optional<Building> buildingOptional = buildingRepository.findById(buildingId);
 
         if(buildingOptional.isPresent()){
             Building building = buildingOptional.get();
@@ -53,7 +52,7 @@ public class EventService {
     }
 
     public Event getEventById(Long id) {
-        Optional<Event> eventOptional = eventRepository.findById(String.valueOf(id));
+        Optional<Event> eventOptional = eventRepository.findById(id);
 
         if(eventOptional.isPresent()){
             return eventOptional.get();

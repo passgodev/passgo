@@ -3,7 +3,7 @@ package pl.uj.passgo.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.uj.passgo.models.DTOs.EventCreateDTO;
+import pl.uj.passgo.models.DTOs.EventCreateRequest;
 import pl.uj.passgo.models.Event;
 import pl.uj.passgo.services.EventService;
 
@@ -26,7 +26,7 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<Event> createEvent(@RequestBody EventCreateDTO event){
+    public ResponseEntity<Event> createEvent(@RequestBody EventCreateRequest event){
         Event createdEvent = eventService.createEvent(event);
         return new ResponseEntity<>(createdEvent, HttpStatus.CREATED);
     }
