@@ -6,34 +6,27 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
-@Data
 @Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "events")
-public class Event {
+@Table(name = "sectors")
+public class Sector {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 255)
+    @OneToMany(mappedBy = "sector", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Row> rows;
+
+    @Column(nullable = false, unique = true)
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "building_id", referencedColumnName = "id")
+    @JoinColumn(name = "building_id", nullable = false)
     private Building building;
-
-    @Column(nullable = false)
-    private LocalDateTime date;
-
-    @Column(columnDefinition = "TEXT")
-    private String description;
-
-    @Column(length = 100)
-    private String category;
-
 }

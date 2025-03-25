@@ -4,8 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.uj.passgo.models.Building;
-import pl.uj.passgo.models.DTOs.BuildingRequest;
-import pl.uj.passgo.models.Event;
+import pl.uj.passgo.models.DTOs.buildingRequests.BuildingRequest;
 import pl.uj.passgo.services.BuildingService;
 
 import java.util.List;
