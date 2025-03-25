@@ -30,5 +30,5 @@ public class Address {
     private String postalCode;
 
     @Column(nullable = false, length = 10)
-    private String buildingNumber;
+    private Long buildingNumber;
 }
