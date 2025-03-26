@@ -1,5 +1,7 @@
 package pl.uj.passgo.services;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,13 +17,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class BuildingService {
 
     private final BuildingRepository buildingRepository;
-
-    public BuildingService(BuildingRepository buildingRepository) {
-        this.buildingRepository = buildingRepository;
-    }
 
     public List<Building> getAllBuildings() {
         return buildingRepository.findAll();
@@ -75,17 +74,11 @@ public class BuildingService {
     }
 
     public Building getBuildingById(Long id) {
-        Optional<Building> buildingOptional = buildingRepository.findById(id);
-
-        if(buildingOptional.isPresent()){
-            return buildingOptional.get();
-        }
-        else{
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    String.format("There is no building with id: %d", id)
-            );
-        }
+        return buildingRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        String.format("There is no building with id: %d", id)
+                ));
     }
 
 }

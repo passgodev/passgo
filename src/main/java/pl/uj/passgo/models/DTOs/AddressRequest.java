@@ -14,5 +14,5 @@ public class AddressRequest {
     private String city;
     private String street;
     private String postalCode;
-    private Long buildingNumber;
+    private String buildingNumber;
 }

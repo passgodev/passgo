@@ -1,5 +1,6 @@
 package pl.uj.passgo.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "buildings")
+@Table(name = "building")
 public class Building {
 
     @Id
@@ -26,5 +27,6 @@ public class Building {
     private Address address;
 
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Sector> sectors = new ArrayList<>();
 }

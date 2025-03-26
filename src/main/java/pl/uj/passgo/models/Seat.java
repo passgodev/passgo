@@ -1,5 +1,6 @@
 package pl.uj.passgo.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "seats")
+@Table(name = "seat")
 public class Seat {
 
     @Id
@@ -20,6 +21,7 @@ public class Seat {
 
     @ManyToOne
     @JoinColumn(name = "row_id", nullable = false)
+    @JsonBackReference
     private Row row;
 
 }

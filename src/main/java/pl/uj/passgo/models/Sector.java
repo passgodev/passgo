@@ -1,5 +1,7 @@
 package pl.uj.passgo.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "sectors")
+@Table(name = "sector")
 public class Sector {
 
     @Id
@@ -21,6 +23,7 @@ public class Sector {
     private Long id;
 
     @OneToMany(mappedBy = "sector", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Row> rows;
 
     @Column(nullable = false, unique = true)
@@ -28,5 +31,6 @@ public class Sector {
 
     @ManyToOne
     @JoinColumn(name = "building_id", nullable = false)
+    @JsonBackReference
     private Building building;
 }

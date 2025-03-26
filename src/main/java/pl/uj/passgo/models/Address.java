@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Builder
+@Table(name = "address")
 public class Address {
 
     @Id
@@ -30,5 +31,5 @@ public class Address {
     private String postalCode;
 
     @Column(nullable = false, length = 10)
-    private Long buildingNumber;
+    private String buildingNumber;
 }

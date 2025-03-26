@@ -1,5 +1,7 @@
 package pl.uj.passgo.controllers;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,13 +13,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/buildings")
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class BuildingController {
 
-    private BuildingService buildingService;
-
-    public BuildingController(BuildingService buildingService) {
-        this.buildingService = buildingService;
-    }
+    private final BuildingService buildingService;
 
     @GetMapping
     public ResponseEntity<List<Building>> getAllBuildings() {
