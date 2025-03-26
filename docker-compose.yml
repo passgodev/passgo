@@ -12,19 +12,26 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "user", "-d", "passgo" ]
+      interval: 5s
+      retries: 5
+      timeout: 3s
 
   app:
     build: .
     container_name: passgo_app
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/passgo
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
     ports:
-      - "8080:8080"
+      - "9090:8080"
     restart: unless-stopped
+    entrypoint: ["/bin/sh", "-c", "echo 'Waiting for DB...'; sleep 2; java -jar app.jar"]
 
 volumes:
   pgdata:

@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(name = "event")
 public class Event {
 
     @Id
@@ -29,7 +30,7 @@ public class Event {
     @Column(nullable = false)
     private LocalDateTime date;
 
-    @Column(columnDefinition = "TEXT") //allows longer strings
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(length = 100)

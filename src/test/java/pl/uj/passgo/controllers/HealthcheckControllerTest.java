@@ -23,14 +23,14 @@ public class HealthcheckControllerTest {
     @Test
     public void testHealthcheckEndpoint_returnsNoContent() throws Exception {
         mockMvc.perform(get("/health"))
-               .andDo(print())
-               .andExpect(status().isNoContent());
+                .andDo(print())
+                .andExpect(status().isNoContent());
     }
 
     @Test
     public void testHealthcheckEndpoint_containsCacheControlNoStore() throws Exception {
         mockMvc.perform(get("/health"))
-               .andDo(print())
-               .andExpect(header().string("Cache-Control", CacheControl.noStore().getHeaderValue()));
+                .andDo(print())
+                .andExpect(header().string("Cache-Control", CacheControl.noStore().getHeaderValue()));
     }
 }
