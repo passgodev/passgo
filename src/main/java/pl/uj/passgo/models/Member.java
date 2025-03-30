@@ -15,9 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "member_type", discriminatorType = DiscriminatorType.STRING)
+@MappedSuperclass
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +31,6 @@ public class Member {
     private LocalDateTime registrationDate;
     @Column(nullable = false, name = "birth_date")
     private LocalDate birthDate;
+    @Column(name = "is_active")
     private boolean isActive;
-    private MemberType type;
 }
