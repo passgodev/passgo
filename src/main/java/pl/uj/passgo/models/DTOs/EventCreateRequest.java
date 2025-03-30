@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventCreateDTO {
+public class EventCreateRequest {
     private String name;
     private Long buildingId;
     private LocalDateTime date;

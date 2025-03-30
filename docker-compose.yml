@@ -29,7 +29,7 @@ services:
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
     ports:
-      - "8080:8080"
+      - "9090:8080"
     restart: unless-stopped
     entrypoint: ["/bin/sh", "-c", "echo 'Waiting for DB...'; sleep 2; java -jar app.jar"]
 
