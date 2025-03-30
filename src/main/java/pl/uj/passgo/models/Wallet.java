@@ -20,8 +20,8 @@ public class Wallet {
     private Long id;
 
     @OneToOne(optional = false)
-    @JoinColumn(name = "user_id", unique = true, nullable = false)
-    private User user;
+    @JoinColumn(name = "client_id", unique = true, nullable = false)
+    private Client client;
 
     @Column
     private BigDecimal money;
