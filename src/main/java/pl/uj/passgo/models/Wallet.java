@@ -19,10 +19,9 @@ public class Wallet {
     @SequenceGenerator(name = "wallet_id_seq", allocationSize = 1)
     private Long id;
 
-    // todo assign the User class when implemented
-//    @OneToOne(optional = false)
-//    @JoinColumn(name = "user_id", unique = true, nullable = false)
-//    private User user;
+    @OneToOne(optional = false)
+    @JoinColumn(name = "client_id", unique = true, nullable = false)
+    private Client client;
 
     @Column
     private BigDecimal money;
