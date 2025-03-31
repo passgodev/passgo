@@ -69,7 +69,7 @@ public class BuildingService {
         }
 
         building.setSectors(sectors);
-
+  
         return buildingRepository.save(building);
     }
 
@@ -80,5 +80,4 @@ public class BuildingService {
                         String.format("There is no building with id: %d", id)
                 ));
     }
-
 }
