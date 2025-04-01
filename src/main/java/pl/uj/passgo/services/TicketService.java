@@ -47,6 +47,7 @@ public class TicketService {
         //                String.format("There is no user with id: %d", userId)
         //        ));
 
+        //TODO: in sellTicket method we should check if place is occupied (field in seat entity)
         if (!sellingService.sellTicket()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ticket sale failed.");
         }

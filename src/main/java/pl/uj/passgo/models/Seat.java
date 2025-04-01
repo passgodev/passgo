@@ -24,4 +24,6 @@ public class Seat {
     @JsonBackReference
     private Row row;
 
+    @Column(nullable = false)
+    private Boolean occupied;
 }
