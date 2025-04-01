@@ -59,6 +59,7 @@ public class BuildingService {
                     Seat seat = new Seat();
                     seat.setRow(row);
                     seats.add(seat);
+                    seat.setOccupied(false);
                 }
 
                 row.setSeats(seats);
