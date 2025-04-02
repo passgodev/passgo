@@ -81,6 +81,8 @@ create table faq
     question varchar(255) not null
 );
 
+alter sequence "faq_id_seq" owned by faq.id;
+
 alter table faq
     owner to "user";
 
@@ -183,6 +185,8 @@ create table wallet
     client_id bigint not null unique references client
 );
 
+alter sequence "wallet_id_seq" owned by wallet.id;
+
 alter table wallet
     owner to "user";
 
@@ -200,12 +204,14 @@ create table wallet_history
     wallet_id      bigint         not null references wallet
 );
 
+alter sequence "wallet_history_id_seq" owned by wallet_history.id;
+
 alter table wallet_history
     owner to "user";
 
 -- test
 
-CREATE SEQUENCE IF NOT EXISTS transaction_id_seq AS BIGINT START 1 INCREMENT 1;
+CREATE SEQUENCE IF NOT EXISTS "transaction_id_seq" AS BIGINT START 1 INCREMENT 1;
 
 CREATE TABLE IF NOT EXISTS transaction
 (
@@ -216,7 +222,9 @@ CREATE TABLE IF NOT EXISTS transaction
     event_id BIGINT NOT NULL REFERENCES event(id)
 );
 
-CREATE SEQUENCE IF NOT EXISTS transaction_component_id_seq AS BIGINT START 1 INCREMENT 1;
+alter sequence "transaction_id_seq" owned by transaction.id;
+
+CREATE SEQUENCE IF NOT EXISTS "transaction_component_id_seq" AS BIGINT START 1 INCREMENT 1;
 
 CREATE TABLE IF NOT EXISTS transaction_component
 (
@@ -224,4 +232,6 @@ CREATE TABLE IF NOT EXISTS transaction_component
     transaction_id BIGINT NOT NULL REFERENCES transaction(id),
     ticket_id BIGINT NOT NULL REFERENCES ticket(id)
 );
+
+alter sequence "transaction_component_id_seq" owned by transaction_component.id;
 
