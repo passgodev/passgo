@@ -1,0 +1,12 @@
+# rewrite to python or golang
+
+# connect to docker container
+docker compose exec -it db sh
+
+# log in to to postgresql via psql, in our case to passgo database
+psql -U <username> -W -p <port> -h <hostname> -d passgo
+
+# you will be prompted to enter a password
+
+# when your connected execute below sql
+CREATE DATABASE "passgo_flyway" OWNER "user"

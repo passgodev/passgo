@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.uj.passgo.models.ticket.Ticket;
+import pl.uj.passgo.models.Ticket;
 
 
 @AllArgsConstructor

@@ -1,0 +1,1 @@
+CREATE DATABASE "passgo_flyway" OWNER "user";
