@@ -32,13 +32,13 @@ public class BaseAuthConfiguration {
 		@Value("${spring.security.user.password:#{null}}")
 		String userPassword
 	) {
-		if (userName == null) {
+		if (userName == null || userName.isBlank()) {
 			userName = UUID.randomUUID().toString();
-			log.info("Default generated userName: {}", userName);
+			log.info("Default generated userName: [{}] - provided value was absent or blank", userName);
 		}
-		if (userPassword == null) {
+		if (userPassword == null || userName.isBlank()) {
 			userPassword = UUID.randomUUID().toString();
-			log.info("Default generated userPassword: {}", userPassword);
+			log.info("Default generated userPassword: [{}] - provided value was absent or blank", userPassword);
 		}
 
 		this.userName = userName;
