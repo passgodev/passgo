@@ -194,27 +194,28 @@ System sprzedaży biletów umożliwiający użytkownikom kupowanie i odsprzedawa
     - [ ] Zarządzanie wydarzeniami
 
 - [x] Kod źródłowy aplikacji należy utrzymywać na **Githubie** ~~lub Gitlabie~~
-- [ ] Kod powinien być automatycznie budowany (~~gradle lub~~ **maven**), a wynik budowania (pass/fail) powinien być widoczny w repozytorium  
-- [ ] Kod powinien być automatycznie testowany
+- [x] Kod powinien być automatycznie budowany (~~gradle lub~~ **maven**), a wynik budowania (pass/fail) powinien być widoczny w repozytorium  
+- [x] Kod powinien być automatycznie testowany
   - [ ] Testowanie na min. dwóch poziomach
     - [ ] Testy jednostkowe
     - [ ] Testy interfejsu HHTP
-  - [ ] Testowanie powinno być elementem budowania projektu  
+  - [x] Testowanie powinno być elementem budowania projektu  
   - [ ] Wyniki testowania powinny być widoczne w repozytorium  
 - [ ] Aplikację należy przetestować wydajnościowo z użyciem np. Gatlinga
 - [ ] Kod powinien być automatycznie skanowany pod kątem bezpieczeństwa (np. Snyk)
-- [ ] Dokumentację API należy udostępnić w formie Swaggera  
+- [x] Dokumentację API należy udostępnić w formie Swaggera  
 - [ ] Usługa powinna udostępniać poprawnie skonstruowane REST API, łącznie z obsługą błędów  
 - [ ] Musi być wykorzystywana data i czas, z poprawnym użyciem klasy Clock 
-- [ ] Dependency Injection: należy używać wstrzykiwania przez konstruktor  
-- [ ] Należy używać bibliotekę do logów
+- [x] Dependency Injection: należy używać wstrzykiwania przez konstruktor  
+- [x] Należy używać bibliotekę do logów
 - [ ] Proces budowania powinien wytwarzać gotowy do wdrożenia artefakt: plik JAR  
-- [ ] Należy dostarczyć pliki: Dockerfile oraz Docker Compose, zawierające kompletne środowisko uruchomieniowe  
-- [ ] Usługa powinna zawierać persystencję. Baza danych w odrębnym Dockerfile, połączona poprzez compose  
+- [x] Należy dostarczyć pliki: Dockerfile oraz Docker Compose, zawierające kompletne środowisko uruchomieniowe  
+- [x] Usługa powinna zawierać persystencję. Baza danych w odrębnym Dockerfile, połączona poprzez compose  
 - [ ] Usługa powinna być monitorowana np. za pomocą ELK. Środowisko monitorujące w osobnym Dockerfile, połączone przez compose 
 - [ ] Usługa powinna korzystać z jakiegoś zewnętrznego API 
-- [ ] Usługa powinna być zabezpieczona przynajmniej na podstawowym poziomie. Logowanie basic auth lub autoryzacja Google  
+- [x] Usługa powinna być zabezpieczona przynajmniej na podstawowym poziomie. Logowanie basic auth lub autoryzacja Google  
 - [ ] Usługa zawiera minimum 3 poziomy uprawnień użytkowników  
 - [ ] Użytkownicy powinni mieć ograniczony dostęp do niektórych zasobów (np. tylko swoich)  
 - [ ] Należy przygotować demo serwisu  
 - *Wszelkie dodatkowe elementy ustalone z prowadzącym są również obowiązkowe*
+- [x] Użycie narzędzia do wersjonowania bazy danych (flyway)
