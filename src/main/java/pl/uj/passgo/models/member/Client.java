@@ -1,10 +1,12 @@
-package pl.uj.passgo.models;
+package pl.uj.passgo.models.member;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import pl.uj.passgo.models.Wallet;
+
 
 @EqualsAndHashCode(callSuper=false)
 @Data

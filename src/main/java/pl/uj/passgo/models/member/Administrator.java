@@ -1,4 +1,4 @@
-package pl.uj.passgo.models;
+package pl.uj.passgo.models.member;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
