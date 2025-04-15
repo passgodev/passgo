@@ -81,4 +81,8 @@ public class BuildingService {
                         String.format("There is no building with id: %d", id)
                 ));
     }
+
+    public List<Building> getBuidlingsByApproved(Boolean approved) {
+        return buildingRepository.findByApproved(approved);
+    }
 }

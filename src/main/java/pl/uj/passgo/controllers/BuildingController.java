@@ -1,5 +1,6 @@
 package pl.uj.passgo.controllers;
 
+import com.fasterxml.jackson.databind.deser.BuilderBasedDeserializer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,8 +20,16 @@ public class BuildingController {
     private final BuildingService buildingService;
 
     @GetMapping
-    public ResponseEntity<List<Building>> getAllBuildings() {
-        List<Building> buildings = buildingService.getAllBuildings();
+    public ResponseEntity<List<Building>> getBuildings(@RequestParam(required = false) Boolean approved) {
+        List<Building> buildings;
+
+        if(approved == null){
+            buildings = buildingService.getAllBuildings();
+        }
+        else{
+            buildings = buildingService.getBuidlingsByApproved(approved) ;
+        }
+
         return ResponseEntity.ok(buildings);
     }
 

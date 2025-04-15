@@ -22,6 +22,9 @@ public class Building {
     @Column(nullable = false, length = 255)
     private String name;
 
+    @Column(nullable = false)
+    private Boolean approved = false;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
