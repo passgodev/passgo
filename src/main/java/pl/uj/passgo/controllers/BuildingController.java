@@ -11,9 +11,11 @@ import pl.uj.passgo.models.DTOs.buildingRequests.BuildingRequest;
 import pl.uj.passgo.services.BuildingService;
 
 import java.util.List;
+import java.util.ResourceBundle;
 
 @RestController
 @RequestMapping("/buildings")
+@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class BuildingController {
 
@@ -43,6 +45,18 @@ public class BuildingController {
     public ResponseEntity<Building> getBuildingById(@PathVariable Long id) {
         Building fetchedBuilding = buildingService.getBuildingById(id);
         return ResponseEntity.ok(fetchedBuilding);
+    }
+
+    @PatchMapping("/{id}/approve")
+    public ResponseEntity<Building> approveBuilding(@PathVariable Long id){
+        Building approvedBuilding = buildingService.approveBuilding(id);
+        return ResponseEntity.ok(approvedBuilding);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteBuilding(@PathVariable Long id){
+        buildingService.deleteBuilding(id);
+        return ResponseEntity.ok(String.format("Buidling with id: %d was succesfully deleted", id));
     }
 
 }

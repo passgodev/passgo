@@ -2,6 +2,7 @@ package pl.uj.passgo.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.info.ProjectInfoProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -84,5 +85,16 @@ public class BuildingService {
 
     public List<Building> getBuidlingsByApproved(Boolean approved) {
         return buildingRepository.findByApproved(approved);
+    }
+
+    public Building approveBuilding(Long id) {
+        Building building = getBuildingById(id);
+        building.setApproved(true);
+        return buildingRepository.save(building);
+    }
+
+    public void deleteBuilding(Long id) {
+        Building building = getBuildingById(id);
+        buildingRepository.deleteById(id);
     }
 }
