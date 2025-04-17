@@ -16,6 +16,6 @@ import pl.uj.passgo.models.Wallet;
 @Table(name = "client")
 public class Client extends Member {
     @OneToOne
-    @JoinColumn(name = "wallet_id")
+    @JoinColumn(name = "wallet_id", referencedColumnName = "id")
     private Wallet wallet;
 }
