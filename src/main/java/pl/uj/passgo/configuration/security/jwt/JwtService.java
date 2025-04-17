@@ -1,4 +1,4 @@
-package pl.uj.passgo.configuration.security;
+package pl.uj.passgo.configuration.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -10,7 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import pl.uj.passgo.configuration.security.JwtService;
+import pl.uj.passgo.configuration.security.jwt.JwtService;
 import pl.uj.passgo.mappers.member.MemberMapper;
 import pl.uj.passgo.models.DTOs.authentication.login.LoginRequest;
 import pl.uj.passgo.models.DTOs.authentication.registration.ClientRegistrationRequest;

@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.uj.passgo.configuration.security.JwtService;
 import pl.uj.passgo.models.DTOs.authentication.login.LoginRequest;
 import pl.uj.passgo.models.DTOs.authentication.registration.MemberRegistrationRequest;
 import pl.uj.passgo.resolvers.authentication.RegistrationRequestResolver.DynamicMemberRegistrationRequest;

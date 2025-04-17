@@ -1,4 +1,4 @@
-package pl.uj.passgo.configuration.security;
+package pl.uj.passgo.configuration.security.jwt;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
