@@ -13,6 +13,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Entity
 @Table(name = "organizer")
-public class Organizer extends Member{
+public class Organizer extends Member {
      private String organization;
 }

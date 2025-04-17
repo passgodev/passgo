@@ -13,5 +13,5 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Entity
 @Table(name = "administrator")
-public class Administrator extends Member{
+public class Administrator extends Member {
 }
