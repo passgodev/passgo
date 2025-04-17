@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.configuration.security.jwt.JwtService;
 import pl.uj.passgo.mappers.member.MemberMapper;
 import pl.uj.passgo.models.DTOs.authentication.login.LoginRequest;
+import pl.uj.passgo.models.DTOs.authentication.login.LoginResponse;
 import pl.uj.passgo.models.DTOs.authentication.registration.ClientRegistrationRequest;
 import pl.uj.passgo.models.DTOs.authentication.registration.MemberRegistrationRequest;
 import pl.uj.passgo.models.DTOs.authentication.registration.OrganizerRegistrationRequest;
@@ -90,7 +91,7 @@ public class AuthenticationService {
 		log.info("Saved Organizer: {}", savedOrganizer);
 	}
 
-	public String loginMember(LoginRequest request) {
+	public LoginResponse loginMember(LoginRequest request) {
 		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.login(), request.password()));
 
 		var memberCredential = memberCredentialRepository.findByLogin(request.login())
@@ -101,6 +102,6 @@ public class AuthenticationService {
 			});
 
 		var jwtToken = jwtService.generateToken(memberCredential);
-		return jwtToken;
+		return new LoginResponse(jwtToken);
 	}
 }
