@@ -15,7 +15,7 @@ import pl.uj.passgo.models.Wallet;
 @Entity
 @Table(name = "client")
 public class Client extends Member {
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "wallet_id", referencedColumnName = "id")
     private Wallet wallet;
 }
