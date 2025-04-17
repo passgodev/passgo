@@ -23,8 +23,8 @@ public class JwtService {
 	private final long expirationDurationMinutes;
 
 	public JwtService(
-		@Value("${app.configuration.security.jwt.secret-key}") String secretKey,
-		@Value("${app.configuration.security.jwt.duration}") long expirationDurationMinutes
+		@Value("${JWT_SECRET}") String secretKey,
+		@Value("${JWT_DURATION_MIN}") long expirationDurationMinutes
 	) {
 		this.secretKey = secretKey;
 		this.expirationDurationMinutes = expirationDurationMinutes;
