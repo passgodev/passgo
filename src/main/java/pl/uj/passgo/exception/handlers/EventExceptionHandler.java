@@ -1,4 +1,4 @@
-package pl.uj.passgo.exceptionHandlers.handlers;
+package pl.uj.passgo.exception.handlers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
