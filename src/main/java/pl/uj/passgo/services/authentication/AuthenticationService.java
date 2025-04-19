@@ -64,8 +64,6 @@ public class AuthenticationService {
 		var saved = memberCredentialRepository.save(memberCredential);
 
 		member.setMemberCredential(saved);
-		member.getMemberCredential().setLogin(request.getCredentials().login());
-		member.getMemberCredential().setPassword(bCryptPasswordEncoder.encode(request.getCredentials().password()));
 	}
 
 	private void handleClientRegistration(ClientRegistrationRequest request) {
