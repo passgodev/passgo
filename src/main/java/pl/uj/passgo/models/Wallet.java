@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import pl.uj.passgo.models.member.Client;
 
 import java.math.BigDecimal;
@@ -21,6 +22,7 @@ public class Wallet {
     private Long id;
 
     @OneToOne(optional = false, mappedBy = "wallet")
+    @ToString.Exclude
     private Client client;
 
     @Column
