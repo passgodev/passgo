@@ -1,6 +1,7 @@
-package pl.uj.passgo.models;
+package pl.uj.passgo.models.member;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -11,9 +12,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 @Entity
-@Table(name = "client")
-public class Client extends Member {
-    @OneToOne
-    @JoinColumn(name = "wallet_id")
-    private Wallet wallet;
+@Table(name = "administrator")
+public class Administrator extends Member {
 }

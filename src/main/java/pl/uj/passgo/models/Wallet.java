@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.uj.passgo.models.member.Client;
 
 import java.math.BigDecimal;
 
@@ -19,8 +20,7 @@ public class Wallet {
     @SequenceGenerator(name = "wallet_id_seq", allocationSize = 1)
     private Long id;
 
-    @OneToOne(optional = false)
-    @JoinColumn(name = "client_id", unique = true, nullable = false)
+    @OneToOne(optional = false, mappedBy = "wallet")
     private Client client;
 
     @Column

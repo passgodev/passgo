@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import pl.uj.passgo.models.Client;
+import pl.uj.passgo.models.member.Client;
 import pl.uj.passgo.models.Event;
 
 import java.math.BigDecimal;
