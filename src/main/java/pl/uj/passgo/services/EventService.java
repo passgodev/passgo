@@ -42,12 +42,32 @@ public class EventService {
         return eventRepository.save(builtEvent);
     }
 
-
     public Event getEventById(Long id) {
         return eventRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         String.format("There is no event with id: %d", id)
                 ));
+    }
+
+    public void deleteEvent(Long id) {
+        eventRepository.deleteById(id);
+    }
+
+    public Event updateEvent(EventCreateRequest eventRequest, Long id) {
+        Event event = eventRepository.findById(id)
+                .map(existingEvent -> updateExistingEvent(existingEvent, eventRequest))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event " + id + " does not exist."));
+        return eventRepository.save(event);
+    }
+
+    private Event updateExistingEvent(Event existingEvent, EventCreateRequest eventRequest) {
+        Building building = buildingRepository.findById(eventRequest.getBuildingId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Building " + eventRequest.getBuildingId() + " does not exist."));
+        existingEvent.setBuilding(building);
+        existingEvent.setName(eventRequest.getName());
+        existingEvent.setDate(eventRequest.getDate());
+        existingEvent.setDescription(eventRequest.getDescription());
+        existingEvent.setCategory(eventRequest.getCategory());
+        return existingEvent;
     }
 }
