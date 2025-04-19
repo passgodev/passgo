@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS "member_credential"
     password varchar(255) NOT NULL
 );
 
+ALTER SEQUENCE "member_credential_id_seq" OWNED BY member_credential.id;
+
 ALTER TABLE "member_credential" OWNER TO "user";
 
 -- alter existing relations to include foreign key attribute
