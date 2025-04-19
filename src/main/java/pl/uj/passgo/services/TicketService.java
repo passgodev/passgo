@@ -12,11 +12,18 @@ import pl.uj.passgo.models.DTOs.ticket.TicketPurchaseResponse;
 import pl.uj.passgo.models.Event;
 import pl.uj.passgo.models.Seat;
 import pl.uj.passgo.models.Ticket;
+import pl.uj.passgo.models.transaction.Transaction;
+import pl.uj.passgo.models.transaction.TransactionComponent;
 import pl.uj.passgo.repos.EventRepository;
 import pl.uj.passgo.repos.SeatRepository;
 import pl.uj.passgo.repos.TicketRepository;
+import pl.uj.passgo.repos.transaction.TransactionComponentRepository;
+import pl.uj.passgo.repos.transaction.TransactionRepository;
 
 import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -89,11 +96,14 @@ public class TicketService {
     private static void checkIfTicketsAreNotAlreadyBought(List<Ticket> tickets, List<Long> ticketToBuyIds) {
         var occupiedTickets = tickets.stream().map(Ticket::getOwner).filter(Objects::nonNull).toList();
         if ( !occupiedTickets.isEmpty() ) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provided tickets: " + occupiedTickets.toString() + " are already occupied");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provided tickets: are already occupied");
         }
     }
 
     private final LoggedInMemberContextService loggedInMemberContextService;
+    private final Clock clock = Clock.systemDefaultZone();
+    private final TransactionRepository transactionRepository;
+    private final TransactionComponentRepository transactionComponentRepository;
 
     @Transactional
     public TicketPurchaseResponse purchaseTickets(
@@ -104,21 +114,39 @@ public class TicketService {
         checkIfAllTicketsExist(tickets, ticketsToBuyIds);
         checkIfTicketsAreNotAlreadyBought(tickets, ticketsToBuyIds);
 
-        // calculate total price
+        // calculate tickets total price
         var ticketsTotalPrice = tickets.stream().map(Ticket::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // check if user have sufficient amount of money
+        // check if client have sufficient amount of money
         var client = loggedInMemberContextService.isClientLoggedIn().orElseThrow();
         var clientMoney = client.getWallet().getMoney();
-        if (clientMoney.compareTo(ticketsTotalPrice) >= 0) {
+        if (clientMoney.compareTo(ticketsTotalPrice) < 0) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Client money is insufficient");
         }
 
-        // decrease wallet money amount
+        // decrease client's wallet money amount
         client.getWallet().setMoney(clientMoney.subtract(ticketsTotalPrice));
 
         // perform assignment of client to tickets
         tickets.forEach(ticket -> ticket.setOwner(client));
+
+        // craete transaction and transaction components
+        var transaction = Transaction.builder()
+            .client(client)
+            .totalPrice(ticketsTotalPrice)
+            .completedAt(LocalDateTime.now(clock))
+            .build();
+        var savedTransaction = transactionRepository.save(transaction);
+
+        var transactionComponents = new ArrayList<TransactionComponent>();
+        for (var ticket : tickets) {
+            var transactionComponent = TransactionComponent.builder()
+                .transaction(savedTransaction)
+                .ticket(ticket)
+                .build();
+            transactionComponents.add(transactionComponent);
+        }
+        transactionComponentRepository.saveAll(transactionComponents);
 
         return new TicketPurchaseResponse(ticketsTotalPrice, tickets.size());
     }
