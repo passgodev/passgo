@@ -21,7 +21,6 @@ public class TransactionMapper {
 
 	public TransactionDto toDto(Transaction transaction) {
 		var clientDto = clientMapper.toClientDto(transaction.getClient());
-		var eventDto = eventMapper.toEventDto(transaction.getEvent());
 		var transactionComponentDtos = transaction.getTransactionComponents().stream().map(this::toDto).toList();
 
 		return new TransactionDto(
@@ -29,7 +28,6 @@ public class TransactionMapper {
 			transaction.getTotalPrice(),
 			transaction.getCompletedAt(),
 			clientDto,
-			eventDto,
 			transactionComponentDtos
 		);
 	}

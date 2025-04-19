@@ -2,11 +2,11 @@ package pl.uj.passgo.models.transaction;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import pl.uj.passgo.models.member.Client;
-import pl.uj.passgo.models.Event;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,6 +15,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Data
 @Entity
 @Table(name = "transaction")
@@ -34,10 +35,6 @@ public class Transaction {
 	@CreationTimestamp
 	@Column(name = "completed_at")
 	private LocalDateTime completedAt;
-
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "event_id", nullable = false)
-	private Event event;
 
 	@OneToMany(mappedBy = "transaction", fetch = FetchType.LAZY)
 	private List<TransactionComponent> transactionComponents;

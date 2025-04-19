@@ -1,0 +1,1 @@
+ALTER TABLE "transaction" DROP COLUMN if exists "event_id";
