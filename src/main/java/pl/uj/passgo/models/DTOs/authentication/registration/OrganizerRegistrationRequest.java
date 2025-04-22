@@ -1,6 +1,7 @@
 package pl.uj.passgo.models.DTOs.authentication.registration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import pl.uj.passgo.models.member.MemberType;
 
 import java.time.LocalDate;
 
@@ -16,5 +17,10 @@ public record OrganizerRegistrationRequest(
 	@Override
 	public MemberRegistrationCredentials getCredentials() {
 		return memberRegistrationCredentials;
+	}
+
+	@Override
+	public MemberType getMemberType() {
+		return MemberType.ORGANIZER;
 	}
 }
