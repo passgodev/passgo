@@ -58,6 +58,7 @@ public class AuthenticationService {
 	private <T extends Member, U extends MemberRegistrationRequest> void setCredentials(T member, U request) {
 		var memberCredential = new MemberCredential();
 
+		memberCredential.setMemberType(request.getMemberType());
 		memberCredential.setLogin(request.getCredentials().login());
 		memberCredential.setPassword(bCryptPasswordEncoder.encode(request.getCredentials().password()));
 
