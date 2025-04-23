@@ -78,7 +78,7 @@ public class RegistrationRequestResolver implements HandlerMethodArgumentResolve
 		var targetClass = switch (memberType) {
 			case MemberType.CLIENT -> ClientRegistrationRequest.class;
 			case MemberType.ORGANIZER -> OrganizerRegistrationRequest.class;
-			case MemberType.ADMIN -> throw new RuntimeException("Admin registration is disabled");
+			case MemberType.ADMINISTRATOR -> throw new RuntimeException("Admin registration is disabled");
 		};
 
 		return objectMapper.readValue(jsonBody, targetClass);

@@ -2,6 +2,7 @@ package pl.uj.passgo.controllers.authentication;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +21,7 @@ import pl.uj.passgo.services.authentication.AuthenticationService;
 public class AuthenticationController {
 	private final AuthenticationService authenticationService;
 
-	@PostMapping("/signup")
+	@PostMapping(value = "/signup", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Void> registerMember(@DynamicMemberRegistrationRequest(requestParam = "member") MemberRegistrationRequest request) {
 		authenticationService.registerNewMember(request);
 		return ResponseEntity.ok().build();

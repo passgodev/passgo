@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import pl.uj.passgo.mappers.role.PrivilegeMapper;
 
 import java.util.Collection;
-import java.util.Collections;
 
 
 @AllArgsConstructor
@@ -28,9 +28,13 @@ public class MemberCredential implements UserDetails {
 	@Column(name = "password", nullable = false)
 	private String password;
 
+	@Column(name = "member_type", nullable = false, updatable = false)
+	@Enumerated(EnumType.STRING)
+	private MemberType memberType;
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Collections.emptyList();
+		return PrivilegeMapper.fromMemberType(memberType).getAuthorities();
 	}
 
 	@Override
