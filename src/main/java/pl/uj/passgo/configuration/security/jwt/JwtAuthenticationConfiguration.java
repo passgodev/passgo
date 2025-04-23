@@ -33,6 +33,7 @@ public class JwtAuthenticationConfiguration {
 				authorizeRequests
 					.requestMatchers("/auth/login").permitAll()
 					.requestMatchers("/auth/signup").permitAll()
+					.requestMatchers("/auth/refresh").permitAll()
 					.requestMatchers(PathRequest.toH2Console()).permitAll()
 					.anyRequest().authenticated();
 			})
