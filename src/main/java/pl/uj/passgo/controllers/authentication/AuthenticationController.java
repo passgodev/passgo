@@ -23,13 +23,13 @@ import pl.uj.passgo.services.authentication.AuthenticationService;
 public class AuthenticationController {
 	private final AuthenticationService authenticationService;
 
-	@PostMapping(value = "/signup", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/signup", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Void> registerMember(@DynamicMemberRegistrationRequest(requestParam = "member") MemberRegistrationRequest request) {
 		authenticationService.registerNewMember(request);
 		return ResponseEntity.ok().build();
 	}
 
-	@PostMapping("/login")
+	@PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoginResponse> loginMember(@RequestBody LoginRequest request) {
 		var responseToken = authenticationService.loginMember(request);
 		return ResponseEntity.ok(responseToken);
