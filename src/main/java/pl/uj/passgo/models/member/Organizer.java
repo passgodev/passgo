@@ -1,4 +1,4 @@
-package pl.uj.passgo.models;
+package pl.uj.passgo.models.member;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -13,6 +13,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Entity
 @Table(name = "organizer")
-public class Organizer extends Member{
+public class Organizer extends Member {
      private String organization;
 }

@@ -2,6 +2,7 @@ package pl.uj.passgo.models.transaction;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import pl.uj.passgo.models.Ticket;
@@ -9,6 +10,7 @@ import pl.uj.passgo.models.Ticket;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Data
 @Entity
 @Table(name = "transaction_component")
