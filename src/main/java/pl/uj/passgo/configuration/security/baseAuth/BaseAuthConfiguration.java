@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
@@ -67,6 +66,7 @@ public class BaseAuthConfiguration {
 	public SecurityFilterChain basicAuthEnabled(HttpSecurity httpSecurity) throws Exception {
 		log.trace("All profiles - BasicAuth enabled");
 		httpSecurity
+			.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
 			.authorizeHttpRequests(a -> {
 				a.requestMatchers("/health").permitAll()
 				 .requestMatchers(PathRequest.toH2Console()).permitAll()
@@ -74,7 +74,7 @@ public class BaseAuthConfiguration {
 			})
 			.sessionManagement(a -> a.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.httpBasic(Customizer.withDefaults())
-			.csrf(AbstractHttpConfigurer::disable);
+			.csrf(csrf -> csrf.ignoringRequestMatchers(PathRequest.toH2Console()).disable());
 
 		return httpSecurity.build();
 	}

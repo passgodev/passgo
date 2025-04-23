@@ -14,6 +14,8 @@ import pl.uj.passgo.configuration.security.jwt.JwtService;
 import pl.uj.passgo.mappers.member.MemberMapper;
 import pl.uj.passgo.models.DTOs.authentication.login.LoginRequest;
 import pl.uj.passgo.models.DTOs.authentication.login.LoginResponse;
+import pl.uj.passgo.models.DTOs.authentication.refresh.RefreshTokenRequest;
+import pl.uj.passgo.models.DTOs.authentication.refresh.RefreshTokenResponse;
 import pl.uj.passgo.models.DTOs.authentication.registration.ClientRegistrationRequest;
 import pl.uj.passgo.models.DTOs.authentication.registration.MemberRegistrationRequest;
 import pl.uj.passgo.models.DTOs.authentication.registration.OrganizerRegistrationRequest;
@@ -40,6 +42,8 @@ public class AuthenticationService {
 	private final AuthenticationManager authenticationManager;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final JwtService jwtService;
+
+	private final RefreshTokenService refreshTokenService;
 
 	@Transactional
 	public void registerNewMember(MemberRegistrationRequest request) {
@@ -101,6 +105,18 @@ public class AuthenticationService {
 			});
 
 		var jwtToken = jwtService.generateToken(memberCredential);
-		return new LoginResponse(jwtToken);
+		var refreshToken = refreshTokenService.createRefreshToken(memberCredential);
+
+		return new LoginResponse(refreshToken.getToken(), jwtToken);
+	}
+
+	public RefreshTokenResponse refreshToken(RefreshTokenRequest request) {
+		var refreshToken = refreshTokenService.getByToken(request.refreshToken());
+		refreshTokenService.isAfterExpirationDate(refreshToken);
+
+		var memberCredential = refreshToken.getMemberCredential();
+		var jwtToken = jwtService.generateToken(memberCredential);
+
+		return new RefreshTokenResponse(refreshToken.getToken(), jwtToken);
 	}
 }
