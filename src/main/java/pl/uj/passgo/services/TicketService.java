@@ -4,16 +4,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.models.*;
 import pl.uj.passgo.models.DTOs.TicketPurchaseRequest;
-import pl.uj.passgo.repos.EventRepository;
-import pl.uj.passgo.repos.SeatRepository;
-import pl.uj.passgo.repos.SectorRepository;
-import pl.uj.passgo.repos.TicketRepository;
+import pl.uj.passgo.repos.*;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -24,6 +25,8 @@ public class TicketService {
     private final EventRepository eventRepository;
     private final SellingService sellingService;
     private final SeatRepository seatRepository;
+    private final SectorRepository sectorRepository;
+    private final RowRepository rowRepository;
 
     // private final ClientRepository clientRepository;
     // TODO: create ClientRepository
@@ -69,4 +72,36 @@ public class TicketService {
         return ticketRepository.save(ticketBuilder.build());
     }
 
+    public Page<Ticket> getAllTickets(Pageable pageable) {
+        return ticketRepository.findAll(pageable);
+    }
+
+    public Ticket getTicketById(Long id) {
+        return ticketRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ticket not found"));
+    }
+
+    public Ticket updateTicket(TicketPurchaseRequest ticketRequest, Long id) {
+        Ticket ticket = getTicketById(id);
+        ticket.setPrice(ticketRequest.getPrice());
+        Event event = eventRepository.findById(ticketRequest.getEventId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
+        ticket.setEvent(event);
+        Sector sector = sectorRepository.findById(ticketRequest.getSectorId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sector not found"));
+        ticket.setSector(sector);
+        Row row = rowRepository.findById(ticketRequest.getRowId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Row not found"));
+        ticket.setRow(row);
+        Seat seat = seatRepository.findById(ticketRequest.getSeatId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seat not found"));
+        ticket.setSeat(seat);
+        //TODO: Change client
+        ticket.setStandingArea(ticketRequest.getStandingArea());
+
+        return ticketRepository.save(ticket);
+    }
+
+    public void deleteTicket(Long id) {
+        ticketRepository.deleteById(id);
+    }
+
+    public List<Ticket> getTicketByClientId(Long id) {
+        return ticketRepository.findAllByOwnerId(id);
+    }
 }

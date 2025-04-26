@@ -3,12 +3,14 @@ package pl.uj.passgo.security.configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -60,12 +62,13 @@ public class BaseAuthConfiguration {
 	@ConditionalOnProperty(name = "app.configuration.security.enabled", havingValue = "true", matchIfMissing = true)
 	public SecurityFilterChain basicAuthEnabled(HttpSecurity httpSecurity) throws Exception {
 		log.trace("All profiles - BasicAuth enabled");
-		httpSecurity.authorizeHttpRequests(a -> {
-			a.requestMatchers("/health").permitAll()
-			 .anyRequest().authenticated();
-		}).sessionManagement(a -> a.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.httpBasic(Customizer.withDefaults())
-			.csrf(AbstractHttpConfigurer::disable);
+		httpSecurity
+				.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+				.authorizeHttpRequests(a -> {
+					a.requestMatchers(PathRequest.toH2Console()).permitAll()
+							.anyRequest().permitAll();
+				})
+				.csrf(csrf -> csrf.ignoringRequestMatchers(PathRequest.toH2Console()).disable());
 
 		return httpSecurity.build();
 	}

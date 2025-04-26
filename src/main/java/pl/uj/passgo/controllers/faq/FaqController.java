@@ -37,8 +37,8 @@ public class FaqController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("{faqId}")
-    public ResponseEntity<Void> deleteFaq(@RequestParam Long faqId) {
+    @DeleteMapping("/{faqId}")
+    public ResponseEntity<Void> deleteFaq(@PathVariable Long faqId) {
         faqService.deleteFaq(faqId);
         return ResponseEntity.noContent().build();
     }
