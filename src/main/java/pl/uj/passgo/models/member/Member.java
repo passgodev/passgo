@@ -1,4 +1,4 @@
-package pl.uj.passgo.models;
+package pl.uj.passgo.models.member;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,4 +32,8 @@ public class Member {
     private LocalDate birthDate;
     @Column(name = "is_active")
     private boolean isActive;
+
+    @OneToOne
+    @JoinColumn(name = "member_credential_id", nullable = false, unique = true)
+    private MemberCredential memberCredential;
 }

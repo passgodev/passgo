@@ -8,8 +8,16 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import pl.uj.passgo.models.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import pl.uj.passgo.models.DTOs.TicketPurchaseRequest;
 import pl.uj.passgo.services.PDFGenerator;
+import pl.uj.passgo.models.DTOs.ticket.TicketPurchaseResponse;
+import pl.uj.passgo.models.Ticket;
 import pl.uj.passgo.services.TicketService;
 
 import java.util.List;
@@ -54,12 +62,11 @@ public class TicketController {
         return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<Ticket> purchaseTicket(@RequestBody TicketPurchaseRequest ticket) {
-        Ticket purchasedTicket = ticketService.purchaseTicket(ticket);
-        return new ResponseEntity<>(purchasedTicket, HttpStatus.CREATED);
+    @PostMapping("/purchase")   // todo: later change this to default post endpoint name
+    public ResponseEntity<TicketPurchaseResponse> purchaseTickets(@RequestBody pl.uj.passgo.models.DTOs.ticket.TicketPurchaseRequest tickets) {
+        var purchasedTicketsResponse = ticketService.purchaseTickets(tickets);
+        return ResponseEntity.ok(purchasedTicketsResponse);
     }
-
     @PutMapping("/{id}")
     public ResponseEntity<Ticket> updateTicket(@RequestBody TicketPurchaseRequest ticket, @PathVariable Long id) {
         Ticket updatedTicket = ticketService.updateTicket(ticket, id);
