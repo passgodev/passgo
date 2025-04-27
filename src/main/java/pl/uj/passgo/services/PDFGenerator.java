@@ -14,13 +14,18 @@ import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.HorizontalAlignment;
+import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
+import com.itextpdf.layout.properties.VerticalAlignment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import pl.uj.passgo.models.Address;
 import pl.uj.passgo.models.Ticket;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class PDFGenerator {
@@ -34,12 +39,18 @@ public class PDFGenerator {
         try (Document document = new Document(pdf)) {
             document.add(addImage());
 
-            Paragraph ticketIdParagraph = new Paragraph("Ticket ID: " + ticket.getId()).setBold();
+            Paragraph ticketIdParagraph = new Paragraph("Ticket ID: " + ticket.getId()).setTextAlignment(TextAlignment.CENTER).setBold();
             Image qrImage = addQRCode(ticket.getId());
+            qrImage.setHorizontalAlignment(HorizontalAlignment.CENTER);
 
             Table idTable = new Table(UnitValue.createPercentArray(new float[]{1, 1})).useAllAvailableWidth();
-            idTable.addCell(new Cell().add(ticketIdParagraph).setBorder(Border.NO_BORDER));
-            idTable.addCell(new Cell().add(qrImage).setBorder(Border.NO_BORDER));
+            idTable.addCell(new Cell().add(ticketIdParagraph)
+                    .setBorder(Border.NO_BORDER)
+                    .setVerticalAlignment(VerticalAlignment.MIDDLE));
+
+            idTable.addCell(new Cell().add(qrImage)
+                    .setBorder(Border.NO_BORDER)
+                    .setVerticalAlignment(VerticalAlignment.MIDDLE));
 
             document.add(idTable);
 
@@ -53,39 +64,51 @@ public class PDFGenerator {
     private Image addImage() throws IOException {
         Image img = new Image(ImageDataFactory.create(new ClassPathResource("passgo.png").getURL()));
         img.setWidth(200);
+        img.setHorizontalAlignment(HorizontalAlignment.CENTER);
         return img;
     }
 
     private Table addTable(Ticket ticket) {
         Table table = new Table(UnitValue.createPercentArray(2)).useAllAvailableWidth();
-        table.addCell("Price:");
-        table.addCell(ticket.getPrice().toString());
 
-        table.addCell("Event:");
-        table.addCell(ticket.getEvent().getName());
-
-        table.addCell("Date:");
-        table.addCell(ticket.getEvent().getDate().toString());
-
-        table.addCell("Description:");
-        table.addCell(ticket.getEvent().getDescription());
-
-        table.addCell("Sector name:");
-        table.addCell(ticket.getSector() != null ? ticket.getSector().getName() : "---");
-
-        table.addCell("Row number:");
-        table.addCell(ticket.getRow() != null ? ticket.getRow().getRowNumber().toString() : "---");
-
-        table.addCell("Seat number:");
-        table.addCell(ticket.getSeat() != null ? ticket.getSeat().getId().toString() : "---");
-
-        table.addCell("Standing area:");
-        table.addCell(ticket.getStandingArea() ? "Yes" : "No");
-
-        table.addCell("Owner:");
-        table.addCell(ticket.getOwner() != null ? ticket.getOwner().getFirstName() + " " + ticket.getOwner().getLastName() : "---");
+        addRow(table, "Price:", ticket.getPrice().toString());
+        addRow(table, "Date:", ticket.getEvent().getDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")));
+        addRow(table, "Event:", ticket.getEvent().getName());
+        addRow(table, "Address:", ticket.getEvent().getBuilding() != null ? getAddress(ticket.getEvent().getBuilding().getAddress()) : "---");
+        addRow(table, "Description:", ticket.getEvent().getDescription());
+        addRow(table, "Sector name:", ticket.getSector() != null ? ticket.getSector().getName() : "---");
+        addRow(table, "Row number:", ticket.getRow() != null ? ticket.getRow().getRowNumber().toString() : "---");
+        addRow(table, "Seat number:", ticket.getSeat() != null ? ticket.getSeat().getId().toString() : "---");
+        addRow(table, "Standing area:", ticket.getStandingArea() ? "Yes" : "No");
+        addRow(table, "Owner:", ticket.getOwner() != null ? ticket.getOwner().getFirstName() + " " + ticket.getOwner().getLastName() : "---");
 
         return table;
+    }
+
+    private String getAddress(Address address) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(address.getStreet()).append(" ")
+                .append(address.getBuildingNumber()).append(", ")
+                .append(address.getCity()).append(", ")
+                .append(address.getCountry());
+        return sb.toString();
+    }
+
+    private void addRow(Table table, String label, String value) {
+        Cell labelCell = new Cell()
+                .add(new Paragraph(label).setBold())
+                .setTextAlignment(TextAlignment.CENTER)
+                .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                .setHeight(30f);
+
+        Cell valueCell = new Cell()
+                .add(new Paragraph(value))
+                .setTextAlignment(TextAlignment.CENTER)
+                .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                .setHeight(30f);
+
+        table.addCell(labelCell);
+        table.addCell(valueCell);
     }
 
     private Image addQRCode(Long ticketID) throws IOException, WriterException {

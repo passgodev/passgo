@@ -12,8 +12,6 @@ import pl.uj.passgo.models.DTOs.TicketPurchaseRequest;
 import pl.uj.passgo.services.PDFGenerator;
 import pl.uj.passgo.services.TicketService;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -44,34 +42,13 @@ public class TicketController {
 
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> getTicketPdf(@PathVariable("id") Long id) {
-//        Ticket ticket = ticketService.getTicketById(id);
-        Event event = Event.builder()
-                .id(1L)
-                .name("wydarzenie")
-                .date(LocalDateTime.now())
-                .description("daw daw daw dasssssssssssssw ad a")
-                .build();
-        Sector sector = Sector.builder().name("A2").build();
-        Row row = Row.builder().rowNumber(12L).build();
-        Seat seat = Seat.builder().id(123L).build();
-        Client client = Client.builder().id(1L).firstName("Wojtek").lastName("Wojetek").build();
-
-        Ticket ticket = Ticket.builder()
-                .id(id)
-                .price(new BigDecimal("100.0"))
-                .event(event)
-                .sector(sector)
-                .row(row)
-                .seat(seat)
-                .standingArea(false)
-                .owner(client)
-                .build();
+        Ticket ticket = ticketService.getTicketById(id);
 
         byte[] pdf = pdfGenerator.generateTicketPdf(ticket);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        //lub zamiast inline "attachment"
+        //or instead of "inline" use "attachment"
         headers.setContentDisposition(ContentDisposition.builder("inline").filename("ticket_" + id + ".pdf").build());
 
         return new ResponseEntity<>(pdf, headers, HttpStatus.OK);

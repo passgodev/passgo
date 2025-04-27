@@ -83,15 +83,27 @@ public class TicketService {
     public Ticket updateTicket(TicketPurchaseRequest ticketRequest, Long id) {
         Ticket ticket = getTicketById(id);
         ticket.setPrice(ticketRequest.getPrice());
-        Event event = eventRepository.findById(ticketRequest.getEventId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
-        ticket.setEvent(event);
-        Sector sector = sectorRepository.findById(ticketRequest.getSectorId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sector not found"));
-        ticket.setSector(sector);
-        Row row = rowRepository.findById(ticketRequest.getRowId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Row not found"));
-        ticket.setRow(row);
-        Seat seat = seatRepository.findById(ticketRequest.getSeatId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seat not found"));
-        ticket.setSeat(seat);
-        //TODO: Change client
+
+        if(!ticket.getEvent().getId().equals(ticketRequest.getEventId())) {
+            Event event = eventRepository.findById(ticketRequest.getEventId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
+            ticket.setEvent(event);
+        }
+        if(!ticket.getSector().getId().equals(ticketRequest.getSectorId())) {
+            Sector sector = sectorRepository.findById(ticketRequest.getSectorId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sector not found"));
+            ticket.setSector(sector);
+        }
+        if(!ticket.getRow().getId().equals(ticketRequest.getRowId())) {
+            Row row = rowRepository.findById(ticketRequest.getRowId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Row not found"));
+            ticket.setRow(row);
+        }
+        if(!ticket.getSeat().getId().equals(ticketRequest.getSeatId())) {
+            Seat seat = seatRepository.findById(ticketRequest.getSeatId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seat not found"));
+            ticket.setSeat(seat);
+        }
+        if(!ticket.getOwner().getId().equals(ticketRequest.getOwnerId())) {
+            //TODO: Change client if owner id is different
+        }
+
         ticket.setStandingArea(ticketRequest.getStandingArea());
 
         return ticketRepository.save(ticket);
