@@ -21,7 +21,7 @@ public class WalletService {
     private final WalletHistoryRepository walletHistoryRepository;
 
     public Wallet getWalletByClientID(Long clientId) {
-        return walletRepository.findWalletByClientId(clientId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client ID: " + clientId + " has no wallet"));
+        return walletRepository.findWalletByClientId(clientId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client ID: " + clientId + " has no wallet."));
     }
 
     public List<WalletHistory> getWalletHistory(Long walletId) {
@@ -29,7 +29,7 @@ public class WalletService {
     }
 
     public Wallet updateBalance(Long walletId, BigDecimal amount, String description) {
-        Wallet wallet = walletRepository.findById(walletId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "wallet id: " + walletId + "does not exists."));
+        Wallet wallet = walletRepository.findById(walletId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Wallet id: " + walletId + " does not exists."));
 
         BigDecimal newBalance = wallet.getMoney().add(amount);
         wallet.setMoney(newBalance);

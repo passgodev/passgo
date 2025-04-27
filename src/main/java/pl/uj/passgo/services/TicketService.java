@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.models.*;
 import pl.uj.passgo.models.DTOs.TicketPurchaseRequest;
 import pl.uj.passgo.repos.*;
+import pl.uj.passgo.repos.member.ClientRepository;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class TicketService {
     private final SeatRepository seatRepository;
     private final SectorRepository sectorRepository;
     private final RowRepository rowRepository;
+    private final ClientRepository clientRepository;
 
     // private final ClientRepository clientRepository;
     // TODO: create ClientRepository
@@ -101,7 +103,8 @@ public class TicketService {
             ticket.setSeat(seat);
         }
         if(!ticket.getOwner().getId().equals(ticketRequest.getOwnerId())) {
-            //TODO: Change client if owner id is different
+            Client client = clientRepository.findById(ticketRequest.getOwnerId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
+            ticket.setOwner(client);
         }
 
         ticket.setStandingArea(ticketRequest.getStandingArea());

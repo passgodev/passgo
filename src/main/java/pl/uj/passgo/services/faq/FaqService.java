@@ -29,9 +29,9 @@ public class FaqService {
 
     public FaqResponse addFaq(FaqRequest faqRequest) {
         Faq faq = new Faq();
-        faq.setQuestion(faqRequest.getQuestion());
-        faq.setAnswer(faqRequest.getAnswer());
-        faq.setAddDate(faqRequest.getAddDate());
+        faq.setQuestion(faqRequest.question());
+        faq.setAnswer(faqRequest.answer());
+        faq.setAddDate(faqRequest.addDate());
 
         return mapFaqToFaqResponse(faqRepository.save(faq));
     }

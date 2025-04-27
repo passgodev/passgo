@@ -29,6 +29,7 @@ import java.time.format.DateTimeFormatter;
 
 @Service
 public class PDFGenerator {
+    private static final String EMPTY_VALUE = "---";
 
     public byte[] generateTicketPdf(Ticket ticket) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -74,13 +75,13 @@ public class PDFGenerator {
         addRow(table, "Price:", ticket.getPrice().toString());
         addRow(table, "Date:", ticket.getEvent().getDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")));
         addRow(table, "Event:", ticket.getEvent().getName());
-        addRow(table, "Address:", ticket.getEvent().getBuilding() != null ? getAddress(ticket.getEvent().getBuilding().getAddress()) : "---");
+        addRow(table, "Address:", ticket.getEvent().getBuilding() != null ? getAddress(ticket.getEvent().getBuilding().getAddress()) : EMPTY_VALUE);
         addRow(table, "Description:", ticket.getEvent().getDescription());
-        addRow(table, "Sector name:", ticket.getSector() != null ? ticket.getSector().getName() : "---");
-        addRow(table, "Row number:", ticket.getRow() != null ? ticket.getRow().getRowNumber().toString() : "---");
-        addRow(table, "Seat number:", ticket.getSeat() != null ? ticket.getSeat().getId().toString() : "---");
+        addRow(table, "Sector name:", ticket.getSector() != null ? ticket.getSector().getName() : EMPTY_VALUE);
+        addRow(table, "Row number:", ticket.getRow() != null ? ticket.getRow().getRowNumber().toString() : EMPTY_VALUE);
+        addRow(table, "Seat number:", ticket.getSeat() != null ? ticket.getSeat().getId().toString() : EMPTY_VALUE);
         addRow(table, "Standing area:", ticket.getStandingArea() ? "Yes" : "No");
-        addRow(table, "Owner:", ticket.getOwner() != null ? ticket.getOwner().getFirstName() + " " + ticket.getOwner().getLastName() : "---");
+        addRow(table, "Owner:", ticket.getOwner() != null ? ticket.getOwner().getFirstName() + " " + ticket.getOwner().getLastName() : EMPTY_VALUE);
 
         return table;
     }
