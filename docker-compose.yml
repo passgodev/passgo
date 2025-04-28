@@ -18,6 +18,8 @@ services:
       interval: 5s
       retries: 5
       timeout: 3s
+    networks:
+      - passgo-network
 
   app:
     build: .
@@ -25,14 +27,18 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/passgo
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: password
     ports:
       - "9090:8080"
+    env_file:
+      - .env
     restart: unless-stopped
-    entrypoint: ["/bin/sh", "-c", "echo 'Waiting for DB...'; sleep 2; java -jar app.jar"]
+    entrypoint: ["/bin/sh", "-c", "echo 'Waiting for DB...'; sleep 2; java -Dspring.profiles.active=dev -jar app.jar"]
+    networks:
+      - passgo-network
 
 volumes:
   pgdata:
+
+networks:
+  passgo-network:
+    driver: bridge
