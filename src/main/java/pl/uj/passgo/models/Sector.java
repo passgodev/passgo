@@ -33,4 +33,7 @@ public class Sector {
     @JoinColumn(name = "building_id", nullable = false)
     @JsonBackReference
     private Building building;
+
+    @Column(nullable = false)
+    private Boolean standingArea;
 }

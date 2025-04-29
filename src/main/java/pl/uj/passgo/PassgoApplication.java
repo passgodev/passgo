@@ -11,6 +11,6 @@ public class PassgoApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PassgoApplication.class, args);
-	}
 
+	}
 }

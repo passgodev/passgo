@@ -46,6 +46,7 @@ public class BuildingService {
             Sector sector = new Sector();
             sector.setName(sectorRequest.getName());
             sector.setBuilding(building);
+            sector.setStandingArea(sectorRequest.getStandingArea());
 
             List<Row> rows = new ArrayList<>();
             for (RowRequest rowRequest : sectorRequest.getRows()) {
@@ -81,4 +82,20 @@ public class BuildingService {
                         String.format("There is no building with id: %d", id)
                 ));
     }
+
+    public List<Building> getBuidlingsByApproved(Boolean approved) {
+        return buildingRepository.findByApproved(approved);
+    }
+
+    public Building approveBuilding(Long id) {
+        Building building = getBuildingById(id);
+        building.setApproved(true);
+        return buildingRepository.save(building);
+    }
+
+    public void deleteBuilding(Long id) {
+        Building building = getBuildingById(id);
+        buildingRepository.deleteById(id);
+    }
+
 }

@@ -19,8 +19,16 @@ public class BuildingController {
     private final BuildingService buildingService;
 
     @GetMapping
-    public ResponseEntity<List<Building>> getAllBuildings() {
-        List<Building> buildings = buildingService.getAllBuildings();
+    public ResponseEntity<List<Building>> getBuildings(@RequestParam(required = false) Boolean approved) {
+        List<Building> buildings;
+
+        if(approved == null){
+            buildings = buildingService.getAllBuildings();
+        }
+        else{
+            buildings = buildingService.getBuidlingsByApproved(approved) ;
+        }
+
         return ResponseEntity.ok(buildings);
     }
 
@@ -34,6 +42,18 @@ public class BuildingController {
     public ResponseEntity<Building> getBuildingById(@PathVariable Long id) {
         Building fetchedBuilding = buildingService.getBuildingById(id);
         return ResponseEntity.ok(fetchedBuilding);
+    }
+
+    @PatchMapping("/{id}/approve")
+    public ResponseEntity<Building> approveBuilding(@PathVariable Long id){
+        Building approvedBuilding = buildingService.approveBuilding(id);
+        return ResponseEntity.ok(approvedBuilding);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteBuilding(@PathVariable Long id){
+        buildingService.deleteBuilding(id);
+        return ResponseEntity.ok(String.format("Buidling with id: %d was succesfully deleted", id));
     }
 
 }

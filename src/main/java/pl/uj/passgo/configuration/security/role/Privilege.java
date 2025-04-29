@@ -12,13 +12,12 @@ import java.util.stream.Stream;
 import static pl.uj.passgo.configuration.security.role.Permission.READ_HEALTH;
 
 
-@RequiredArgsConstructor
 public enum Privilege {
 	CLIENT(
-		Collections.emptySet()
+			Set.of(READ_HEALTH)
 	),
 	ORGANIZER(
-		Set.of(READ_HEALTH)
+			Set.of(READ_HEALTH)
 	),
 	ADMINISTRATOR(
 		Stream.of(CLIENT.permissions,
@@ -38,5 +37,9 @@ public enum Privilege {
 		authorities.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
 
 		return authorities;
+	}
+
+	Privilege(Set<Permission> permissions) {
+		this.permissions = permissions;
 	}
 }

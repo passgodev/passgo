@@ -32,7 +32,7 @@ services:
     env_file:
       - .env
     restart: unless-stopped
-    entrypoint: ["/bin/sh", "-c", "echo 'Waiting for DB...'; sleep 2; java -Dspring.profiles.active=dev -jar app.jar"]
+    entrypoint: ["/bin/sh", "-c", "echo 'Waiting for DB...'; sleep 2; java -jar app.jar"]
     networks:
       - passgo-network
 
