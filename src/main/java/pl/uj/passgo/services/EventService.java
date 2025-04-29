@@ -102,4 +102,10 @@ public class EventService {
         }
         ticketRepository.saveAll(tickets);
     }
+
+    public Event approveEvent(Long id) {
+        Event event = getEventById(id);
+        event.setApproved(true);
+        return eventRepository.save(event);
+    }
 }

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.uj.passgo.models.Building;
 import pl.uj.passgo.models.DTOs.EventCreateRequest;
 import pl.uj.passgo.models.Event;
 import pl.uj.passgo.services.EventService;
@@ -46,5 +47,11 @@ public class EventController {
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         eventService.deleteEvent(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/approve")
+    public ResponseEntity<Event> approveBuilding(@PathVariable Long id){
+        Event approvedEvent = eventService.approveEvent(id);
+        return ResponseEntity.ok(approvedEvent);
     }
 }
