@@ -1,4 +1,4 @@
-package pl.uj.passgo.models.DTOs.client;
+package pl.uj.passgo.models.DTOs.member;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
