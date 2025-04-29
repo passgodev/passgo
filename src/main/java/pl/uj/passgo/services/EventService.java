@@ -43,6 +43,7 @@ public class EventService {
                 .date(event.getDate())
                 .description(event.getDescription())
                 .category(event.getCategory())
+                .approved(false)
                 .build();
 
         Event resposeEvent = eventRepository.save(builtEvent);
@@ -107,5 +108,9 @@ public class EventService {
         Event event = getEventById(id);
         event.setApproved(true);
         return eventRepository.save(event);
+    }
+
+    public List<Event> getEventsByApproved(Boolean approved) {
+        return eventRepository.findByApproved(approved);
     }
 }

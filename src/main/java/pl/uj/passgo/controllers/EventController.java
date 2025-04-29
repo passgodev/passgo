@@ -20,8 +20,16 @@ public class EventController {
     private final EventService eventService;
 
     @GetMapping
-    public ResponseEntity<List<Event>> getAllEvents(){
-        List<Event> events = eventService.getAllEvents();
+    public ResponseEntity<List<Event>> getAllEvents(@RequestParam(required = false) Boolean approved) {
+        List<Event> events;
+
+        if(approved == null){
+            events = eventService.getAllEvents();
+        }
+        else{
+            events = eventService.getEventsByApproved(approved);
+        }
+
         return ResponseEntity.ok(events);
     }
 
