@@ -26,8 +26,7 @@ public class PDFGenerator {
     public byte[] generateTicketPdf(Ticket ticket) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        try {
-            Document document = new Document();
+        try(Document document = new Document()) {
             PdfWriter.getInstance(document, out);
             document.open();
 
@@ -40,7 +39,6 @@ public class PDFGenerator {
             document.add(addQRCode(ticket.getId()));
 
             document.add(addTable(ticket));
-            document.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
