@@ -16,7 +16,6 @@ public class MemberMapper {
 		client.setLastName(request.lastName());
 		client.setEmail(request.getCredentials().email());
 		client.setBirthDate(request.birthDate());
-		client.setActive(true);
 
 		return client;
 	}
@@ -28,7 +27,6 @@ public class MemberMapper {
 		organizer.setLastName(request.lastName());
 		organizer.setEmail(request.getCredentials().email());
 		organizer.setBirthDate(request.birthDate());
-		organizer.setActive(true);
 		organizer.setOrganization(request.organization());
 
 		return organizer;

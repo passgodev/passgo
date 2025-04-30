@@ -55,7 +55,7 @@ public class MemberService {
 	}
 
 	private static Organizer activateOrganizer(Organizer organizer) {
-		organizer.setActive(true);
+		organizer.getMemberCredential().setActive(true);
 		return organizer;
 	}
 }

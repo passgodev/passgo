@@ -15,7 +15,8 @@ public class OrganizerMapper {
 			organizer.getEmail(),
 			organizer.getRegistrationDate(),
 			organizer.getBirthDate(),
-			organizer.isActive(),
+			organizer.getMemberCredential()
+					 .isActive(),
 			organizer.getOrganization()
 		);
 	}

@@ -15,7 +15,8 @@ public class ClientMapper {
 			client.getEmail(),
 			client.getRegistrationDate(),
 			client.getBirthDate(),
-			client.isActive()
+			client.getMemberCredential()
+				  .isActive()
 		);
 	}
 }
