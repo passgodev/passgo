@@ -173,15 +173,17 @@ System sprzedaży biletów umożliwiający użytkownikom kupowanie i odsprzedawa
 
 - Domena i zakres funkcjonalny
   - Użytkownik:
-    - [ ] Tworzenie konta
+    - [x] Tworzenie konta
     - [ ] Kupowanie, sprzedaż biletu,odsprzedaż
     - [ ] Przeglądanie wydarzeń
     - [ ] Wirtualny portfel
     - [ ] Generowanie biletów w formacie PDF i QR code
     - [ ] Centrum pomocy i FAQ
-    - [ ] Profil użytkownika i historia transakcji
+    - [ ] Profil użytkownika
+    - [x] Historia transakcji
 
   - Organizator:
+    - [x] Tworzenie konta
     - [ ] Tworzenie wydarzeń, anulowanie, edycja - zarządzanie
     - [ ] Podgląd statystyk wydarzenia
     - [ ] Ustawienie planu obiektu
@@ -189,7 +191,8 @@ System sprzedaży biletów umożliwiający użytkownikom kupowanie i odsprzedawa
 
   - Administrator:
     - [ ] Zatwierdzanie planów obiektów
-    - [ ] Zarządzanie użytkownikami i organizatorami
+    - Zarządzanie użytkownikami i organizatorami
+      - [x] Zatwierdzanie kont organizatorów
     - [ ] Wgląd w statystyki
     - [ ] Zarządzanie wydarzeniami
 
@@ -204,7 +207,7 @@ System sprzedaży biletów umożliwiający użytkownikom kupowanie i odsprzedawa
 - [ ] Aplikację należy przetestować wydajnościowo z użyciem np. Gatlinga
 - [ ] Kod powinien być automatycznie skanowany pod kątem bezpieczeństwa (np. Snyk)
 - [x] Dokumentację API należy udostępnić w formie Swaggera  
-- [ ] Usługa powinna udostępniać poprawnie skonstruowane REST API, łącznie z obsługą błędów  
+- [x] Usługa powinna udostępniać poprawnie skonstruowane REST API, łącznie z obsługą błędów  
 - [ ] Musi być wykorzystywana data i czas, z poprawnym użyciem klasy Clock 
 - [x] Dependency Injection: należy używać wstrzykiwania przez konstruktor  
 - [x] Należy używać bibliotekę do logów
@@ -214,8 +217,8 @@ System sprzedaży biletów umożliwiający użytkownikom kupowanie i odsprzedawa
 - [ ] Usługa powinna być monitorowana np. za pomocą ELK. Środowisko monitorujące w osobnym Dockerfile, połączone przez compose 
 - [ ] Usługa powinna korzystać z jakiegoś zewnętrznego API 
 - [x] Usługa powinna być zabezpieczona przynajmniej na podstawowym poziomie. Logowanie basic auth lub autoryzacja Google  
-- [ ] Usługa zawiera minimum 3 poziomy uprawnień użytkowników  
-- [ ] Użytkownicy powinni mieć ograniczony dostęp do niektórych zasobów (np. tylko swoich)  
+- [x] Usługa zawiera minimum 3 poziomy uprawnień użytkowników  
+- [x] Użytkownicy powinni mieć ograniczony dostęp do niektórych zasobów (np. tylko swoich)  
 - [ ] Należy przygotować demo serwisu  
 - *Wszelkie dodatkowe elementy ustalone z prowadzącym są również obowiązkowe*
 - [x] Użycie narzędzia do wersjonowania bazy danych (flyway)
