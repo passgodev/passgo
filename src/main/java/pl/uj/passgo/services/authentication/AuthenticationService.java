@@ -108,10 +108,16 @@ public class AuthenticationService {
 
 		var memberCredential = memberCredentialRepository.findByLogin(request.login())
 			.orElseThrow(() -> {
-				var message = "User with provided login does not exist, login: " + request.login();
+				var message = "Member with provided login does not exist, login: " + request.login();
 				log.warn(message);
 				return new ResponseStatusException(HttpStatus.CONFLICT, message);
 			});
+
+		if (!memberCredential.isActive()) {
+			var message = "Member is not active, login: " + request.login();
+			log.warn(message);
+			throw new ResponseStatusException(HttpStatus.CONFLICT, message);
+		}
 
 		var jwtToken = jwtService.generateToken(memberCredential);
 		var refreshToken = refreshTokenService.createRefreshToken(memberCredential);
