@@ -10,6 +10,8 @@ import pl.uj.passgo.models.DTOs.AddressRequest;
 import pl.uj.passgo.models.DTOs.buildingRequests.BuildingRequest;
 import pl.uj.passgo.models.DTOs.buildingRequests.RowRequest;
 import pl.uj.passgo.models.DTOs.buildingRequests.SectorRequest;
+import pl.uj.passgo.models.responses.BuidlingResponse;
+import pl.uj.passgo.models.responses.FullBuildingResponse;
 import pl.uj.passgo.repos.BuildingRepository;
 
 import java.util.ArrayList;
@@ -22,11 +24,14 @@ public class BuildingService {
 
     private final BuildingRepository buildingRepository;
 
-    public List<Building> getAllBuildings() {
-        return buildingRepository.findAll();
+    public List<BuidlingResponse> getAllBuildings(Boolean approved) {
+        if(approved == null)
+            return buildingRepository.findAll().stream().map(BuildingService::mapBuidlingToBuidlingResponse).toList();
+        else
+            return buildingRepository.findByApproved(approved).stream().map(BuildingService::mapBuidlingToBuidlingResponse).toList();
     }
 
-    public Building createBuilding(BuildingRequest buildingRequest) {
+    public BuidlingResponse createBuilding(BuildingRequest buildingRequest) {
         AddressRequest addressRequest = buildingRequest.getAddress();
         Address address = Address.builder()
                 .country(addressRequest.getCountry())
@@ -72,7 +77,7 @@ public class BuildingService {
 
         building.setSectors(sectors);
   
-        return buildingRepository.save(building);
+        return mapBuidlingToBuidlingResponse(buildingRepository.save(building));
     }
 
     public Building getBuildingById(Long id) {
@@ -83,14 +88,14 @@ public class BuildingService {
                 ));
     }
 
-    public List<Building> getBuidlingsByApproved(Boolean approved) {
-        return buildingRepository.findByApproved(approved);
+    public FullBuildingResponse getFullBuidlingById(Long id){
+        return mapBuildingToFullBuildingResponse(getBuildingById(id));
     }
 
-    public Building approveBuilding(Long id) {
+    public BuidlingResponse approveBuilding(Long id) {
         Building building = getBuildingById(id);
         building.setApproved(true);
-        return buildingRepository.save(building);
+        return mapBuidlingToBuidlingResponse(buildingRepository.save(building));
     }
 
     public void deleteBuilding(Long id) {
@@ -98,4 +103,17 @@ public class BuildingService {
         buildingRepository.deleteById(id);
     }
 
+    private static BuidlingResponse mapBuidlingToBuidlingResponse(Building building){
+        return new BuidlingResponse(building.getId(), building.getName(), building.getAddress(), building.getApproved());
+    }
+
+    private static FullBuildingResponse mapBuildingToFullBuildingResponse(Building building){
+        return new FullBuildingResponse(
+                building.getId(),
+                building.getName(),
+                building.getAddress(),
+                building.getApproved(),
+                building.getSectors()
+        );
+    }
 }

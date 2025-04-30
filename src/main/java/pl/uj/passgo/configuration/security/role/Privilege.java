@@ -3,7 +3,6 @@ package pl.uj.passgo.configuration.security.role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,7 +10,7 @@ import java.util.stream.Stream;
 
 import static pl.uj.passgo.configuration.security.role.Permission.READ_HEALTH;
 
-
+@RequiredArgsConstructor
 public enum Privilege {
 	CLIENT(
 			Set.of(READ_HEALTH)
@@ -39,7 +38,4 @@ public enum Privilege {
 		return authorities;
 	}
 
-	Privilege(Set<Permission> permissions) {
-		this.permissions = permissions;
-	}
 }
