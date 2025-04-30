@@ -12,4 +12,5 @@ import java.util.List;
 public class SectorRequest {
     private String name;
     private List<RowRequest> rows;
+    private Boolean standingArea;
 }

@@ -8,9 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 @OpenAPIDefinition(info = @Info(title = "Passgo API", version = "1.0"))
 public class PassgoApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(PassgoApplication.class, args);
 	}
-
 }

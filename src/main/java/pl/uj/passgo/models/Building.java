@@ -26,6 +26,9 @@ public class Building {
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 
+    @Column(nullable = false)
+    private Boolean approved = false;
+
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Sector> sectors = new ArrayList<>();
