@@ -3,3 +3,6 @@ ALTER TABLE building
 
 ALTER TABLE event
     ADD COLUMN approved BOOLEAN NOT NULL DEFAULT FALSE;
+
+ALTER TABLE sector
+    ADD COLUMN standing_area NOT NULL;
