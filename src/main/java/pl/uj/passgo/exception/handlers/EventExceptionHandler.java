@@ -17,7 +17,7 @@ public class EventExceptionHandler {
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ExceptionMessageResponse> handleResponseStatusException(ResponseStatusException ex) {
-        var body = new ExceptionMessageResponse(ex.getMessage());
+        var body = new ExceptionMessageResponse(ex.getReason());
         return ResponseEntity.status(ex.getStatusCode()).body(body);
     }
 
