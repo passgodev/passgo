@@ -9,8 +9,12 @@ import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.models.Address;
 import pl.uj.passgo.models.Ticket;
 
@@ -18,13 +22,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
+@Slf4j
 @Service
 public class PDFGenerator {
 
     private static final String EMPTY_VALUE = "---";
 
     public byte[] generateTicketPdf(Ticket ticket) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        var out = new ByteArrayOutputStream();
 
         try(Document document = new Document()) {
             PdfWriter.getInstance(document, out);
@@ -32,22 +37,29 @@ public class PDFGenerator {
 
             document.add(addImage());
 
-            Paragraph ticketIdParagraph = new Paragraph("Ticket ID: " + ticket.getId(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12));
+            var ticketIdParagraph = new Paragraph("Ticket ID: " + ticket.getId(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12));
             ticketIdParagraph.setAlignment(Element.ALIGN_CENTER);
             document.add(ticketIdParagraph);
 
             document.add(addQRCode(ticket.getId()));
 
             document.add(addTable(ticket));
+            log.info("PDF generated successfully for ticket ID: {}", ticket.getId());
+        } catch (IOException e) {
+            log.error("I/O error while generating PDF for ticket ID {}: {}", ticket.getId(), e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to generate PDF for ticket ID: " + ticket.getId(), e);
+        } catch (DocumentException e) {
+            log.error("PDF document error for ticket ID {}: {}", ticket.getId(), e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to generate PDF for ticket ID: " + ticket.getId(), e);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Unexpected error while generating PDF for ticket ID {}: {}", ticket.getId(), e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to generate PDF for ticket ID: " + ticket.getId(), e);
         }
         return out.toByteArray();
     }
 
     private Image addImage() throws IOException, BadElementException {
-        Image image = Image.getInstance(new ClassPathResource("passgo.png").getURL());
-
+        var image = Image.getInstance(new ClassPathResource("passgo.png").getURL());
         float maxWidth = 400f;
 
         if (image.getWidth() > maxWidth) {
@@ -60,7 +72,7 @@ public class PDFGenerator {
     }
 
     private PdfPTable addTable(Ticket ticket) throws DocumentException {
-        PdfPTable table = new PdfPTable(2);
+        var table = new PdfPTable(2);
         table.setWidthPercentage(100);
 
         addRow(table, "Price:", ticket.getPrice().toString());
@@ -87,13 +99,13 @@ public class PDFGenerator {
     }
 
     private void addRow(PdfPTable table, String label, String value) {
-        PdfPCell labelCell = new PdfPCell(new Phrase(label, FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
+        var labelCell = new PdfPCell(new Phrase(label, FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
         labelCell.setHorizontalAlignment(Element.ALIGN_CENTER);
         labelCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         labelCell.setFixedHeight(30f);
         labelCell.setBorder(Rectangle.NO_BORDER);
 
-        PdfPCell valueCell = new PdfPCell(new Phrase(value));
+        var valueCell = new PdfPCell(new Phrase(value));
         valueCell.setHorizontalAlignment(Element.ALIGN_CENTER);
         valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         valueCell.setFixedHeight(30f);
@@ -104,12 +116,12 @@ public class PDFGenerator {
     }
 
     private Image addQRCode(Long ticketID) throws IOException, WriterException, BadElementException {
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        var qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = qrCodeWriter.encode("Ticket ID: " + ticketID, BarcodeFormat.QR_CODE, 100, 100);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        var out = new ByteArrayOutputStream();
         MatrixToImageWriter.writeToStream(bitMatrix, "PNG", out);
 
-        Image image = Image.getInstance(out.toByteArray());
+        var image = Image.getInstance(out.toByteArray());
         image.setAlignment(Element.ALIGN_CENTER);
         image.scaleAbsolute(100, 100);
         return image;
