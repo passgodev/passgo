@@ -36,4 +36,7 @@ public class Event {
     @Column(length = 100)
     private String category;
 
+    @Column(nullable = false)
+    private Boolean approved = false;
+
 }

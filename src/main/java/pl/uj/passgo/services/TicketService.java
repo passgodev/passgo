@@ -51,47 +51,6 @@ public class TicketService {
     // private final ClientRepository clientRepository;
     // TODO: create ClientRepository
 
-
-    public Ticket purchaseTicket(TicketPurchaseRequest ticketRequest) {
-        Long eventId = ticketRequest.getEventId();
-        Long userId = ticketRequest.getOwnerId();
-        boolean standingArea = ticketRequest.getStandingArea().booleanValue();
-
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        String.format("There is no event with id: %d", eventId)
-                ));
-
-
-        //Client client = clientRepository.findById(userId)
-        //        .orElseThrow(() -> new ResponseStatusException(
-        //                HttpStatus.BAD_REQUEST,
-        //                String.format("There is no user with id: %d", userId)
-        //        ));
-
-        //TODO: in sellTicket method we should check if place is occupied (field in seat entity)
-        if (!sellingService.sellTicket()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ticket sale failed.");
-        }
-
-        Ticket.TicketBuilder ticketBuilder = Ticket.builder()
-                .price(ticketRequest.getPrice())
-                .event(event)
-                .standingArea(standingArea);
-
-        if (!standingArea) {
-            Seat seat = seatRepository.findById(ticketRequest.getSeatId())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seat not found"));
-
-            ticketBuilder.seat(seat)
-                    .row(seat.getRow())
-                    .sector(seat.getRow().getSector());
-        }
-
-        return ticketRepository.save(ticketBuilder.build());
-    }
-
     private static void checkIfAllTicketsExist(List<Ticket> tickets, List<Long> ticketToBuyIds) {
         var validTicketsMap = new HashMap<>(tickets.stream().collect(Collectors.toMap(Ticket::getId, Function.identity())));
         var invalidTicketIds = ticketToBuyIds.stream().filter(id -> !validTicketsMap.containsKey(id)).toList();

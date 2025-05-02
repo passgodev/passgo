@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -15,4 +17,5 @@ public class EventCreateRequest {
     private LocalDateTime date;
     private String description;
     private String category;
+    private Map<Long, BigDecimal> rowPrices;
 }

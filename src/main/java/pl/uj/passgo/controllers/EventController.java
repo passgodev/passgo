@@ -5,8 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.uj.passgo.models.Building;
 import pl.uj.passgo.models.DTOs.EventCreateRequest;
 import pl.uj.passgo.models.Event;
+import pl.uj.passgo.models.responses.EventResponse;
+import pl.uj.passgo.models.responses.FullEventResponse;
 import pl.uj.passgo.services.EventService;
 
 import java.util.List;
@@ -19,26 +22,26 @@ public class EventController {
     private final EventService eventService;
 
     @GetMapping
-    public ResponseEntity<List<Event>> getAllEvents(){
-        List<Event> events = eventService.getAllEvents();
+    public ResponseEntity<List<EventResponse>> getAllEvents(@RequestParam(required = false) Boolean approved) {
+        List<EventResponse> events = eventService.getAllEvents(approved);
         return ResponseEntity.ok(events);
     }
 
     @PostMapping
-    public ResponseEntity<Event> createEvent(@RequestBody EventCreateRequest event){
-        Event createdEvent = eventService.createEvent(event);
+    public ResponseEntity<EventResponse> createEvent(@RequestBody EventCreateRequest event){
+        EventResponse createdEvent = eventService.createEvent(event);
         return new ResponseEntity<>(createdEvent, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Event> getEventById(@PathVariable Long id) {
-        Event fetchedEvent = eventService.getEventById(id);
+    public ResponseEntity<FullEventResponse> getEventById(@PathVariable Long id) {
+        FullEventResponse fetchedEvent = eventService.getFullBuidlingById(id);
         return ResponseEntity.ok(fetchedEvent);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Event> updateEvent(@RequestBody EventCreateRequest eventRequest, @PathVariable Long id) {
-        Event event = eventService.updateEvent(eventRequest, id);
+    public ResponseEntity<EventResponse> updateEvent(@RequestBody EventCreateRequest eventRequest, @PathVariable Long id) {
+        EventResponse event = eventService.updateEvent(eventRequest, id);
         return ResponseEntity.ok(event);
     }
 
@@ -46,5 +49,11 @@ public class EventController {
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         eventService.deleteEvent(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/approve")
+    public ResponseEntity<EventResponse> approveBuilding(@PathVariable Long id){
+        EventResponse approvedEvent = eventService.approveEvent(id);
+        return ResponseEntity.ok(approvedEvent);
     }
 }

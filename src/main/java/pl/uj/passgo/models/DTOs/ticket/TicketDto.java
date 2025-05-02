@@ -15,5 +15,4 @@ public record TicketDto(
 	Long seatId,
 	boolean standingArea,
 	ClientDto client
-) {
-}
+) {}
