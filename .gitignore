@@ -35,3 +35,6 @@ build/
 ### dotenv file
 .env
 /**.env
+
+# ignore any generated log file ending with .log extension
+*.log
