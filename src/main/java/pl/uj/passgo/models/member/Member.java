@@ -30,10 +30,8 @@ public class Member {
     private LocalDateTime registrationDate;
     @Column(nullable = false, name = "birth_date")
     private LocalDate birthDate;
-    @Column(name = "is_active")
-    private boolean isActive;
 
     @OneToOne
-    @JoinColumn(name = "member_credential_id", nullable = false, unique = true)
+    @JoinColumn(name = "member_credential_id", referencedColumnName = "id", nullable = false, unique = true)
     private MemberCredential memberCredential;
 }

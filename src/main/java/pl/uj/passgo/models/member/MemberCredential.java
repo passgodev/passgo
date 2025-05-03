@@ -32,6 +32,9 @@ public class MemberCredential implements UserDetails {
 	@Enumerated(EnumType.STRING)
 	private MemberType memberType;
 
+	@Column(name = "is_active", nullable = false)
+	private boolean isActive;
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return PrivilegeMapper.fromMemberType(memberType).getAuthorities();

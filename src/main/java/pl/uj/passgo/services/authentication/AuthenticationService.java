@@ -22,6 +22,7 @@ import pl.uj.passgo.models.DTOs.authentication.registration.OrganizerRegistratio
 import pl.uj.passgo.models.Wallet;
 import pl.uj.passgo.models.member.Member;
 import pl.uj.passgo.models.member.MemberCredential;
+import pl.uj.passgo.models.member.MemberType;
 import pl.uj.passgo.repos.WalletRepository;
 import pl.uj.passgo.repos.member.ClientRepository;
 import pl.uj.passgo.repos.member.MemberCredentialRepository;
@@ -59,12 +60,20 @@ public class AuthenticationService {
 		}
 	}
 
+	private static boolean memberIsActive(MemberType memberType) {
+		return switch (memberType) {
+			case CLIENT, ADMINISTRATOR -> true;
+			case ORGANIZER -> false;
+		};
+	}
+
 	private <T extends Member, U extends MemberRegistrationRequest> void setCredentials(T member, U request) {
 		var memberCredential = new MemberCredential();
 
 		memberCredential.setMemberType(request.getMemberType());
 		memberCredential.setLogin(request.getCredentials().login());
 		memberCredential.setPassword(bCryptPasswordEncoder.encode(request.getCredentials().password()));
+		memberCredential.setActive(memberIsActive(request.getMemberType()));
 
 		var saved = memberCredentialRepository.save(memberCredential);
 
@@ -99,10 +108,16 @@ public class AuthenticationService {
 
 		var memberCredential = memberCredentialRepository.findByLogin(request.login())
 			.orElseThrow(() -> {
-				var message = "User with provided login does not exist, login: " + request.login();
+				var message = "Member with provided login does not exist, login: " + request.login();
 				log.warn(message);
 				return new ResponseStatusException(HttpStatus.CONFLICT, message);
 			});
+
+		if (!memberCredential.isActive()) {
+			var message = "Member is not active, login: " + request.login();
+			log.warn(message);
+			throw new ResponseStatusException(HttpStatus.CONFLICT, message);
+		}
 
 		var jwtToken = jwtService.generateToken(memberCredential);
 		var refreshToken = refreshTokenService.createRefreshToken(memberCredential);

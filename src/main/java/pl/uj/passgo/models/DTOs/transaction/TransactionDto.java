@@ -1,6 +1,6 @@
 package pl.uj.passgo.models.DTOs.transaction;
 
-import pl.uj.passgo.models.DTOs.client.ClientDto;
+import pl.uj.passgo.models.DTOs.member.ClientDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

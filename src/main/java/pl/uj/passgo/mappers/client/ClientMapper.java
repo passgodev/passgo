@@ -1,7 +1,7 @@
 package pl.uj.passgo.mappers.client;
 
 import org.springframework.stereotype.Service;
-import pl.uj.passgo.models.DTOs.client.ClientDto;
+import pl.uj.passgo.models.DTOs.member.ClientDto;
 import pl.uj.passgo.models.member.Client;
 
 
@@ -15,7 +15,8 @@ public class ClientMapper {
 			client.getEmail(),
 			client.getRegistrationDate(),
 			client.getBirthDate(),
-			client.isActive()
+			client.getMemberCredential()
+				  .isActive()
 		);
 	}
 }
