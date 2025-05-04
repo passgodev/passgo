@@ -9,6 +9,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import pl.uj.passgo.models.member.MemberCredential;
 
 import java.security.Key;
 import java.util.Collections;
@@ -34,7 +35,11 @@ public class JwtService {
 		return generateToken(Collections.emptyMap(), userDetails);
 	}
 
-	public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+	public String generateToken(MemberCredential userDetails) {
+		return generateToken(Map.of("memberType", userDetails.getMemberType()), userDetails);
+	}
+
+	private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
 		return buildToken(extraClaims, userDetails, expirationDurationMinutes);
 	}
 
