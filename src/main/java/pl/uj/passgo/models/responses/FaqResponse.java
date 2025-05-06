@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 
 public record FaqResponse(
+    Long id,
     String question,
-    String answer,
-    LocalDate addDate
+    String answer
 ) {}

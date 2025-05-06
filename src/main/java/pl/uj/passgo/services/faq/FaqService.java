@@ -19,7 +19,7 @@ public class FaqService {
     private final FaqRepository faqRepository;
 
     public Page<FaqResponse> getAllFaqs(Pageable pageable) {
-        return faqRepository.findAll(pageable).map(faq -> new FaqResponse(faq.getQuestion(), faq.getAnswer(), faq.getAddDate()));
+        return faqRepository.findAll(pageable).map(faq -> new FaqResponse(faq.getId(), faq.getQuestion(), faq.getAnswer()));
     }
 
     public FaqResponse getFaqById(Long faqId) {
@@ -37,7 +37,7 @@ public class FaqService {
     }
 
     private FaqResponse mapFaqToFaqResponse(Faq save) {
-        return new FaqResponse(save.getQuestion(), save.getAnswer(), save.getAddDate());
+        return new FaqResponse(save.getId(), save.getQuestion(), save.getAnswer());
     }
 
     public void deleteFaq(Long faqId) {
