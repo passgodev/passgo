@@ -43,7 +43,7 @@ public class Ticket {
     @Column(nullable = false)
     private Boolean standingArea;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "client_id")
     private Client owner;
 }

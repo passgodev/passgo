@@ -1,0 +1,1 @@
+ALTER TABLE ticket DROP CONSTRAINT IF EXISTS ticket_client_id_key;
