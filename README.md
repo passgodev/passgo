@@ -214,7 +214,7 @@ System sprzedaży biletów umożliwiający użytkownikom kupowanie i odsprzedawa
 - [ ] Proces budowania powinien wytwarzać gotowy do wdrożenia artefakt: plik JAR  
 - [x] Należy dostarczyć pliki: Dockerfile oraz Docker Compose, zawierające kompletne środowisko uruchomieniowe  
 - [x] Usługa powinna zawierać persystencję. Baza danych w odrębnym Dockerfile, połączona poprzez compose  
-- [ ] Usługa powinna być monitorowana np. za pomocą ELK. Środowisko monitorujące w osobnym Dockerfile, połączone przez compose 
+- [x] Usługa powinna być monitorowana np. za pomocą ELK. Środowisko monitorujące w osobnym Dockerfile, połączone przez compose 
 - [ ] Usługa powinna korzystać z jakiegoś zewnętrznego API 
 - [x] Usługa powinna być zabezpieczona przynajmniej na podstawowym poziomie. Logowanie basic auth lub autoryzacja Google  
 - [x] Usługa zawiera minimum 3 poziomy uprawnień użytkowników  
