@@ -39,4 +39,5 @@ public class Event {
     @Column(nullable = false)
     private Boolean approved = false;
 
+    private String imagePath;
 }

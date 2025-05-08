@@ -3,8 +3,10 @@ package pl.uj.passgo.services;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.proxy.pojo.bytebuddy.ByteBuddyInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.models.*;
 import pl.uj.passgo.models.DTOs.EventCreateRequest;
@@ -16,10 +18,14 @@ import pl.uj.passgo.repos.BuildingRepository;
 import pl.uj.passgo.repos.EventRepository;
 import pl.uj.passgo.repos.TicketRepository;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -28,6 +34,10 @@ public class EventService {
     private final EventRepository eventRepository;
     private final BuildingRepository buildingRepository;
     private final TicketRepository ticketRepository;
+
+    @Value("${app.upload-dir}")
+    private String imagesPath;
+    private static String folderName = "events";
 
     public List<EventResponse> getAllEvents(Boolean approved) {
         if(approved == null)
@@ -143,5 +153,19 @@ public class EventService {
                 event.getCategory(),
                 event.getApproved()
         );
+    }
+
+    public String uploadImage(MultipartFile file) {
+        String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path filepath = Paths.get(imagesPath, folderName, filename);
+
+        try {
+            file.transferTo(filepath);
+            return filepath.toString();
+        }
+        catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Upload failed");
+        }
+
     }
 }

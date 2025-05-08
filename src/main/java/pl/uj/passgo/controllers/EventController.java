@@ -2,9 +2,11 @@ package pl.uj.passgo.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pl.uj.passgo.models.Building;
 import pl.uj.passgo.models.DTOs.EventCreateRequest;
 import pl.uj.passgo.models.Event;
@@ -55,5 +57,10 @@ public class EventController {
     public ResponseEntity<EventResponse> approveBuilding(@PathVariable Long id){
         EventResponse approvedEvent = eventService.approveEvent(id);
         return ResponseEntity.ok(approvedEvent);
+    }
+
+    @PostMapping("/image")
+    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file){
+        return ResponseEntity.ok(eventService.uploadImage(file));
     }
 }

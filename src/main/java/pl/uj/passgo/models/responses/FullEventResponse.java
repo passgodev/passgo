@@ -7,7 +7,7 @@ public record FullEventResponse(
         String name,
         Building building,
         LocalDateTime date,
-        String desription,
+        String description,
         String category,
         Boolean approved
 ) {
