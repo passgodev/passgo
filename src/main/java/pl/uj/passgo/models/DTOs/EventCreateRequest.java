@@ -18,5 +18,4 @@ public class EventCreateRequest {
     private String description;
     private String category;
     private Map<Long, BigDecimal> rowPrices;
-    private String imagePath;
 }

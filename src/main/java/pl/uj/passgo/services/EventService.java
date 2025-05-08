@@ -35,10 +35,6 @@ public class EventService {
     private final BuildingRepository buildingRepository;
     private final TicketRepository ticketRepository;
 
-    @Value("${app.upload-dir}")
-    private String imagesPath;
-    private static String folderName = "events";
-
     public List<EventResponse> getAllEvents(Boolean approved) {
         if(approved == null)
             return eventRepository.findAll().stream().map(EventService::mapEventToEventResponse).toList();
@@ -155,17 +151,4 @@ public class EventService {
         );
     }
 
-    public String uploadImage(MultipartFile file) {
-        String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        Path filepath = Paths.get(imagesPath, folderName, filename);
-
-        try {
-            file.transferTo(filepath);
-            return filepath.toString();
-        }
-        catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Upload failed");
-        }
-
-    }
 }
