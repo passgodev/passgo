@@ -12,6 +12,8 @@ import pl.uj.passgo.models.Faq;
 import pl.uj.passgo.models.responses.FaqResponse;
 import pl.uj.passgo.repos.faq.FaqRepository;
 
+import java.time.LocalDate;
+
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -31,7 +33,7 @@ public class FaqService {
         Faq faq = new Faq();
         faq.setQuestion(faqRequest.question());
         faq.setAnswer(faqRequest.answer());
-        faq.setAddDate(faqRequest.addDate());
+        faq.setAddDate(LocalDate.now());
 
         return mapFaqToFaqResponse(faqRepository.save(faq));
     }
@@ -42,5 +44,15 @@ public class FaqService {
 
     public void deleteFaq(Long faqId) {
         faqRepository.deleteById(faqId);
+    }
+
+    public FaqResponse updateFaq(FaqRequest faqRequest, Long faqId) {
+        Faq faq = faqRepository.findById(faqId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Faq with id: %d not found", faqId)));
+
+        faq.setAnswer(faqRequest.answer());
+        faq.setQuestion(faqRequest.question());
+        faq.setAddDate(LocalDate.now());
+
+        return mapFaqToFaqResponse(faqRepository.save(faq));
     }
 }

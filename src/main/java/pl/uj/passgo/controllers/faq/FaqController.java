@@ -37,6 +37,12 @@ public class FaqController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @PutMapping("/{faqId}")
+    public ResponseEntity<FaqResponse> updateFaq(@RequestBody FaqRequest faqRequest, @PathVariable Long faqId){
+        var response = faqService.updateFaq(faqRequest, faqId);
+        return ResponseEntity.ok(response);
+    }
+
     @DeleteMapping("/{faqId}")
     public ResponseEntity<Void> deleteFaq(@PathVariable Long faqId) {
         faqService.deleteFaq(faqId);
