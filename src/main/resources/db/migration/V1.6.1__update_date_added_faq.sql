@@ -1,2 +1,2 @@
 ALTER TABLE faq
-    ADD COLUMN add_date DATE NOT NULL;
+    ADD COLUMN update_date DATE NOT NULL;
