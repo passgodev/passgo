@@ -1,6 +1,7 @@
 package pl.uj.passgo.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolverSupport;
@@ -22,13 +23,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class MediaService {
 
     @Value("${app.upload-dir}")
     private String imagesPath;
-    private static String folderName = "events";
+    private final static String EVENTS_FOLDER_NAME = "events";
 
     private final EventService eventService;
     private final EventRepository eventRepository;
@@ -36,7 +38,7 @@ public class MediaService {
     public String uploadImage(MultipartFile file, Long id) {
         Event event = eventService.getEventById(id);
         String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        Path filepath = Paths.get(imagesPath, folderName, filename);
+        Path filepath = Paths.get(imagesPath, EVENTS_FOLDER_NAME, filename);
 
         try {
             file.transferTo(filepath);
@@ -45,6 +47,7 @@ public class MediaService {
             return filepath.toString();
         }
         catch (IOException e) {
+            log.error("Unexpected error while uploading image for event {}: {}", id, e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Upload failed");
         }
 
@@ -57,8 +60,10 @@ public class MediaService {
 
         Path path = Paths.get(event.getImagePath());
 
-        if(!Files.exists(path))
+        if(!Files.exists(path)) {
+            log.error("Filepath: {} does not exist.", path);
             throw new FileSystemNotFoundException();
+        }
         try {
             byte[] image = Files.readAllBytes(path);
             String imageType = Files.probeContentType(path);
@@ -71,6 +76,7 @@ public class MediaService {
 
         }
         catch (IOException e){
+            log.error("Unexpected error while fetching image for file path {}: {}", path, e.getMessage(), e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while fetching image");
         }
 
