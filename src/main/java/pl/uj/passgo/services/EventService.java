@@ -3,8 +3,10 @@ package pl.uj.passgo.services;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.proxy.pojo.bytebuddy.ByteBuddyInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.models.*;
 import pl.uj.passgo.models.DTOs.EventCreateRequest;
@@ -16,10 +18,14 @@ import pl.uj.passgo.repos.BuildingRepository;
 import pl.uj.passgo.repos.EventRepository;
 import pl.uj.passgo.repos.TicketRepository;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -97,6 +103,11 @@ public class EventService {
             for(Row row : sector.getRows()){
                 Long rowId = row.getId();
                 for(Seat seat : row.getSeats()){
+                    if(sector.getStandingArea()) {
+                        seat = null;
+                        row = null;
+                    }
+
                     tickets.add(
                         Ticket.builder()
                                 .event(event)
@@ -144,4 +155,5 @@ public class EventService {
                 event.getApproved()
         );
     }
+
 }

@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @Table(name = "seat")
 public class Seat {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,7 +22,4 @@ public class Seat {
     @JoinColumn(name = "row_id", nullable = false)
     @JsonBackReference
     private Row row;
-
-    @Column(nullable = false)
-    private Boolean occupied;
 }

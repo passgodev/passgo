@@ -7,10 +7,10 @@ import java.time.LocalDateTime;
 public record EventResponse(
         Long id,
         String name,
-        String buidlingName,
+        String buildingName,
         Address address,
         LocalDateTime date,
-        String desription,
+        String description,
         String category,
         Boolean approved
         ) {

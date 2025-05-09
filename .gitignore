@@ -38,3 +38,5 @@ build/
 
 # ignore any generated log file ending with .log extension
 *.log
+
+/uploads
