@@ -26,5 +26,5 @@ public class Wallet {
     private Client client;
 
     @Column
-    private BigDecimal money;
+    private BigDecimal money = BigDecimal.ZERO;
 }

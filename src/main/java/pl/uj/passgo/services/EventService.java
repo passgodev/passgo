@@ -103,6 +103,11 @@ public class EventService {
             for(Row row : sector.getRows()){
                 Long rowId = row.getId();
                 for(Seat seat : row.getSeats()){
+                    if(sector.getStandingArea()) {
+                        seat = null;
+                        row = null;
+                    }
+
                     tickets.add(
                         Ticket.builder()
                                 .event(event)

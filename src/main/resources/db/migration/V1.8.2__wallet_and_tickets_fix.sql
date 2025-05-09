@@ -1,0 +1,4 @@
+ALTER TABLE wallet
+    ALTER COLUMN money SET DEFAULT 0;
+
+ALTER TABLE seat DROP COLUMN occupied;
