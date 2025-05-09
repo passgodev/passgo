@@ -34,6 +34,7 @@ public class FaqService {
         faq.setQuestion(faqRequest.question());
         faq.setAnswer(faqRequest.answer());
         faq.setAddDate(LocalDate.now());
+        faq.setUpdateDate(LocalDate.now());
 
         return mapFaqToFaqResponse(faqRepository.save(faq));
     }
@@ -51,7 +52,7 @@ public class FaqService {
 
         faq.setAnswer(faqRequest.answer());
         faq.setQuestion(faqRequest.question());
-        faq.setAddDate(LocalDate.now());
+        faq.setUpdateDate(LocalDate.now());
 
         return mapFaqToFaqResponse(faqRepository.save(faq));
     }
