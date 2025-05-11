@@ -174,27 +174,30 @@ System sprzedaży biletów umożliwiający użytkownikom kupowanie i odsprzedawa
 - Domena i zakres funkcjonalny
   - Użytkownik:
     - [x] Tworzenie konta
-    - [ ] Kupowanie, sprzedaż biletu,odsprzedaż
-    - [ ] Przeglądanie wydarzeń
-    - [ ] Wirtualny portfel
-    - [ ] Generowanie biletów w formacie PDF i QR code
-    - [ ] Centrum pomocy i FAQ
-    - [ ] Profil użytkownika
+    - [x] Kupowanie, sprzedaż biletu,odsprzedaż
+    - [x] Przeglądanie wydarzeń
+    - [x] Wirtualny portfel
+    - [x] Generowanie biletów w formacie PDF i QR code
+    - [x] Centrum pomocy i FAQ
+    - [x] Profil użytkownika
     - [x] Historia transakcji
 
   - Organizator:
     - [x] Tworzenie konta
-    - [ ] Tworzenie wydarzeń, anulowanie, edycja - zarządzanie
+    - [x] Tworzenie wydarzeń
+    - [x] Anulowanie wydarzeń
+    - [x] Edycja, zarządzanie wydarzeń
     - [ ] Podgląd statystyk wydarzenia
-    - [ ] Ustawienie planu obiektu
-    - [ ] Przed dodaniem wydarzenia dodaj prośbę o wydarzenie o akceptację
+    - [x] Ustawienie planu obiektu
+    - [x] Przed dodaniem wydarzenia dodaj prośbę o wydarzenie o akceptację
 
   - Administrator:
-    - [ ] Zatwierdzanie planów obiektów
+    - [x] Zatwierdzanie planów obiektów
     - Zarządzanie użytkownikami i organizatorami
       - [x] Zatwierdzanie kont organizatorów
     - [ ] Wgląd w statystyki
-    - [ ] Zarządzanie wydarzeniami
+    - Zarządzanie wydarzeniami 
+      - [x] Zatwierdzenia wydarzeń
 
 - [x] Kod źródłowy aplikacji należy utrzymywać na **Githubie** ~~lub Gitlabie~~
 - [x] Kod powinien być automatycznie budowany (~~gradle lub~~ **maven**), a wynik budowania (pass/fail) powinien być widoczny w repozytorium  
