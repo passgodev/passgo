@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.uj.passgo.models.DTOs.TicketPurchaseRequest;
 import pl.uj.passgo.models.DTOs.ticket.TicketPurchaseResponse;
 import pl.uj.passgo.models.Ticket;
+import pl.uj.passgo.services.PDFGenerator;
 import pl.uj.passgo.services.TicketService;
 
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.List;
 public class TicketController {
 
     private final TicketService ticketService;
+    private final PDFGenerator pdfGenerator;
 
     @GetMapping
     public ResponseEntity<Page<Ticket>> getAllTickets(@PageableDefault Pageable pageable) {
@@ -38,6 +40,20 @@ public class TicketController {
     public ResponseEntity<Ticket> getTicketById(@PathVariable("id") Long id) {
         Ticket ticket = ticketService.getTicketById(id);
         return ResponseEntity.ok(ticket);
+    }
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> getTicketPdf(@PathVariable("id") Long id) {
+        Ticket ticket = ticketService.getTicketById(id);
+
+        byte[] pdf = pdfGenerator.generateTicketPdf(ticket);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        //or instead of "inline" use "attachment"
+        headers.setContentDisposition(ContentDisposition.builder("inline").filename("ticket_" + id + ".pdf").build());
+
+        return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
     }
 
     @GetMapping("/client/{id}")

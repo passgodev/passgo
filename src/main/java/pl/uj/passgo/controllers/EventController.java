@@ -55,7 +55,7 @@ public class EventController {
     }
 
     @PatchMapping("/{id}/approve")
-    public ResponseEntity<EventResponse> approveBuilding(@PathVariable Long id){
+    public ResponseEntity<EventResponse> approveEvent(@PathVariable Long id){
         EventResponse approvedEvent = eventService.approveEvent(id);
         return ResponseEntity.ok(approvedEvent);
     }
