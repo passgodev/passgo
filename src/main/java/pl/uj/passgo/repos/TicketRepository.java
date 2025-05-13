@@ -11,4 +11,6 @@ import java.util.List;
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 	List<Ticket> getTicketsByIdIn(Collection<Long> ids);
     List<Ticket> findAllByOwnerId(Long id);
+    long countByEventId(Long eventId);
+    long countByEventIdAndOwnerIsNull(Long eventId);
 }

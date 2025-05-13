@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.models.*;
 import pl.uj.passgo.models.DTOs.TicketPurchaseRequest;
 import pl.uj.passgo.models.member.Client;
+import pl.uj.passgo.models.transaction.TransactionType;
 import pl.uj.passgo.repos.*;
 import pl.uj.passgo.repos.member.ClientRepository;
 
@@ -42,14 +43,10 @@ public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final EventRepository eventRepository;
-    private final SellingService sellingService;
     private final SeatRepository seatRepository;
     private final SectorRepository sectorRepository;
     private final RowRepository rowRepository;
     private final ClientRepository clientRepository;
-
-    // private final ClientRepository clientRepository;
-    // TODO: create ClientRepository
 
     private static void checkIfAllTicketsExist(List<Ticket> tickets, List<Long> ticketToBuyIds) {
         var validTicketsMap = new HashMap<>(tickets.stream().collect(Collectors.toMap(Ticket::getId, Function.identity())));
@@ -101,7 +98,9 @@ public class TicketService {
             .client(client)
             .totalPrice(ticketsTotalPrice)
             .completedAt(LocalDateTime.now(clock))
+            .transactionType(TransactionType.PURCHASE)
             .build();
+
         var savedTransaction = transactionRepository.save(transaction);
 
         var transactionComponents = new ArrayList<TransactionComponent>();
@@ -116,6 +115,7 @@ public class TicketService {
 
         return new TicketPurchaseResponse(ticketsTotalPrice, tickets.size());
     }
+
     public Page<Ticket> getAllTickets(Pageable pageable) {
         return ticketRepository.findAll(pageable);
     }
@@ -160,5 +160,39 @@ public class TicketService {
 
     public List<Ticket> getTicketByClientId(Long id) {
         return ticketRepository.findAllByOwnerId(id);
+    }
+
+    @Transactional
+    public void returnTicket(Long id) {
+        Ticket ticket = getTicketById(id);
+
+        if(ticket.getOwner() == null){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Ticket with id: %d is not purchased.", id));
+        }
+
+        Client client = loggedInMemberContextService.isClientLoggedIn().orElseThrow();
+
+        var returnPrice = ticket.getPrice();
+        var clientMoney = client.getWallet().getMoney();
+
+        ticket.setOwner(null);
+        client.getWallet().setMoney(clientMoney.add(returnPrice));
+
+        var transaction = Transaction.builder()
+                .client(client)
+                .totalPrice(returnPrice)
+                .completedAt(LocalDateTime.now(clock))
+                .transactionType(TransactionType.RETURN)
+                .build();
+
+        var savedTransaction = transactionRepository.save(transaction);
+        var transactionComponent = TransactionComponent.builder()
+                .transaction(savedTransaction)
+                .ticket(ticket)
+                .build();
+
+        ticketRepository.save(ticket);
+        clientRepository.save(client);
+        transactionComponentRepository.save(transactionComponent);
     }
 }
