@@ -6,9 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import pl.uj.passgo.configuration.security.role.Privilege;
+import pl.uj.passgo.mappers.role.PrivilegeMapper;
 import pl.uj.passgo.models.member.Client;
+import pl.uj.passgo.models.member.MemberCredential;
+import pl.uj.passgo.models.member.Organizer;
 import pl.uj.passgo.repos.member.ClientRepository;
 import pl.uj.passgo.repos.member.MemberCredentialRepository;
+import pl.uj.passgo.repos.member.OrganizerRepository;
 
 import java.util.Optional;
 
@@ -18,9 +23,21 @@ import java.util.Optional;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class LoggedInMemberContextService {
 	private final ClientRepository clientRepository;
+	private final OrganizerRepository organizerRepository;
 	private final MemberCredentialRepository memberCredentialRepository;
 
 	public Optional<Client> isClientLoggedIn() {
+		var credentials = getMemberCredential();
+		return clientRepository.findByMemberCredential((credentials));
+	}
+
+	public Optional<Organizer> isOrganizerLoggedIn() {
+		var credentials = getMemberCredential();
+		return organizerRepository.findByMemberCredential((credentials));
+	}
+
+	private MemberCredential getMemberCredential() {
+		log.debug("getMemberCredential - invoked");
 		var authentication = SecurityContextHolder.getContext().getAuthentication();
 		log.debug("Authentication: {}", authentication);
 
@@ -29,11 +46,11 @@ public class LoggedInMemberContextService {
 
 		var credentials = memberCredentialRepository.findByLogin(userDetails.getUsername()).orElseThrow();
 		log.debug("credentials: {}", credentials);
+		log.debug("getMemberCredential - returning");
 
-		var client = clientRepository.findByMemberCredential((credentials));
-		log.debug("client: {}", client);
+		return credentials;
+	}
 
 		return client;
 	}
-
 }
