@@ -55,7 +55,6 @@ public class TicketController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        //or instead of "inline" use "attachment"
         headers.setContentDisposition(ContentDisposition.builder("inline").filename("ticket_" + id + ".pdf").build());
 
         return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
