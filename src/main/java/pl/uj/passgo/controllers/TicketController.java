@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.uj.passgo.models.DTOs.TicketPurchaseRequest;
-//import pl.uj.passgo.services.PDFGenerator;
+import pl.uj.passgo.services.PDFGenerator;
 import pl.uj.passgo.models.DTOs.ticket.TicketPurchaseResponse;
 import pl.uj.passgo.models.Ticket;
 import pl.uj.passgo.services.TicketService;
@@ -28,7 +28,7 @@ import java.util.List;
 public class TicketController {
 
     private final TicketService ticketService;
-//    private final PDFGenerator pdfGenerator;
+    private final PDFGenerator pdfGenerator;
 
     @GetMapping
     public ResponseEntity<Page<Ticket>> getAllTickets(@PageableDefault Pageable pageable) {
@@ -48,19 +48,19 @@ public class TicketController {
         return ResponseEntity.ok(tickets);
     }
 
-//    @GetMapping("/{id}/pdf")
-//    public ResponseEntity<byte[]> getTicketPdf(@PathVariable("id") Long id) {
-//        Ticket ticket = ticketService.getTicketById(id);
-//
-//        byte[] pdf = pdfGenerator.generateTicketPdf(ticket);
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_PDF);
-//        //or instead of "inline" use "attachment"
-//        headers.setContentDisposition(ContentDisposition.builder("inline").filename("ticket_" + id + ".pdf").build());
-//
-//        return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
-//    }
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> getTicketPdf(@PathVariable("id") Long id) {
+        Ticket ticket = ticketService.getTicketById(id);
+
+        byte[] pdf = pdfGenerator.generateTicketPdf(ticket);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        //or instead of "inline" use "attachment"
+        headers.setContentDisposition(ContentDisposition.builder("inline").filename("ticket_" + id + ".pdf").build());
+
+        return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
+    }
 
     @PostMapping("/purchase")   // todo: later change this to default post endpoint name
     public ResponseEntity<TicketPurchaseResponse> purchaseTickets(@RequestBody pl.uj.passgo.models.DTOs.ticket.TicketPurchaseRequest tickets) {
