@@ -7,7 +7,6 @@ import pl.uj.passgo.models.DTOs.member.OrganizerDto;
 
 public record OrganizerMemberResponse(
 	@JsonUnwrapped
-	@JsonProperty("organizer")
 	OrganizerDto organizerDto
 ) implements MemberResponse {
 }
