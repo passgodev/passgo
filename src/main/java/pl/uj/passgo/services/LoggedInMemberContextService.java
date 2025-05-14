@@ -51,6 +51,9 @@ public class LoggedInMemberContextService {
 		return credentials;
 	}
 
-		return client;
+	public Privilege getLoggedInPrivilege() {
+		var credentials = getMemberCredential();
+		log.debug("getLoggedInPrivilege - credentials: {}", credentials);
+		return PrivilegeMapper.fromMemberType(credentials.getMemberType());
 	}
 }
