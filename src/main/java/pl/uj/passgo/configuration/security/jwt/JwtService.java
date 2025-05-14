@@ -35,8 +35,8 @@ public class JwtService {
 		return generateToken(Collections.emptyMap(), userDetails);
 	}
 
-	public String generateToken(MemberCredential userDetails) {
-		return generateToken(Map.of("memberType", userDetails.getMemberType()), userDetails);
+	public String generateToken(MemberCredential memberCredential) {
+		return generateToken(Map.of("memberType", memberCredential.getMemberType(), "memberId", memberCredential.getId()), memberCredential);
 	}
 
 	private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
