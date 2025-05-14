@@ -9,13 +9,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import pl.uj.passgo.configuration.security.role.Privilege;
 import pl.uj.passgo.mappers.member.MemberResponseMapper;
 import pl.uj.passgo.models.member.MemberType;
 import pl.uj.passgo.models.member.Organizer;
+import pl.uj.passgo.models.responses.member.ClientMemberResponse;
 import pl.uj.passgo.models.responses.member.MemberResponse;
 import pl.uj.passgo.models.responses.member.OrganizerMemberResponse;
 import pl.uj.passgo.repos.member.ClientRepository;
 import pl.uj.passgo.repos.member.OrganizerRepository;
+import pl.uj.passgo.services.LoggedInMemberContextService;
+
+import java.util.Objects;
+import java.util.stream.Stream;
 
 
 @Slf4j
@@ -25,6 +31,37 @@ public class MemberService {
 	private final ClientRepository clientRepository;
 	private final OrganizerRepository organizerRepository;
 	private final MemberResponseMapper memberResponseMapper;
+	private final LoggedInMemberContextService loggedInMemberContextService;
+
+	public MemberResponse getMemberById(Long id, MemberType type) {
+		return switch (type) {
+			case CLIENT -> getClientById(id);
+			case ORGANIZER -> getOrganizerById(id);
+			case ADMINISTRATOR -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Admin can not be specified");
+		};
+	}
+
+	/// Logged-in as client, can only retrieve information about itself (client)
+	private ClientMemberResponse getClientById(Long id) {
+		var client = loggedInMemberContextService.isClientLoggedIn()
+												 .filter(loggedInClient -> Objects.equals(loggedInClient.getId(), id))
+												 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Logged in client can only fetch its own information"));
+
+		return memberResponseMapper.toClientMemberResponse(client);
+	}
+
+	/// logged-in as organizer, administrator can retrieve information about all-organizers
+	private OrganizerMemberResponse getOrganizerById(Long id) {
+		var loggedInPrivilege = loggedInMemberContextService.getLoggedInPrivilege();
+		Stream.of(Privilege.ORGANIZER, Privilege.ADMINISTRATOR)
+			  .filter(allowedPrivilege -> allowedPrivilege.equals(loggedInPrivilege))
+			  .findAny()
+			  .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Only organizer and administrator are allowed to retrieve information about other organizers"));
+
+		return organizerRepository.findById(id)
+								  .map(memberResponseMapper::toOrganizerMemberResponse)
+								  .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Organizer with id: %d not found", id)));
+	}
 
 	public Page<MemberResponse> getMembersByType(MemberType memberType, Pageable pageable) {
 		return switch ( memberType ) {
