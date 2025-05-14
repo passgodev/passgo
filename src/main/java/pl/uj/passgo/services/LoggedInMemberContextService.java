@@ -6,11 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import pl.uj.passgo.configuration.security.role.Privilege;
-import pl.uj.passgo.mappers.role.PrivilegeMapper;
+import pl.uj.passgo.exception.MemberCredentialNotFoundException;
 import pl.uj.passgo.models.member.Client;
 import pl.uj.passgo.models.member.MemberCredential;
-import pl.uj.passgo.models.member.Organizer;
 import pl.uj.passgo.repos.member.ClientRepository;
 import pl.uj.passgo.repos.member.MemberCredentialRepository;
 import pl.uj.passgo.repos.member.OrganizerRepository;
@@ -31,11 +29,6 @@ public class LoggedInMemberContextService {
 		return clientRepository.findByMemberCredential((credentials));
 	}
 
-	public Optional<Organizer> isOrganizerLoggedIn() {
-		var credentials = getMemberCredential();
-		return organizerRepository.findByMemberCredential((credentials));
-	}
-
 	private MemberCredential getMemberCredential() {
 		log.debug("getMemberCredential - invoked");
 		var authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -44,16 +37,19 @@ public class LoggedInMemberContextService {
 		var userDetails = (UserDetails)authentication.getPrincipal();
 		log.debug("UserDetails: {}", userDetails);
 
-		var credentials = memberCredentialRepository.findByLogin(userDetails.getUsername()).orElseThrow();
+		var credentials = memberCredentialRepository.findByLogin(userDetails.getUsername())
+													.orElseThrow(() -> {
+														var msg = "MemberCredential not found for login: " + userDetails.getUsername();
+														log.error(msg);
+														return new MemberCredentialNotFoundException(msg);
+													});
 		log.debug("credentials: {}", credentials);
 		log.debug("getMemberCredential - returning");
 
 		return credentials;
 	}
 
-	public Privilege getLoggedInPrivilege() {
-		var credentials = getMemberCredential();
-		log.debug("getLoggedInPrivilege - credentials: {}", credentials);
-		return PrivilegeMapper.fromMemberType(credentials.getMemberType());
+	public MemberCredential getLoggedInMemberCredential() {
+		return getMemberCredential();
 	}
 }
