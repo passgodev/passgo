@@ -65,15 +65,9 @@ public class MemberService {
 
 	/// logged-in as organizer, administrator can retrieve information about all-organizers
 	private OrganizerMemberResponse getOrganizerById(Long id) {
-		var loggedInPrivilege = loggedInMemberContextService.getLoggedInMemberCredential();
-
-		return switch ( loggedInPrivilege.getMemberType() ) {
-			case CLIENT -> throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Client can not fetch information about organizers");
-			case ORGANIZER, ADMINISTRATOR -> organizerRepository.findById(id)
-																.map(memberResponseMapper::toOrganizerMemberResponse)
-																.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Organizer with id: %d not found", id)));
-
-		};
+		return organizerRepository.findById(id)
+								  .map(memberResponseMapper::toOrganizerMemberResponse)
+								  .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Organizer with id: %d not found", id)));
 	}
 
 	public Page<MemberResponse> getMembersByType(MemberType memberType, Pageable pageable) {
