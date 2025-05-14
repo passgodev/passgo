@@ -47,6 +47,7 @@ public class TicketService {
     private final SectorRepository sectorRepository;
     private final RowRepository rowRepository;
     private final ClientRepository clientRepository;
+    private final WalletHistoryRepository walletHistoryRepository;
 
     // private final ClientRepository clientRepository;
     // TODO: create ClientRepository
@@ -90,13 +91,18 @@ public class TicketService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Client money is insufficient");
         }
 
-        // decrease client's wallet money amount
+        // decrease client's wallet money amount and save result to wallet history
         client.getWallet().setMoney(clientMoney.subtract(ticketsTotalPrice));
+        WalletHistory walletHistory = new WalletHistory();
+        walletHistory.setWallet(client.getWallet());
+        walletHistory.setAmount(ticketsTotalPrice.negate());
+        walletHistory.setDescription("Ticket Purchase");
+        walletHistoryRepository.save(walletHistory);
 
         // perform assignment of client to tickets
         tickets.forEach(ticket -> ticket.setOwner(client));
 
-        // craete transaction and transaction components
+        // create transaction and transaction components
         var transaction = Transaction.builder()
             .client(client)
             .totalPrice(ticketsTotalPrice)
