@@ -5,15 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import pl.uj.passgo.models.DTOs.TopUpWalletRequest;
 import pl.uj.passgo.models.DTOs.WalletDto;
 import pl.uj.passgo.models.DTOs.WalletHistoryDto;
-import pl.uj.passgo.models.Wallet;
-import pl.uj.passgo.models.WalletHistory;
 import pl.uj.passgo.repos.WalletHistoryRepository;
 import pl.uj.passgo.repos.WalletRepository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Service
