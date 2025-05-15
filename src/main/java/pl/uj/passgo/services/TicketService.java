@@ -47,10 +47,7 @@ public class TicketService {
     private final SectorRepository sectorRepository;
     private final RowRepository rowRepository;
     private final ClientRepository clientRepository;
-    private final WalletHistoryRepository walletHistoryRepository;
-
-    // private final ClientRepository clientRepository;
-    // TODO: create ClientRepository
+    private final WalletOperationService walletOperationService;
 
     private static void checkIfAllTicketsExist(List<Ticket> tickets, List<Long> ticketToBuyIds) {
         var validTicketsMap = new HashMap<>(tickets.stream().collect(Collectors.toMap(Ticket::getId, Function.identity())));
@@ -92,12 +89,7 @@ public class TicketService {
         }
 
         // decrease client's wallet money amount and save result to wallet history
-        client.getWallet().setMoney(clientMoney.subtract(ticketsTotalPrice));
-        WalletHistory walletHistory = new WalletHistory();
-        walletHistory.setWallet(client.getWallet());
-        walletHistory.setAmount(ticketsTotalPrice.negate());
-        walletHistory.setDescription("Ticket Purchase");
-        walletHistoryRepository.save(walletHistory);
+        walletOperationService.chargeWalletForTicketPurchase(client, ticketsTotalPrice);
 
         // perform assignment of client to tickets
         tickets.forEach(ticket -> ticket.setOwner(client));

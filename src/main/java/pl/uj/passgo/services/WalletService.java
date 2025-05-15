@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import pl.uj.passgo.models.DTOs.TopUpWalletRequest;
 import pl.uj.passgo.models.DTOs.WalletDto;
 import pl.uj.passgo.models.DTOs.WalletHistoryDto;
 import pl.uj.passgo.models.Wallet;
@@ -33,25 +34,5 @@ public class WalletService {
                 .stream()
                 .map(walletHistory -> new WalletHistoryDto(walletHistory.getOperationDate(), walletHistory.getAmount(), walletHistory.getDescription()))
                 .toList();
-    }
-
-    public WalletDto updateBalance(Long walletId, BigDecimal amount, String description) {
-        Wallet wallet = walletRepository.findById(walletId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Wallet id: " + walletId + " does not exists."));
-
-        BigDecimal newBalance = wallet.getMoney().add(amount);
-        if(newBalance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Client do not have enough money.");
-        }
-
-        wallet.setMoney(newBalance);
-        walletRepository.save(wallet);
-
-        WalletHistory walletHistory = new WalletHistory();
-        walletHistory.setWallet(wallet);
-        walletHistory.setDescription(description);
-        walletHistory.setAmount(amount);
-        walletHistoryRepository.save(walletHistory);
-
-        return new WalletDto(wallet.getId(), wallet.getMoney());
     }
 }
