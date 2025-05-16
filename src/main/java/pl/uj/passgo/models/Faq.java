@@ -30,6 +30,10 @@ public class Faq {
     @CurrentTimestamp
     private LocalDate addDate;
 
+    @Column(nullable = false)
+    @CurrentTimestamp
+    private LocalDate updateDate;
+
     // todo implement when Member entity will be available
 //    @Column()
 //    private Member addedBy;

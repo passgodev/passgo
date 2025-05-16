@@ -47,6 +47,8 @@ public class TicketService {
     private final SectorRepository sectorRepository;
     private final RowRepository rowRepository;
     private final ClientRepository clientRepository;
+    private final WalletOperationService walletOperationService;
+
 
     private static void checkIfAllTicketsExist(List<Ticket> tickets, List<Long> ticketToBuyIds) {
         var validTicketsMap = new HashMap<>(tickets.stream().collect(Collectors.toMap(Ticket::getId, Function.identity())));
@@ -87,13 +89,13 @@ public class TicketService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Client money is insufficient");
         }
 
-        // decrease client's wallet money amount
-        client.getWallet().setMoney(clientMoney.subtract(ticketsTotalPrice));
+        // decrease client's wallet money amount and save result to wallet history
+        walletOperationService.chargeWalletForTicketPurchase(client, ticketsTotalPrice);
 
         // perform assignment of client to tickets
         tickets.forEach(ticket -> ticket.setOwner(client));
 
-        // craete transaction and transaction components
+        // create transaction and transaction components
         var transaction = Transaction.builder()
             .client(client)
             .totalPrice(ticketsTotalPrice)

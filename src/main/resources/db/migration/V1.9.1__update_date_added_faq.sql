@@ -1,0 +1,2 @@
+ALTER TABLE faq
+    ADD COLUMN update_date DATE NOT NULL;
