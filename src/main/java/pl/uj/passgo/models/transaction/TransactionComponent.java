@@ -24,7 +24,7 @@ public class TransactionComponent {
 	@JoinColumn(name = "transaction_id", nullable = false)
 	private Transaction transaction;
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "ticket_id", nullable = false)
 	private Ticket ticket;
 }

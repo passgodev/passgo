@@ -17,6 +17,7 @@ import pl.uj.passgo.models.DTOs.TicketPurchaseRequest;
 import pl.uj.passgo.services.PDFGenerator;
 import pl.uj.passgo.models.DTOs.ticket.TicketPurchaseResponse;
 import pl.uj.passgo.models.Ticket;
+import pl.uj.passgo.services.PDFGenerator;
 import pl.uj.passgo.services.TicketService;
 
 import java.util.List;
@@ -39,6 +40,20 @@ public class TicketController {
     public ResponseEntity<Ticket> getTicketById(@PathVariable("id") Long id) {
         Ticket ticket = ticketService.getTicketById(id);
         return ResponseEntity.ok(ticket);
+    }
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> getTicketPdf(@PathVariable("id") Long id) {
+        Ticket ticket = ticketService.getTicketById(id);
+
+        byte[] pdf = pdfGenerator.generateTicketPdf(ticket);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        //or instead of "inline" use "attachment"
+        headers.setContentDisposition(ContentDisposition.builder("inline").filename("ticket_" + id + ".pdf").build());
+
+        return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
     }
 
     @GetMapping("/client/{id}")
@@ -65,6 +80,7 @@ public class TicketController {
         var purchasedTicketsResponse = ticketService.purchaseTickets(tickets);
         return ResponseEntity.ok(purchasedTicketsResponse);
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<Ticket> updateTicket(@RequestBody TicketPurchaseRequest ticket, @PathVariable Long id) {
         Ticket updatedTicket = ticketService.updateTicket(ticket, id);
@@ -75,5 +91,11 @@ public class TicketController {
     public ResponseEntity<Void> deleteTicket(@PathVariable Long id) {
         ticketService.deleteTicket(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/return")
+    public ResponseEntity<String> returnTicket(@PathVariable Long id){
+        ticketService.returnTicket(id);
+        return ResponseEntity.ok(String.format("Ticket with id: %d was succesfully returned", id));
     }
 }

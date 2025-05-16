@@ -29,7 +29,7 @@ public class Transaction {
 	@JoinColumn(name = "client_id", nullable = false)
 	private Client client;
 
-	@Column(name = "total_price", nullable = false, precision = 2)
+	@Column(name = "total_price", nullable = false, precision = 10, scale = 2)
 	private BigDecimal totalPrice;
 
 	@CreationTimestamp
@@ -38,4 +38,8 @@ public class Transaction {
 
 	@OneToMany(mappedBy = "transaction", fetch = FetchType.LAZY)
 	private List<TransactionComponent> transactionComponents;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "transaction_type", nullable = false)
+	private TransactionType transactionType;
 }

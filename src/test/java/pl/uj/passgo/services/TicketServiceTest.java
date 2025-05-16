@@ -28,8 +28,6 @@ public class TicketServiceTest {
 	@Mock
 	private EventRepository eventRepository;
 	@Mock
-	private SellingService sellingService;
-	@Mock
 	private SeatRepository seatRepository;
 	@Mock
 	private LoggedInMemberContextService loggedInMemberContextService;
