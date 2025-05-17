@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskExecutionProperties;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolverSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,6 +30,8 @@ import java.util.UUID;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class MediaService {
 
+    private final ProjectInfoAutoConfiguration projectInfoAutoConfiguration;
+    private final TaskExecutionProperties taskExecutionProperties;
     @Value("${app.upload-dir}")
     private String imagesPath;
     private final static String EVENTS_FOLDER_NAME = "events";
@@ -55,10 +59,14 @@ public class MediaService {
 
     public ImageDto getEventsMainImage(Long id) {
         Event event = eventService.getEventById(id);
+        String imgPath = event.getImagePath();
 
-        System.out.println("MY DEBUG: " +event.getImagePath());
+        System.out.println(event.getId() + ", path: " + event.getImagePath());
 
-        Path path = Paths.get(event.getImagePath());
+        if(imgPath == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found for event: " + id);
+
+        Path path = Paths.get(imgPath);
 
         if(!Files.exists(path)) {
             log.error("Filepath: {} does not exist.", path);
