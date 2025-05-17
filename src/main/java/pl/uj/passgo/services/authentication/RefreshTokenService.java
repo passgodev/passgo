@@ -1,8 +1,8 @@
 package pl.uj.passgo.services.authentication;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -31,8 +31,7 @@ public class RefreshTokenService {
 	}
 
 	public RefreshToken getByToken(UUID token) {
-		return refreshTokenRepository.findByToken(token)
-									 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Refresh token not found"));
+		return getRefreshToken(token);
 	}
 
 	public void isAfterExpirationDate(RefreshToken refreshToken) {
@@ -50,5 +49,19 @@ public class RefreshTokenService {
 		refreshToken.setExpiresAt(LocalDateTime.now().plusMinutes(expirationDuration.toMinutes()));
 
 		return refreshTokenRepository.save(refreshToken);
+	}
+
+	public void deleteRefreshToken(UUID refreshToken) {
+		var token = getRefreshToken(refreshToken);
+		try {
+			refreshTokenRepository.delete(token);
+		} catch (OptimisticLockingFailureException e) {
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "RefreshToken has been modified meantime");
+		}
+	}
+
+	private RefreshToken getRefreshToken(UUID refreshToken) {
+		return refreshTokenRepository.findByToken(refreshToken)
+									 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Refresh token not found"));
 	}
 }
