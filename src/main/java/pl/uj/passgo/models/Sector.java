@@ -26,7 +26,7 @@ public class Sector {
     @JsonManagedReference
     private List<Row> rows;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     @ManyToOne

@@ -18,6 +18,9 @@ public class Seat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private Long seatNumber;
+
     @ManyToOne
     @JoinColumn(name = "row_id", nullable = false)
     @JsonBackReference

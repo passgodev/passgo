@@ -26,8 +26,9 @@ public class Building {
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Boolean approved = false;
+    private BuildingStatus status = BuildingStatus.PENDING;
 
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

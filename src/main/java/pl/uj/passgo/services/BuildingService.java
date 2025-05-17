@@ -10,13 +10,11 @@ import pl.uj.passgo.models.DTOs.AddressRequest;
 import pl.uj.passgo.models.DTOs.buildingRequests.BuildingRequest;
 import pl.uj.passgo.models.DTOs.buildingRequests.RowRequest;
 import pl.uj.passgo.models.DTOs.buildingRequests.SectorRequest;
-import pl.uj.passgo.models.responses.BuidlingResponse;
-import pl.uj.passgo.models.responses.FullBuildingResponse;
+import pl.uj.passgo.models.responses.building.*;
 import pl.uj.passgo.repos.BuildingRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -24,14 +22,14 @@ public class BuildingService {
 
     private final BuildingRepository buildingRepository;
 
-    public List<BuidlingResponse> getAllBuildings(Boolean approved) {
-        if(approved == null)
-            return buildingRepository.findAll().stream().map(BuildingService::mapBuidlingToBuidlingResponse).toList();
+    public List<BuildingResponse> getAllBuildings(BuildingStatus status) {
+        if(status == null)
+            return buildingRepository.findAll().stream().map(BuildingService::mapBuildingToBuildingResponse).toList();
         else
-            return buildingRepository.findByApproved(approved).stream().map(BuildingService::mapBuidlingToBuidlingResponse).toList();
+            return buildingRepository.findByStatus(status).stream().map(BuildingService::mapBuildingToBuildingResponse).toList();
     }
 
-    public BuidlingResponse createBuilding(BuildingRequest buildingRequest) {
+    public BuildingResponse createBuilding(BuildingRequest buildingRequest) {
         AddressRequest addressRequest = buildingRequest.getAddress();
         Address address = Address.builder()
                 .country(addressRequest.getCountry())
@@ -61,8 +59,9 @@ public class BuildingService {
                 row.setSector(sector);
 
                 List<Seat> seats = new ArrayList<>();
-                for (int i = 0; i < rowRequest.getSeatsCount(); i++) {
+                for (long i = 1; i <= rowRequest.getSeatsCount(); i++) {
                     Seat seat = new Seat();
+                    seat.setSeatNumber(i);
                     seat.setRow(row);
                     seats.add(seat);
                 }
@@ -76,7 +75,7 @@ public class BuildingService {
 
         building.setSectors(sectors);
   
-        return mapBuidlingToBuidlingResponse(buildingRepository.save(building));
+        return mapBuildingToBuildingResponse(buildingRepository.save(building));
     }
 
     public Building getBuildingById(Long id) {
@@ -87,23 +86,32 @@ public class BuildingService {
                 ));
     }
 
-    public FullBuildingResponse getFullBuidlingById(Long id){
+    public FullBuildingResponse getFullBuildingById(Long id){
         return mapBuildingToFullBuildingResponse(getBuildingById(id));
     }
 
-    public BuidlingResponse approveBuilding(Long id) {
+    public BuildingResponse updateBuildingStatus(Long id, BuildingStatus status) {
         Building building = getBuildingById(id);
-        building.setApproved(true);
-        return mapBuidlingToBuidlingResponse(buildingRepository.save(building));
+        building.setStatus(status);
+        return mapBuildingToBuildingResponse(buildingRepository.save(building));
     }
 
     public void deleteBuilding(Long id) {
-        Building building = getBuildingById(id);
         buildingRepository.deleteById(id);
     }
 
-    private static BuidlingResponse mapBuidlingToBuidlingResponse(Building building){
-        return new BuidlingResponse(building.getId(), building.getName(), building.getAddress(), building.getApproved());
+    private static BuildingResponse mapBuildingToBuildingResponse(Building building){
+        return new BuildingResponse(building.getId(), building.getName(), mapAddressToAddressResponse(building.getAddress()), building.getStatus());
+    }
+
+    private static AddressResponse mapAddressToAddressResponse(Address address) {
+        return new AddressResponse(
+                address.getCountry(),
+                address.getCity(),
+                address.getStreet(),
+                address.getPostalCode(),
+                address.getBuildingNumber()
+        );
     }
 
     private static FullBuildingResponse mapBuildingToFullBuildingResponse(Building building){
@@ -111,8 +119,23 @@ public class BuildingService {
                 building.getId(),
                 building.getName(),
                 building.getAddress(),
-                building.getApproved(),
-                building.getSectors()
+                building.getStatus(),
+                building.getSectors().stream().map(BuildingService::mapSectorToSectorResponse).toList()
+        );
+    }
+
+    private static SectorResponse mapSectorToSectorResponse(Sector sector) {
+        return new SectorResponse(
+                sector.getName(),
+                sector.getStandingArea(),
+                sector.getRows().stream().map(BuildingService::mapRowToRowResponse).toList()
+        );
+    }
+
+    private static RowResponse mapRowToRowResponse(Row row) {
+        return new RowResponse(
+                row.getRowNumber(),
+                row.getSeatsCount()
         );
     }
 }
