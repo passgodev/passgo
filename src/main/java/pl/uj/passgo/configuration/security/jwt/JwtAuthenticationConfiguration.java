@@ -42,6 +42,7 @@ public class JwtAuthenticationConfiguration {
 					.requestMatchers("/auth/login").permitAll()
 					.requestMatchers("/auth/signup").permitAll()
 					.requestMatchers("/auth/refresh").permitAll()
+					.requestMatchers("/auth/logout").permitAll()
 					.requestMatchers(PathRequest.toH2Console()).permitAll()
 					.anyRequest().authenticated();
 			})
