@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.uj.passgo.models.DTOs.EventCreateRequest;
 import pl.uj.passgo.models.DTOs.event.ImageDto;
+import pl.uj.passgo.models.DTOs.ticket.TicketResponse;
 import pl.uj.passgo.models.responses.EventResponse;
 import pl.uj.passgo.models.responses.FullEventResponse;
 import pl.uj.passgo.services.EventService;
 import pl.uj.passgo.services.MediaService;
+import pl.uj.passgo.services.TicketService;
 
 import java.util.List;
 
@@ -23,6 +25,7 @@ public class EventController {
 
     private final EventService eventService;
     private final MediaService mediaService;
+    private final TicketService ticketService;
 
     @GetMapping
     public ResponseEntity<List<EventResponse>> getAllEvents(@RequestParam(required = false) Boolean approved) {
@@ -71,5 +74,11 @@ public class EventController {
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(imageDto.contentType()))
                 .body(imageDto.data());
+    }
+
+    @GetMapping("{id}/tickets")
+    public ResponseEntity<List<TicketResponse>> getAllAvailableTicketsForEvent(@PathVariable Long id){
+        List<TicketResponse> tickets = ticketService.getAllAvailableTicketsForEvent(id);
+        return ResponseEntity.ok(tickets);
     }
 }

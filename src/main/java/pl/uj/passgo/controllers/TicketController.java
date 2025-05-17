@@ -42,20 +42,6 @@ public class TicketController {
         return ResponseEntity.ok(ticket);
     }
 
-    @GetMapping("/{id}/pdf")
-    public ResponseEntity<byte[]> getTicketPdf(@PathVariable("id") Long id) {
-        Ticket ticket = ticketService.getTicketById(id);
-
-        byte[] pdf = pdfGenerator.generateTicketPdf(ticket);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        //or instead of "inline" use "attachment"
-        headers.setContentDisposition(ContentDisposition.builder("inline").filename("ticket_" + id + ".pdf").build());
-
-        return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
-    }
-
     @GetMapping("/client/{id}")
     public ResponseEntity<List<Ticket>> getTicketByClientId(@PathVariable("id") Long id) {
         List<Ticket> tickets = ticketService.getTicketByClientId(id);
