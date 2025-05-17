@@ -14,6 +14,7 @@ import pl.uj.passgo.configuration.security.jwt.JwtService;
 import pl.uj.passgo.mappers.member.MemberMapper;
 import pl.uj.passgo.models.DTOs.authentication.login.LoginRequest;
 import pl.uj.passgo.models.DTOs.authentication.login.LoginResponse;
+import pl.uj.passgo.models.DTOs.authentication.logout.LogoutRequest;
 import pl.uj.passgo.models.DTOs.authentication.refresh.RefreshTokenRequest;
 import pl.uj.passgo.models.DTOs.authentication.refresh.RefreshTokenResponse;
 import pl.uj.passgo.models.DTOs.authentication.registration.ClientRegistrationRequest;
@@ -133,5 +134,15 @@ public class AuthenticationService {
 		var jwtToken = jwtService.generateToken(memberCredential);
 
 		return new RefreshTokenResponse(refreshToken.getToken(), jwtToken);
+	}
+
+	public void logoutMember(LogoutRequest request) {
+		var refreshToken = request.refreshToken();
+		if ( refreshToken == null ) {
+			log.info("logout refresh token is null, returning...");
+			return;
+		}
+
+		refreshTokenService.deleteRefreshToken(refreshToken);
 	}
 }
