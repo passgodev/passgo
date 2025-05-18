@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.models.*;
 import pl.uj.passgo.models.DTOs.TicketPurchaseRequest;
+import pl.uj.passgo.models.DTOs.ticket.TicketResponse;
 import pl.uj.passgo.models.member.Client;
 import pl.uj.passgo.models.transaction.TransactionType;
 import pl.uj.passgo.repos.*;
@@ -196,5 +197,25 @@ public class TicketService {
         ticketRepository.save(ticket);
         clientRepository.save(client);
         transactionComponentRepository.save(transactionComponent);
+    }
+
+    public List<TicketResponse> getAllAvailableTicketsForEvent(Long id) {
+        List<Ticket> tickets = ticketRepository.findAllByEventIdAndOwnerIsNull(id);
+        List<TicketResponse> ticketResponses = new ArrayList<>();
+
+        for(Ticket ticket : tickets){
+            ticketResponses.add(TicketResponse.builder()
+                    .standingArea(ticket.getStandingArea())
+                    .rowId(ticket.getRow().getId())
+                    .seatId(ticket.getSeat().getId())
+                    .sectorId(ticket.getSector().getId())
+                    .price(ticket.getPrice())
+                    .id(ticket.getId())
+                    .sectorName(ticket.getSector().getName())
+                    .build()
+            );
+        }
+
+        return ticketResponses;
     }
 }

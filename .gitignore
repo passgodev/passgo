@@ -39,4 +39,12 @@ build/
 # ignore any generated log file ending with .log extension
 *.log
 
-/uploads
+# Ignoruj wszystko w uploads/
+uploads/**/*
+# Ale NIE ignoruj folderów
+!uploads/
+!uploads/buildings/
+!uploads/events/
+# Ale NIE ignoruj .gitkeep
+!uploads/buildings/.gitkeep
+!uploads/events/.gitkeep
