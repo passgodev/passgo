@@ -1,0 +1,2 @@
+ALTER TABLE faq
+    ADD COLUMN seat_number BIGINT NOT NULL;

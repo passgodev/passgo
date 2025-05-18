@@ -1,0 +1,5 @@
+ALTER TABLE building
+    DROP COLUMN approved;
+
+ALTER TABLE building
+    ADD COLUMN status VARCHAR NOT NULL DEFAULT 'PENDING';
