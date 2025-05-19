@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.uj.passgo.models.DTOs.authentication.login.LoginRequest;
 import pl.uj.passgo.models.DTOs.authentication.login.LoginResponse;
+import pl.uj.passgo.models.DTOs.authentication.logout.LogoutRequest;
 import pl.uj.passgo.models.DTOs.authentication.refresh.RefreshTokenRequest;
 import pl.uj.passgo.models.DTOs.authentication.refresh.RefreshTokenResponse;
 import pl.uj.passgo.models.DTOs.authentication.registration.MemberRegistrationRequest;
@@ -39,5 +40,11 @@ public class AuthenticationController {
 	public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
 		var responseRefreshToken = authenticationService.refreshToken(request);
 		return ResponseEntity.ok(responseRefreshToken);
+	}
+
+	@PostMapping(value = "/logout", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Void> logout(@RequestBody LogoutRequest request) {
+		authenticationService.logoutMember(request);
+		return ResponseEntity.noContent().build();
 	}
 }
