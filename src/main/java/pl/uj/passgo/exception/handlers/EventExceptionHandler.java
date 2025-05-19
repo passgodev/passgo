@@ -7,6 +7,7 @@ import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
+import pl.uj.passgo.exception.MemberCredentialNotFoundException;
 
 import java.util.Arrays;
 
@@ -25,6 +26,12 @@ public class EventExceptionHandler {
     public ResponseEntity<ExceptionMessageResponse> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
         var body = new ExceptionMessageResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+    }
+
+    @ExceptionHandler(MemberCredentialNotFoundException.class)
+    public ResponseEntity<ExceptionMessageResponse> handleMemberCredentialNotFoundException(MemberCredentialNotFoundException ex) {
+        var body = new ExceptionMessageResponse(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
     @ExceptionHandler(Exception.class)

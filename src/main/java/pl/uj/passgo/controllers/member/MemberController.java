@@ -21,6 +21,12 @@ import pl.uj.passgo.services.member.MemberService;
 public class MemberController {
 	private final MemberService memberService;
 
+	@GetMapping("/{id}")
+	public ResponseEntity<MemberResponse> getClientById(@PathVariable Long id, @RequestParam(value = "type") MemberType type) {
+		var memberResponse = memberService.getMemberById(id, type);
+		return ResponseEntity.ok(memberResponse);
+	}
+
 	@PreAuthorize("hasRole('ADMINISTRATOR')")
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Page<MemberResponse>> getMembers(@RequestParam(value = "type") MemberType type, @PageableDefault Pageable pageable) {

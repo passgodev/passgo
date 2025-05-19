@@ -7,7 +7,6 @@ import pl.uj.passgo.models.DTOs.member.ClientDto;
 
 public record ClientMemberResponse(
 	@JsonUnwrapped
-	@JsonProperty("client")
 	ClientDto clientDto
 ) implements MemberResponse {
 }
