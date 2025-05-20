@@ -22,7 +22,7 @@ public class BuildingService {
 
     private final BuildingRepository buildingRepository;
 
-    public List<BuildingResponse> getAllBuildings(BuildingStatus status) {
+    public List<BuildingResponse> getAllBuildings(Status status) {
         if(status == null)
             return buildingRepository.findAll().stream().map(BuildingService::mapBuildingToBuildingResponse).toList();
         else
@@ -90,7 +90,7 @@ public class BuildingService {
         return mapBuildingToFullBuildingResponse(getBuildingById(id));
     }
 
-    public BuildingResponse updateBuildingStatus(Long id, BuildingStatus status) {
+    public BuildingResponse updateBuildingStatus(Long id, Status status) {
         Building building = getBuildingById(id);
         building.setStatus(status);
         return mapBuildingToBuildingResponse(buildingRepository.save(building));
@@ -100,11 +100,11 @@ public class BuildingService {
         buildingRepository.deleteById(id);
     }
 
-    private static BuildingResponse mapBuildingToBuildingResponse(Building building){
+    static BuildingResponse mapBuildingToBuildingResponse(Building building){
         return new BuildingResponse(building.getId(), building.getName(), mapAddressToAddressResponse(building.getAddress()), building.getStatus());
     }
 
-    private static AddressResponse mapAddressToAddressResponse(Address address) {
+    static AddressResponse mapAddressToAddressResponse(Address address) {
         return new AddressResponse(
                 address.getCountry(),
                 address.getCity(),
@@ -134,6 +134,7 @@ public class BuildingService {
 
     private static RowResponse mapRowToRowResponse(Row row) {
         return new RowResponse(
+                row.getId(),
                 row.getRowNumber(),
                 row.getSeatsCount()
         );
