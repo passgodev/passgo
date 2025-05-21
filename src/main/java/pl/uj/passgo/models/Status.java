@@ -1,6 +1,6 @@
 package pl.uj.passgo.models;
 
-public enum BuildingStatus {
+public enum Status {
     PENDING,
     APPROVED,
     REJECTED

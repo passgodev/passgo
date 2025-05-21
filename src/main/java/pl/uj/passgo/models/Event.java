@@ -36,8 +36,9 @@ public class Event {
     @Column(length = 100)
     private String category;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Boolean approved = false;
+    private Status status = Status.PENDING;
 
     @Column(nullable = true)
     private String imagePath = null;

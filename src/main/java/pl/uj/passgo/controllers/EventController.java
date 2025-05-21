@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.uj.passgo.models.DTOs.EventCreateRequest;
 import pl.uj.passgo.models.DTOs.event.ImageDto;
+import pl.uj.passgo.models.DTOs.event.UpdateEventDto;
 import pl.uj.passgo.models.DTOs.ticket.TicketResponse;
+import pl.uj.passgo.models.Status;
 import pl.uj.passgo.models.responses.EventResponse;
 import pl.uj.passgo.models.responses.FullEventResponse;
 import pl.uj.passgo.services.EventService;
@@ -28,8 +30,8 @@ public class EventController {
     private final TicketService ticketService;
 
     @GetMapping
-    public ResponseEntity<List<EventResponse>> getAllEvents(@RequestParam(required = false) Boolean approved) {
-        List<EventResponse> events = eventService.getAllEvents(approved);
+    public ResponseEntity<List<EventResponse>> getAllEvents(@RequestParam(required = false) Status status) {
+        List<EventResponse> events = eventService.getAllEvents(status);
         return ResponseEntity.ok(events);
     }
 
@@ -41,13 +43,13 @@ public class EventController {
 
     @GetMapping("/{id}")
     public ResponseEntity<FullEventResponse> getEventById(@PathVariable Long id) {
-        FullEventResponse fetchedEvent = eventService.getFullBuidlingById(id);
+        FullEventResponse fetchedEvent = eventService.getFullBuildingById(id);
         return ResponseEntity.ok(fetchedEvent);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EventResponse> updateEvent(@RequestBody EventCreateRequest eventRequest, @PathVariable Long id) {
-        EventResponse event = eventService.updateEvent(eventRequest, id);
+    public ResponseEntity<EventResponse> updateEvent(@RequestBody UpdateEventDto updateEventDto, @PathVariable Long id) {
+        EventResponse event = eventService.updateEvent(updateEventDto, id);
         return ResponseEntity.ok(event);
     }
 
@@ -57,9 +59,9 @@ public class EventController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{id}/approve")
-    public ResponseEntity<EventResponse> approveEvent(@PathVariable Long id){
-        EventResponse approvedEvent = eventService.approveEvent(id);
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<EventResponse> updateEventStatus(@PathVariable Long id, @RequestParam Status status){
+        EventResponse approvedEvent = eventService.updateEventStatus(id, status);
         return ResponseEntity.ok(approvedEvent);
     }
 
