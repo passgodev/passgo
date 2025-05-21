@@ -6,10 +6,14 @@ import org.springframework.stereotype.Service;
 import pl.uj.passgo.mappers.client.ClientMapper;
 import pl.uj.passgo.mappers.event.EventMapper;
 import pl.uj.passgo.mappers.ticket.TicketMapper;
+import pl.uj.passgo.models.DTOs.transaction.SimpleTransactionDto;
 import pl.uj.passgo.models.DTOs.transaction.TransactionComponentDto;
 import pl.uj.passgo.models.DTOs.transaction.TransactionDto;
 import pl.uj.passgo.models.transaction.Transaction;
 import pl.uj.passgo.models.transaction.TransactionComponent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -39,5 +43,19 @@ public class TransactionMapper {
 			transactionComponent.getId(),
 			ticketDto
 		);
+	}
+
+	public List<SimpleTransactionDto> toSimpleTransactionDto(List<Transaction> transactions){
+		List<SimpleTransactionDto> responses = new ArrayList<>();
+		for(var transaction : transactions){
+			responses.add(SimpleTransactionDto.builder()
+					.id(transaction.getId())
+					.completedAt(transaction.getCompletedAt())
+					.totalPrice(transaction.getTotalPrice())
+					.transactionType(transaction.getTransactionType())
+					.build()
+			);
+		}
+		return responses;
 	}
 }
