@@ -18,7 +18,6 @@ import pl.uj.passgo.models.DTOs.ticket.TicketInfoDto;
 import pl.uj.passgo.services.PDFGenerator;
 import pl.uj.passgo.models.DTOs.ticket.TicketPurchaseResponse;
 import pl.uj.passgo.models.Ticket;
-import pl.uj.passgo.services.PDFGenerator;
 import pl.uj.passgo.services.TicketService;
 
 import java.util.List;
