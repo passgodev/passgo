@@ -1,0 +1,5 @@
+ALTER TABLE event
+    DROP COLUMN approved;
+
+ALTER TABLE event
+    ADD COLUMN status VARCHAR NOT NULL DEFAULT 'PENDING';

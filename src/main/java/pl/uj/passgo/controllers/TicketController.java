@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.uj.passgo.models.DTOs.TicketPurchaseRequest;
+import pl.uj.passgo.models.DTOs.ticket.TicketInfoDto;
 import pl.uj.passgo.services.PDFGenerator;
 import pl.uj.passgo.models.DTOs.ticket.TicketPurchaseResponse;
 import pl.uj.passgo.models.Ticket;
-import pl.uj.passgo.services.PDFGenerator;
 import pl.uj.passgo.services.TicketService;
 
 import java.util.List;
@@ -46,6 +46,12 @@ public class TicketController {
     public ResponseEntity<List<Ticket>> getTicketByClientId(@PathVariable("id") Long id) {
         List<Ticket> tickets = ticketService.getTicketByClientId(id);
         return ResponseEntity.ok(tickets);
+    }
+
+    @GetMapping("/{eventId}/info")
+    public ResponseEntity<List<TicketInfoDto>> getTicketsInfoByEventId(@PathVariable("eventId") Long eventId) {
+        var ticketsInfoDto = ticketService.getTicketsInfoByEventId(eventId);
+        return ResponseEntity.ok(ticketsInfoDto);
     }
 
     @GetMapping("/{id}/pdf")

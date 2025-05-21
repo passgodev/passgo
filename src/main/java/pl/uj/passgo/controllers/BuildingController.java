@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.uj.passgo.models.BuildingStatus;
+import pl.uj.passgo.models.Status;
 import pl.uj.passgo.models.DTOs.buildingRequests.BuildingRequest;
 import pl.uj.passgo.models.responses.building.BuildingResponse;
 import pl.uj.passgo.models.responses.building.FullBuildingResponse;
@@ -21,7 +21,7 @@ public class BuildingController {
     private final BuildingService buildingService;
 
     @GetMapping
-    public ResponseEntity<List<BuildingResponse>> getBuildings(@RequestParam(required = false) BuildingStatus status) {
+    public ResponseEntity<List<BuildingResponse>> getBuildings(@RequestParam(required = false) Status status) {
         List<BuildingResponse> buildings = buildingService.getAllBuildings(status);
         return ResponseEntity.ok(buildings);
     }
@@ -39,7 +39,7 @@ public class BuildingController {
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<BuildingResponse> updateBuildingStatus(@PathVariable Long id, @RequestParam BuildingStatus status) {
+    public ResponseEntity<BuildingResponse> updateBuildingStatus(@PathVariable Long id, @RequestParam Status status) {
         BuildingResponse updatedBuilding = buildingService.updateBuildingStatus(id, status);
         return ResponseEntity.ok(updatedBuilding);
     }

@@ -28,7 +28,7 @@ public class Building {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BuildingStatus status = BuildingStatus.PENDING;
+    private Status status = Status.PENDING;
 
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
