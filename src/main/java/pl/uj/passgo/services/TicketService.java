@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.models.*;
 import pl.uj.passgo.models.DTOs.TicketPurchaseRequest;
+import pl.uj.passgo.models.DTOs.ticket.TicketInfoDto;
 import pl.uj.passgo.models.DTOs.ticket.TicketResponse;
 import pl.uj.passgo.models.member.Client;
 import pl.uj.passgo.models.transaction.TransactionType;
@@ -217,5 +218,21 @@ public class TicketService {
         }
 
         return ticketResponses;
+    }
+
+    @Transactional
+    public void deleteAllTicketsConnectedToEvent(Long id) {
+        List<Ticket> tickets = ticketRepository.findAllByEventId(id);
+
+        for (Ticket ticket : tickets) {
+            if (ticket.getOwner() != null) {
+                walletOperationService.rechargeWalletForTicketReturn(ticket.getOwner(), ticket.getPrice());
+            }
+        }
+        ticketRepository.deleteAll(tickets);
+    }
+
+    public List<TicketInfoDto> getTicketsInfoByEventId(Long eventId) {
+        return ticketRepository.getTicketSummaryByEvent(eventId);
     }
 }

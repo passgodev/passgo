@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.models.*;
 import pl.uj.passgo.models.DTOs.EventCreateRequest;
+import pl.uj.passgo.models.DTOs.event.UpdateEventDto;
 import pl.uj.passgo.models.responses.EventResponse;
 import pl.uj.passgo.models.responses.FullEventResponse;
 import pl.uj.passgo.repos.BuildingRepository;
@@ -25,12 +26,13 @@ public class EventService {
     private final EventRepository eventRepository;
     private final BuildingRepository buildingRepository;
     private final TicketRepository ticketRepository;
+    private final TicketService ticketService;
 
-    public List<EventResponse> getAllEvents(Boolean approved) {
-        if(approved == null)
+    public List<EventResponse> getAllEvents(Status status) {
+        if(status == null)
             return eventRepository.findAll().stream().map(EventService::mapEventToEventResponse).toList();
         else
-            return eventRepository.findByApproved(approved).stream().map(EventService::mapEventToEventResponse).toList();
+            return eventRepository.findByStatus(status).stream().map(EventService::mapEventToEventResponse).toList();
     }
 
     public EventResponse createEvent(EventCreateRequest event) {
@@ -46,7 +48,7 @@ public class EventService {
                 .date(event.getDate())
                 .description(event.getDescription())
                 .category(event.getCategory())
-                .approved(false)
+                .status(Status.PENDING)
                 .build();
 
         Event resposeEvent = eventRepository.save(builtEvent);
@@ -62,28 +64,28 @@ public class EventService {
                 ));
     }
 
-    public FullEventResponse getFullBuidlingById(Long id){
+    public FullEventResponse getFullBuildingById(Long id){
         return mapEventToFullEventResponse(getEventById(id));
     }
 
     public void deleteEvent(Long id) {
+        ticketService.deleteAllTicketsConnectedToEvent(id);
         eventRepository.deleteById(id);
     }
 
-    public EventResponse updateEvent(EventCreateRequest eventRequest, Long id) {
+    public EventResponse updateEvent(UpdateEventDto updateEventDto, Long id) {
         Event event = eventRepository.findById(id)
-                .map(existingEvent -> updateExistingEvent(existingEvent, eventRequest))
+                .map(existingEvent -> updateExistingEvent(existingEvent, updateEventDto))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event " + id + " does not exist."));
         return mapEventToEventResponse(eventRepository.save(event));
     }
 
-    private Event updateExistingEvent(Event existingEvent, EventCreateRequest eventRequest) {
-        Building building = buildingRepository.findById(eventRequest.getBuildingId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Building " + eventRequest.getBuildingId() + " does not exist."));
-        existingEvent.setBuilding(building);
-        existingEvent.setName(eventRequest.getName());
-        existingEvent.setDate(eventRequest.getDate());
-        existingEvent.setDescription(eventRequest.getDescription());
-        existingEvent.setCategory(eventRequest.getCategory());
+    private Event updateExistingEvent(Event existingEvent, UpdateEventDto updateEventDto) {
+        existingEvent.setName(updateEventDto.name());
+        existingEvent.setDate(updateEventDto.date());
+        existingEvent.setDescription(updateEventDto.description());
+        existingEvent.setCategory(updateEventDto.category());
+        existingEvent.setStatus(Status.PENDING);
         return existingEvent;
     }
 
@@ -94,11 +96,6 @@ public class EventService {
             for(Row row : sector.getRows()){
                 Long rowId = row.getId();
                 for(Seat seat : row.getSeats()){
-                    if(sector.getStandingArea()) {
-                        seat = null;
-                        row = null;
-                    }
-
                     tickets.add(
                         Ticket.builder()
                                 .event(event)
@@ -116,9 +113,9 @@ public class EventService {
         ticketRepository.saveAll(tickets);
     }
 
-    public EventResponse approveEvent(Long id) {
+    public EventResponse updateEventStatus(Long id, Status status) {
         Event event = getEventById(id);
-        event.setApproved(true);
+        event.setStatus(status);
         return mapEventToEventResponse(eventRepository.save(event));
     }
 
@@ -127,11 +124,11 @@ public class EventService {
                 event.getId(),
                 event.getName(),
                 event.getBuilding().getName(),
-                event.getBuilding().getAddress(),
+                BuildingService.mapAddressToAddressResponse(event.getBuilding().getAddress()),
                 event.getDate(),
                 event.getDescription(),
                 event.getCategory(),
-                event.getApproved()
+                event.getStatus()
         );
     }
 
@@ -139,11 +136,11 @@ public class EventService {
         return new FullEventResponse(
                 event.getId(),
                 event.getName(),
-                event.getBuilding(),
+                BuildingService.mapBuildingToBuildingResponse(event.getBuilding()),
                 event.getDate(),
                 event.getDescription(),
                 event.getCategory(),
-                event.getApproved()
+                event.getStatus()
         );
     }
 
