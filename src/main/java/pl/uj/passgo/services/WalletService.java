@@ -31,4 +31,5 @@ public class WalletService {
                 .map(walletHistory -> new WalletHistoryDto(walletHistory.getOperationDate(), walletHistory.getAmount(), walletHistory.getDescription()))
                 .toList();
     }
+
 }

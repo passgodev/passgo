@@ -8,8 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.mappers.transaction.TransactionMapper;
+import pl.uj.passgo.models.DTOs.transaction.SimpleTransactionDto;
 import pl.uj.passgo.models.DTOs.transaction.TransactionDto;
+import pl.uj.passgo.models.transaction.Transaction;
 import pl.uj.passgo.repos.transaction.TransactionRepository;
+
+import java.util.List;
 
 
 @Service
@@ -26,5 +30,10 @@ public class TransactionService {
 		return transactionRepository.findById(id)
 			.map(transactionMapper::toDto)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+	}
+
+	public List<SimpleTransactionDto> getTransactionsByUser(Long id) {
+		List<Transaction> transactions = transactionRepository.findTransactionByClientId(id);
+		return transactionMapper.toSimpleTransactionDto(transactions);
 	}
 }

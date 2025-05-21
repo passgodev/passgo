@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.uj.passgo.models.DTOs.TicketPurchaseRequest;
+import pl.uj.passgo.models.DTOs.ticket.TicketFullResponse;
 import pl.uj.passgo.models.DTOs.ticket.TicketInfoDto;
 import pl.uj.passgo.services.PDFGenerator;
 import pl.uj.passgo.models.DTOs.ticket.TicketPurchaseResponse;
@@ -43,8 +44,8 @@ public class TicketController {
     }
 
     @GetMapping("/client/{id}")
-    public ResponseEntity<List<Ticket>> getTicketByClientId(@PathVariable("id") Long id) {
-        List<Ticket> tickets = ticketService.getTicketByClientId(id);
+    public ResponseEntity<List<TicketFullResponse>> getTicketByClientId(@PathVariable("id") Long id) {
+        List<TicketFullResponse> tickets = ticketService.getTicketByClientId(id);
         return ResponseEntity.ok(tickets);
     }
 
