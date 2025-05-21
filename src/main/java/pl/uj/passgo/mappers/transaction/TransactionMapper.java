@@ -46,7 +46,7 @@ public class TransactionMapper {
 	}
 
 	public List<SimpleTransactionDto> toSimpleTransactionDto(List<Transaction> transactions){
-		List<SimpleTransactionDto> responses = new ArrayList<>();
+		List<SimpleTransactionDto> responses = new ArrayList<>(transactions.size());
 		for(var transaction : transactions){
 			responses.add(SimpleTransactionDto.builder()
 					.id(transaction.getId())
