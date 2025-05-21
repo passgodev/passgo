@@ -48,7 +48,7 @@ public class TicketController {
         return ResponseEntity.ok(tickets);
     }
 
-    @GetMapping("/info/{eventId}")
+    @GetMapping("/{eventId}/info")
     public ResponseEntity<List<TicketInfoDto>> getTicketsInfoByEventId(@PathVariable("eventId") Long eventId) {
         var ticketsInfoDto = ticketService.getTicketsInfoByEventId(eventId);
         return ResponseEntity.ok(ticketsInfoDto);

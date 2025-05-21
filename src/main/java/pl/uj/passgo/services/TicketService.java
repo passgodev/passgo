@@ -222,7 +222,7 @@ public class TicketService {
 
     @Transactional
     public void deleteAllTicketsConnectedToEvent(Long id) {
-        List<Ticket> tickets = ticketRepository.findAllByEventId(id);
+        var tickets = ticketRepository.findAllByEventId(id);
 
         for (Ticket ticket : tickets) {
             if (ticket.getOwner() != null) {

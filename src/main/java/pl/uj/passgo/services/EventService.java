@@ -29,10 +29,12 @@ public class EventService {
     private final TicketService ticketService;
 
     public List<EventResponse> getAllEvents(Status status) {
-        if(status == null)
+        if(status == null) {
             return eventRepository.findAll().stream().map(EventService::mapEventToEventResponse).toList();
-        else
+        } else {
             return eventRepository.findByStatus(status).stream().map(EventService::mapEventToEventResponse).toList();
+        }
+
     }
 
     public EventResponse createEvent(EventCreateRequest event) {
