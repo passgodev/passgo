@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class WalletOperationService {
+public class    WalletOperationService {
 
     private final WalletRepository walletRepository;
     private final WalletHistoryRepository walletHistoryRepository;

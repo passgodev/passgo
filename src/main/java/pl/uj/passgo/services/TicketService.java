@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.models.*;
 import pl.uj.passgo.models.DTOs.TicketPurchaseRequest;
+import pl.uj.passgo.models.DTOs.ticket.TicketFullResponse;
 import pl.uj.passgo.models.DTOs.ticket.TicketResponse;
 import pl.uj.passgo.models.member.Client;
 import pl.uj.passgo.models.transaction.TransactionType;
@@ -161,8 +162,22 @@ public class TicketService {
         ticketRepository.deleteById(id);
     }
 
-    public List<Ticket> getTicketByClientId(Long id) {
-        return ticketRepository.findAllByOwnerId(id);
+    public List<TicketFullResponse> getTicketByClientId(Long id) {
+        List<Ticket> tickets = ticketRepository.findAllByOwnerId(id);
+        List<TicketFullResponse> responses = new ArrayList<>();
+        for(var ticket : tickets){
+            responses.add(TicketFullResponse.builder()
+                    .eventName(ticket.getEvent().getName())
+                    .rowNumber(ticket.getRow().getRowNumber())
+                    .seatNumber(ticket.getSeat().getSeatNumber())
+                    .sectorName(ticket.getSector().getName())
+                    .standingArea(ticket.getStandingArea())
+                    .price(ticket.getPrice())
+                    .id(ticket.getId())
+                    .build()
+            );
+        }
+        return responses;
     }
 
     @Transactional
@@ -176,10 +191,9 @@ public class TicketService {
         Client client = loggedInMemberContextService.isClientLoggedIn().orElseThrow();
 
         var returnPrice = ticket.getPrice();
-        var clientMoney = client.getWallet().getMoney();
 
         ticket.setOwner(null);
-        client.getWallet().setMoney(clientMoney.add(returnPrice));
+        walletOperationService.rechargeWalletForTicketReturn(client, returnPrice);
 
         var transaction = Transaction.builder()
                 .client(client)
