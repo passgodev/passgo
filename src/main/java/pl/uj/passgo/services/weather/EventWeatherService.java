@@ -21,7 +21,7 @@ import java.util.Arrays;
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class EventWeatherService implements WeatherService<EventWeatherResponse, EventWeatherRequest, EventWeatherException> {
+public class EventWeatherService implements WeatherService<EventWeatherRequest, EventWeatherResponse, EventWeatherException> {
 	private static final String LOCATION_NAME_TO_COORDINATE_SERVICE_URL = "https://nominatim.openstreetmap.org/search";
 	private static final String WEATHER_SERVICE_URL = "https://api.open-meteo.com/v1/forecast";
 
