@@ -1,4 +1,4 @@
-package pl.uj.passgo.services;
+package pl.uj.passgo.services.ticket;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +17,9 @@ import pl.uj.passgo.repos.SeatRepository;
 import pl.uj.passgo.repos.TicketRepository;
 import pl.uj.passgo.repos.transaction.TransactionComponentRepository;
 import pl.uj.passgo.repos.transaction.TransactionRepository;
+import pl.uj.passgo.services.LoggedInMemberContextService;
+import pl.uj.passgo.services.TicketService;
+import pl.uj.passgo.services.WalletOperationService;
 
 import java.math.BigDecimal;
 import java.util.List;
