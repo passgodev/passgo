@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import pl.uj.passgo.models.DTOs.ticket.TicketPurchaseRequest;
 import pl.uj.passgo.models.Ticket;
 import pl.uj.passgo.models.Wallet;
@@ -13,12 +15,16 @@ import pl.uj.passgo.models.member.Client;
 import pl.uj.passgo.repos.EventRepository;
 import pl.uj.passgo.repos.SeatRepository;
 import pl.uj.passgo.repos.TicketRepository;
+import pl.uj.passgo.repos.transaction.TransactionComponentRepository;
+import pl.uj.passgo.repos.transaction.TransactionRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 
@@ -31,6 +37,12 @@ public class TicketServiceTest {
 	private SeatRepository seatRepository;
 	@Mock
 	private LoggedInMemberContextService loggedInMemberContextService;
+	@Mock
+	private WalletOperationService walletOperationService;
+	@Mock
+	private TransactionRepository transactionRepository;
+	@Mock
+	private TransactionComponentRepository ticketTransactionComponentRepository;
 
 	@InjectMocks
 	private TicketService ticketService;
@@ -56,6 +68,14 @@ public class TicketServiceTest {
 		var ticketsPurchaseRequest = new TicketPurchaseRequest(List.of(1L));
 		when(ticketRepository.getTicketsByIdIn(anyCollection())).thenReturn(List.of(ticket));
 		when(loggedInMemberContextService.isClientLoggedIn()).thenReturn(Optional.of(client));
+		doAnswer(new Answer() {
+			@Override
+			public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+				var client = (Client)invocationOnMock.getArgument(0);
+				client.getWallet().setMoney(wallet.getMoney().subtract(ticket.getPrice()));
+				return null;
+			}
+		}).when(walletOperationService).chargeWalletForTicketPurchase(any(), any());
 
 		// act
 		var response = ticketService.purchaseTickets(ticketsPurchaseRequest);
