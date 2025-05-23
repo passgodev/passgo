@@ -1,26 +1,23 @@
 package pl.uj.passgo.services.member;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.mappers.client.ClientMapper;
 import pl.uj.passgo.mappers.member.MemberResponseMapper;
 import pl.uj.passgo.mappers.organizer.OrganizerMapper;
-import pl.uj.passgo.models.DTOs.member.OrganizerDto;
 import pl.uj.passgo.models.member.MemberCredential;
 import pl.uj.passgo.models.member.MemberType;
 import pl.uj.passgo.models.member.Organizer;
-import pl.uj.passgo.models.responses.member.OrganizerMemberResponse;
 import pl.uj.passgo.repos.member.ClientRepository;
 import pl.uj.passgo.repos.member.OrganizerRepository;
 import pl.uj.passgo.services.LoggedInMemberContextService;
@@ -38,16 +35,23 @@ public class MemberServiceTest {
 	@Mock
 	private OrganizerRepository organizerRepository;
 	@Mock
-	private MemberResponseMapper memberResponseMapper;
-	@Mock
 	private LoggedInMemberContextService loggedInMemberContextService;
 
-	@Spy
-	private OrganizerMapper organizerMapper;
+	private final ClientMapper clientMapper = new ClientMapper();
+	private final OrganizerMapper organizerMapper = new OrganizerMapper();
+	private final MemberResponseMapper memberResponseMapper = new MemberResponseMapper(clientMapper, organizerMapper);
 
-	@InjectMocks
 	private MemberService memberService;
 
+	@BeforeEach
+	public void setup() {
+		this.memberService = new MemberService(
+			clientRepository,
+			organizerRepository,
+			memberResponseMapper,
+			loggedInMemberContextService
+		);
+	}
 
 	@Test
 	public void testGetClientById_clientGetsClientDoesNotExist() {
@@ -162,9 +166,6 @@ public class MemberServiceTest {
 		organizer.setMemberCredential(organizerCredential);
 		when(organizerRepository.findById(eq(organizerId))).thenReturn(Optional.of(organizer));
 		// mock mapper to obtain mapped organizer
-		var mappedOrganizer = organizerMapper.toOrganizerDto(organizer);
-		when(memberResponseMapper.toOrganizerMemberResponse(any(Organizer.class)))
-			.thenReturn(new OrganizerMemberResponse(mappedOrganizer));
 
 		// act
 		memberService.activateOrganizer(organizerId);
