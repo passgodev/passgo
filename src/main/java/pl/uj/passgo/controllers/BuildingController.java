@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.uj.passgo.models.Status;
 import pl.uj.passgo.models.DTOs.buildingRequests.BuildingRequest;
@@ -26,6 +27,7 @@ public class BuildingController {
         return ResponseEntity.ok(buildings);
     }
 
+    @PreAuthorize("hasRole('ORGANIZER')")
     @PostMapping
     public ResponseEntity<BuildingResponse> createBuilding(@RequestBody BuildingRequest building) {
         BuildingResponse createdBuilding = buildingService.createBuilding(building);
@@ -38,12 +40,14 @@ public class BuildingController {
         return ResponseEntity.ok(fetchedBuilding);
     }
 
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PatchMapping("/{id}/status")
     public ResponseEntity<BuildingResponse> updateBuildingStatus(@PathVariable Long id, @RequestParam Status status) {
         BuildingResponse updatedBuilding = buildingService.updateBuildingStatus(id, status);
         return ResponseEntity.ok(updatedBuilding);
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ORGANIZER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBuilding(@PathVariable Long id){
         buildingService.deleteBuilding(id);

@@ -10,4 +10,5 @@ import java.util.Optional;
 @Repository
 public interface MemberCredentialRepository extends JpaRepository<MemberCredential, Long> {
 	Optional<MemberCredential> findByLogin(String login);
+
 }

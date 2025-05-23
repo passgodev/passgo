@@ -8,11 +8,13 @@ import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.models.*;
 import pl.uj.passgo.models.DTOs.EventCreateRequest;
 import pl.uj.passgo.models.DTOs.event.UpdateEventDto;
+import pl.uj.passgo.models.member.Organizer;
 import pl.uj.passgo.models.responses.EventResponse;
 import pl.uj.passgo.models.responses.FullEventResponse;
 import pl.uj.passgo.repos.BuildingRepository;
 import pl.uj.passgo.repos.EventRepository;
 import pl.uj.passgo.repos.TicketRepository;
+import pl.uj.passgo.repos.member.OrganizerRepository;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -27,14 +29,42 @@ public class EventService {
     private final BuildingRepository buildingRepository;
     private final TicketRepository ticketRepository;
     private final TicketService ticketService;
+    private final OrganizerRepository organizerRepository;
 
     public List<EventResponse> getAllEvents(Status status) {
         if(status == null) {
-            return eventRepository.findAll().stream().map(EventService::mapEventToEventResponse).toList();
+            return eventRepository.findAll()
+                    .stream()
+                    .map(EventService::mapEventToEventResponse)
+                    .toList();
         } else {
-            return eventRepository.findByStatus(status).stream().map(EventService::mapEventToEventResponse).toList();
+            return eventRepository.findByStatus(status)
+                    .stream()
+                    .map(EventService::mapEventToEventResponse)
+                    .toList();
         }
+    }
 
+    public List<EventResponse> getAllOrganizerEvents(Long organizerCredentialId , Status status) {
+        Organizer organizer = organizerRepository.findByMemberCredentialId(organizerCredentialId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "No organizer found for the provided member_credential_id: " + organizerCredentialId
+                ));
+
+        Long organizerId = organizer.getId();
+
+        if(status == null) {
+            return eventRepository.findAllByOrganizerId(organizerId)
+                    .stream()
+                    .map(EventService::mapEventToEventResponse)
+                    .toList();
+        } else {
+            return eventRepository.findAllByOrganizerIdAndStatus(organizerId, status)
+                    .stream()
+                    .map(EventService::mapEventToEventResponse)
+                    .toList();
+        }
     }
 
     public EventResponse createEvent(EventCreateRequest event) {
@@ -44,6 +74,12 @@ public class EventService {
                         String.format("There is no building with id: %d", event.getBuildingId())
                 ));
 
+        Organizer organizer = organizerRepository.findByMemberCredentialId(event.getOrganizerId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        String.format("There is no organizer with id: %d", event.getOrganizerId())
+                ));
+
         Event builtEvent = Event.builder()
                 .name(event.getName())
                 .building(building)
@@ -51,6 +87,7 @@ public class EventService {
                 .description(event.getDescription())
                 .category(event.getCategory())
                 .status(Status.PENDING)
+                .organizer(organizer)
                 .build();
 
         Event resposeEvent = eventRepository.save(builtEvent);
@@ -145,5 +182,4 @@ public class EventService {
                 event.getStatus()
         );
     }
-
 }

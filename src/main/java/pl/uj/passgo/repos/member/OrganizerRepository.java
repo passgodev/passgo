@@ -9,4 +9,5 @@ import java.util.Optional;
 
 public interface OrganizerRepository extends JpaRepository<Organizer, Long> {
 	Optional<Organizer> findByMemberCredential(MemberCredential credentials);
+	Optional<Organizer> findByMemberCredentialId(Long credentialId);
 }
