@@ -22,6 +22,8 @@ import pl.uj.passgo.repos.TicketRepository;
 import pl.uj.passgo.services.weather.EventWeatherService;
 
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +58,12 @@ public class EventService {
                         String.format("There is no building with id: %d", event.getBuildingId())
                 ));
 
+        System.out.println("DEBUG 2: " + event.getDate());
+        if(!thisDateIsFree(event.getDate(), building)){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "There is already an event announced for this date.");
+        }
+
+
         Event builtEvent = Event.builder()
                 .name(event.getName())
                 .building(building)
@@ -68,6 +76,28 @@ public class EventService {
         Event resposeEvent = eventRepository.save(builtEvent);
         createAllTickets(building, builtEvent, event.getRowPrices());
         return mapEventToEventResponse(resposeEvent);
+    }
+
+    private boolean thisDateIsFree(LocalDateTime date, Building building){
+        List<Event> events = eventRepository.findAll();
+
+        for(var event : events){
+
+            if(!event.getBuilding().getId().equals(building.getId()))
+                continue;
+
+            LocalDateTime eventDate = event.getDate();
+
+            if (eventDate.toLocalDate().equals(date.toLocalDate()) && event.getStatus() == Status.APPROVED) {
+                long hoursDifference = Math.abs(Duration.between(eventDate, date).toHours());
+
+                if (hoursDifference < 10) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     public Event getEventById(Long id) {

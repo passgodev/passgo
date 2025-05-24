@@ -11,10 +11,15 @@ import pl.uj.passgo.models.DTOs.WalletDto;
 import pl.uj.passgo.models.Wallet;
 import pl.uj.passgo.models.WalletHistory;
 import pl.uj.passgo.models.member.Client;
+import pl.uj.passgo.models.transaction.Transaction;
+import pl.uj.passgo.models.transaction.TransactionType;
 import pl.uj.passgo.repos.WalletHistoryRepository;
 import pl.uj.passgo.repos.WalletRepository;
+import pl.uj.passgo.repos.transaction.TransactionRepository;
 
 import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -22,6 +27,10 @@ public class WalletOperationService {
 
     private final WalletRepository walletRepository;
     private final WalletHistoryRepository walletHistoryRepository;
+    private final TransactionRepository transactionRepository;
+
+    private final LoggedInMemberContextService loggedInMemberContextService;
+    private final Clock clock = Clock.systemDefaultZone();
 
     @Transactional
     public WalletDto topUpBalance(Long walletId, TopUpWalletRequest topUpWalletRequest) {
@@ -40,6 +49,16 @@ public class WalletOperationService {
         walletHistory.setDescription(topUpWalletRequest.description());
         walletHistory.setAmount(topUpWalletRequest.amount());
         walletHistoryRepository.save(walletHistory);
+
+        Client client = loggedInMemberContextService.isClientLoggedIn().orElseThrow();
+        var transaction = Transaction.builder()
+                .client(client)
+                .totalPrice(topUpWalletRequest.amount())
+                .completedAt(LocalDateTime.now(clock))
+                .transactionType(TransactionType.TOP_UP)
+                .build();
+
+        transactionRepository.save(transaction);
 
         return new WalletDto(wallet.getId(), wallet.getMoney());
     }
