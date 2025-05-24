@@ -13,6 +13,7 @@ import pl.uj.passgo.models.DTOs.EventCreateRequest;
 import pl.uj.passgo.models.DTOs.event.UpdateEventDto;
 import pl.uj.passgo.models.DTOs.weahter.EventWeatherRequest;
 import pl.uj.passgo.models.DTOs.weahter.EventWeatherResponse;
+import pl.uj.passgo.models.responses.DetailsEventResponse;
 import pl.uj.passgo.models.responses.EventResponse;
 import pl.uj.passgo.models.responses.FullEventResponse;
 import pl.uj.passgo.repos.BuildingRepository;
@@ -79,6 +80,22 @@ public class EventService {
 
     public FullEventResponse getFullBuildingById(Long id){
         return mapEventToFullEventResponse(getEventById(id));
+    }
+
+    public DetailsEventResponse getDetailsAboutEvent(Long id){
+        return mapEventToDetailsResponse(getEventById(id));
+    }
+
+    private static DetailsEventResponse mapEventToDetailsResponse(Event event) {
+        return new DetailsEventResponse(
+                event.getId(),
+                event.getName(),
+                event.getBuilding(),
+                event.getDate(),
+                event.getDescription(),
+                event.getCategory(),
+                event.getStatus()
+        );
     }
 
     public void deleteEvent(Long id) {
