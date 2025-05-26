@@ -4,10 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class PassgoApplicationTests {
-
+class PassgoApplicationTest {
 	@Test
-	void contextLoads() {
-	}
-
+	void testApplicationStartup() {}
 }

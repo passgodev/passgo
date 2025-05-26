@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.uj.passgo.mappers.client.ClientMapper;
-import pl.uj.passgo.mappers.event.EventMapper;
 import pl.uj.passgo.mappers.ticket.TicketMapper;
 import pl.uj.passgo.models.DTOs.transaction.SimpleTransactionDto;
 import pl.uj.passgo.models.DTOs.transaction.TransactionComponentDto;
@@ -20,7 +19,6 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class TransactionMapper {
 	private final ClientMapper clientMapper;
-	private final EventMapper eventMapper;
 	private final TicketMapper ticketMapper;
 
 	public TransactionDto toDto(Transaction transaction) {

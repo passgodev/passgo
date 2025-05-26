@@ -1,26 +1,35 @@
 package pl.uj.passgo.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
+import pl.uj.passgo.exception.weather.EventWeatherException;
 import pl.uj.passgo.models.*;
 import pl.uj.passgo.models.DTOs.EventCreateRequest;
 import pl.uj.passgo.models.DTOs.event.UpdateEventDto;
 import pl.uj.passgo.models.member.Organizer;
+import pl.uj.passgo.models.DTOs.weahter.EventWeatherRequest;
+import pl.uj.passgo.models.DTOs.weahter.EventWeatherResponse;
 import pl.uj.passgo.models.responses.EventResponse;
 import pl.uj.passgo.models.responses.FullEventResponse;
 import pl.uj.passgo.repos.BuildingRepository;
 import pl.uj.passgo.repos.EventRepository;
 import pl.uj.passgo.repos.TicketRepository;
 import pl.uj.passgo.repos.member.OrganizerRepository;
+import pl.uj.passgo.services.weather.EventWeatherService;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class EventService {
@@ -30,6 +39,8 @@ public class EventService {
     private final TicketRepository ticketRepository;
     private final TicketService ticketService;
     private final OrganizerRepository organizerRepository;
+    private final RestTemplate restTemplate;
+    private final EventWeatherService weatherService;
 
     public List<EventResponse> getAllEvents(Status status) {
         var events = status == null ? eventRepository.findAll() : eventRepository.findByStatus(status);
@@ -170,5 +181,36 @@ public class EventService {
                 event.getCategory(),
                 event.getStatus()
         );
+    }
+
+    public EventWeatherResponse getWeather(Long eventId) {
+        var event = this.getEventById(eventId);
+        var eventAddress = Optional.ofNullable(event)
+            .map(Event::getBuilding)
+            .map(Building::getAddress)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                                                           "Event's (id: " + eventId + ") associated building does not have an address."));
+
+        var eventRequest = new EventWeatherRequest(
+            eventAddress.getCountry(),
+            eventAddress.getCity(),
+            Optional.ofNullable(eventAddress.getPostalCode())
+        );
+
+        try {
+            return weatherService.getWeather(eventRequest);
+        } catch (EventWeatherException e) {
+            log.error("EventService.getWeater - error: {}\n Cause: {}", e.getMessage(), Optional.ofNullable(e.getCause()).map(Throwable::toString).orElse("No cause"));
+            var status = mapFaultReasonToHttpStatus(e.getFaultSide());
+            throw new ResponseStatusException(status, e.getMessage());
+        }
+    }
+
+    // if used in another place, move to seperate mapper class. Move FaultReason as well.
+    private static HttpStatus mapFaultReasonToHttpStatus(EventWeatherException.FaultReason faultReason) {
+        return switch (faultReason) {
+            case INVALID_REQUEST, INVALID_RESPONSE -> HttpStatus.INTERNAL_SERVER_ERROR;
+            case SERVICE_UNAVAILABLE -> HttpStatus.SERVICE_UNAVAILABLE;
+        };
     }
 }

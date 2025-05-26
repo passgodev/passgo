@@ -12,6 +12,7 @@ import pl.uj.passgo.models.DTOs.EventCreateRequest;
 import pl.uj.passgo.models.DTOs.event.ImageDto;
 import pl.uj.passgo.models.DTOs.event.UpdateEventDto;
 import pl.uj.passgo.models.DTOs.ticket.TicketResponse;
+import pl.uj.passgo.models.DTOs.weahter.EventWeatherResponse;
 import pl.uj.passgo.models.Status;
 import pl.uj.passgo.models.responses.EventResponse;
 import pl.uj.passgo.models.responses.FullEventResponse;
@@ -94,5 +95,11 @@ public class EventController {
     public ResponseEntity<List<TicketResponse>> getAllAvailableTicketsForEvent(@PathVariable Long id){
         List<TicketResponse> tickets = ticketService.getAllAvailableTicketsForEvent(id);
         return ResponseEntity.ok(tickets);
+    }
+
+    @GetMapping("/{eventId}/weather")
+    public ResponseEntity<EventWeatherResponse> getWeather(@PathVariable Long eventId) {
+        var weatherResponse = eventService.getWeather(eventId);
+        return ResponseEntity.ok(weatherResponse);
     }
 }
