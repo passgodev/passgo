@@ -2,7 +2,7 @@ name: Passgo-snyk-scan
 
 on:
   push:
-    branches: ["workflow-dev"]
+    branches: ["main"]
 
 jobs:
   snyk:
