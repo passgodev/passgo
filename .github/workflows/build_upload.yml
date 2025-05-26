@@ -2,7 +2,9 @@ name: Passgo-verify-deploy
 
 on:
   push:
-    branches: ["workflow-dev"]
+    branches: ["main"]
+  pull_request:
+    types: [auto_merge_enabled]
 
 jobs:
   build:
