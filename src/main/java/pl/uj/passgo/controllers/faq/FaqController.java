@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.uj.passgo.models.DTOs.FaqRequest;
 import pl.uj.passgo.models.responses.FaqResponse;
@@ -31,18 +32,21 @@ public class FaqController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PostMapping()
     public ResponseEntity<FaqResponse> addFaq(@RequestBody FaqRequest faqRequest){
         var response = faqService.addFaq(faqRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PutMapping("/{faqId}")
     public ResponseEntity<FaqResponse> updateFaq(@RequestBody FaqRequest faqRequest, @PathVariable Long faqId){
         var response = faqService.updateFaq(faqRequest, faqId);
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @DeleteMapping("/{faqId}")
     public ResponseEntity<Void> deleteFaq(@PathVariable Long faqId) {
         faqService.deleteFaq(faqId);

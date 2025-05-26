@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.uj.passgo.models.member.Organizer;
 
 import java.time.LocalDateTime;
 
@@ -42,4 +43,8 @@ public class Event {
 
     @Column(nullable = true)
     private String imagePath = null;
+
+    @ManyToOne
+    @JoinColumn(name = "organizer_id", referencedColumnName = "id")
+    private Organizer organizer;
 }
