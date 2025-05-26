@@ -27,7 +27,7 @@ public class BuildingController {
         return ResponseEntity.ok(buildings);
     }
 
-    @PreAuthorize("hasRole('ORGANIZER')")
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ORGANIZER')")
     @PostMapping
     public ResponseEntity<BuildingResponse> createBuilding(@RequestBody BuildingRequest building) {
         BuildingResponse createdBuilding = buildingService.createBuilding(building);
@@ -47,7 +47,7 @@ public class BuildingController {
         return ResponseEntity.ok(updatedBuilding);
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ORGANIZER')")
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBuilding(@PathVariable Long id){
         buildingService.deleteBuilding(id);

@@ -32,17 +32,10 @@ public class EventService {
     private final OrganizerRepository organizerRepository;
 
     public List<EventResponse> getAllEvents(Status status) {
-        if(status == null) {
-            return eventRepository.findAll()
-                    .stream()
-                    .map(EventService::mapEventToEventResponse)
-                    .toList();
-        } else {
-            return eventRepository.findByStatus(status)
-                    .stream()
-                    .map(EventService::mapEventToEventResponse)
-                    .toList();
-        }
+        var events = status == null ? eventRepository.findAll() : eventRepository.findByStatus(status);
+        return events.stream()
+                .map(EventService::mapEventToEventResponse)
+                .toList();
     }
 
     public List<EventResponse> getAllOrganizerEvents(Long organizerCredentialId , Status status) {
@@ -54,17 +47,13 @@ public class EventService {
 
         Long organizerId = organizer.getId();
 
-        if(status == null) {
-            return eventRepository.findAllByOrganizerId(organizerId)
-                    .stream()
-                    .map(EventService::mapEventToEventResponse)
-                    .toList();
-        } else {
-            return eventRepository.findAllByOrganizerIdAndStatus(organizerId, status)
-                    .stream()
-                    .map(EventService::mapEventToEventResponse)
-                    .toList();
-        }
+        var organizerEvents = status == null ?
+                eventRepository.findAllByOrganizerId(organizerId)
+                : eventRepository.findAllByOrganizerIdAndStatus(organizerId, status);
+
+        return organizerEvents.stream()
+                .map(EventService::mapEventToEventResponse)
+                .toList();
     }
 
     public EventResponse createEvent(EventCreateRequest event) {
