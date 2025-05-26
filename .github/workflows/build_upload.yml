@@ -23,6 +23,9 @@ jobs:
         run: chmod u+x ./mvnw
 
       - name: Build with Maven
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_DURATION_MIN: ${{ secrets.JWT_DURATION_MIN }}
         run: ./mvnw --batch-mode --update-snapshots verify
 
       - name: Create and copy artifact directory
