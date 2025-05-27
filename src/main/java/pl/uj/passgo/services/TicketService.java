@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -57,11 +58,11 @@ public class TicketService {
         var validTicketsMap = new HashMap<>(tickets.stream().collect(Collectors.toMap(Ticket::getId, Function.identity())));
         var invalidTicketIds = ticketToBuyIds.stream().filter(id -> !validTicketsMap.containsKey(id)).toList();
         if ( !invalidTicketIds.isEmpty() ) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provided tickets ids: " + invalidTicketIds.toString() + " do not exist.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provided tickets ids: " + invalidTicketIds + " do not exist.");
         }
     }
 
-    private static void checkIfTicketsAreNotAlreadyBought(List<Ticket> tickets, List<Long> ticketToBuyIds) {
+    private static void checkIfTicketsAreNotAlreadyBought(List<Ticket> tickets) {
         var occupiedTickets = tickets.stream().map(Ticket::getOwner).filter(Objects::nonNull).toList();
         if ( !occupiedTickets.isEmpty() ) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provided tickets: are already occupied");
@@ -69,7 +70,7 @@ public class TicketService {
     }
 
     private final LoggedInMemberContextService loggedInMemberContextService;
-    private final Clock clock = Clock.systemDefaultZone();
+    private final Clock clock;
     private final TransactionRepository transactionRepository;
     private final TransactionComponentRepository transactionComponentRepository;
 
@@ -80,7 +81,7 @@ public class TicketService {
         var ticketsToBuyIds = ticketsPurchaseRequest.ticketIds();
         var tickets = ticketRepository.getTicketsByIdIn(ticketsToBuyIds);
         checkIfAllTicketsExist(tickets, ticketsToBuyIds);
-        checkIfTicketsAreNotAlreadyBought(tickets, ticketsToBuyIds);
+        checkIfTicketsAreNotAlreadyBought(tickets);
 
         // calculate tickets total price
         var ticketsTotalPrice = tickets.stream().map(Ticket::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -159,7 +160,19 @@ public class TicketService {
         return ticketRepository.save(ticket);
     }
 
+    @Transactional
     public void deleteTicket(Long id) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ticket not found"));
+
+        boolean hasOwner = ticket.getOwner() != null;
+        if (hasOwner && ticket.getEvent().getDate().isBefore(LocalDateTime.now(clock))) {
+            processTicketReturn(ticket);
+        } else if (hasOwner) {
+            ticket.setOwner(null);
+            ticketRepository.save(ticket);
+        }
+
         ticketRepository.deleteById(id);
     }
 
@@ -185,13 +198,15 @@ public class TicketService {
     public void returnTicket(Long id) {
         Ticket ticket = getTicketById(id);
 
-        if(ticket.getOwner() == null){
+        if (ticket.getOwner() == null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Ticket with id: %d is not purchased.", id));
         }
 
+        processTicketReturn(ticket);
+    }
+    private void processTicketReturn(Ticket ticket) {
         Client client = loggedInMemberContextService.isClientLoggedIn().orElseThrow();
-
-        var returnPrice = ticket.getPrice();
+        BigDecimal returnPrice = ticket.getPrice();
 
         ticket.setOwner(null);
         walletOperationService.rechargeWalletForTicketReturn(client, returnPrice);
@@ -204,6 +219,7 @@ public class TicketService {
                 .build();
 
         var savedTransaction = transactionRepository.save(transaction);
+
         var transactionComponent = TransactionComponent.builder()
                 .transaction(savedTransaction)
                 .ticket(ticket)
@@ -239,11 +255,20 @@ public class TicketService {
         var tickets = ticketRepository.findAllByEventId(id);
 
         for (Ticket ticket : tickets) {
-            if (ticket.getOwner() != null) {
-                walletOperationService.rechargeWalletForTicketReturn(ticket.getOwner(), ticket.getPrice());
+            if (shouldProcessRefund(ticket)) {
+                processTicketReturn(ticket);
+            } else if (ticket.getOwner() != null) {
+                ticket.setOwner(null);
+                ticketRepository.save(ticket);
             }
         }
         ticketRepository.deleteAll(tickets);
+    }
+
+    private boolean shouldProcessRefund(Ticket ticket) {
+        return ticket.getOwner() != null
+                && ticket.getEvent() != null
+                && ticket.getEvent().getDate().isAfter(LocalDateTime.now(clock));
     }
 
     public List<TicketInfoDto> getTicketsInfoByEventId(Long eventId) {
