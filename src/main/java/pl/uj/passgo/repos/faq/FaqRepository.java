@@ -10,5 +10,5 @@ import java.util.Optional;
 
 @Repository
 public interface FaqRepository extends JpaRepository<Faq, Long> {
-    Optional<FaqResponse> getFaqById(Long id);
+    Optional<Faq> getFaqById(Long id);
 }
