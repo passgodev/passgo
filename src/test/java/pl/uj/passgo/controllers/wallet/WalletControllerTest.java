@@ -1,6 +1,5 @@
 package pl.uj.passgo.controllers.wallet;
 
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,7 +17,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -55,7 +53,6 @@ class WalletControllerTest {
     @Test
     void shouldReturnUpdatedWallet_whenTopUpWallet() throws Exception {
         // Arrange
-        TopUpWalletRequest request = new TopUpWalletRequest(BigDecimal.valueOf(50), "Top up");
         WalletDto updatedWallet = new WalletDto(1L, BigDecimal.valueOf(150));
         when(walletOperationService.topUpBalance(eq(1L), any(TopUpWalletRequest.class)))
                 .thenReturn(updatedWallet);
