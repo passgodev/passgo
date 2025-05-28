@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.exception.weather.EventWeatherException;
 import pl.uj.passgo.models.*;
@@ -39,7 +38,6 @@ public class EventService {
     private final TicketRepository ticketRepository;
     private final TicketService ticketService;
     private final OrganizerRepository organizerRepository;
-    private final RestTemplate restTemplate;
     private final EventWeatherService weatherService;
 
     public List<EventResponse> getAllEvents(Status status) {
@@ -160,14 +158,14 @@ public class EventService {
 
     private static EventResponse mapEventToEventResponse(Event event){
         return new EventResponse(
-                event.getId(),
-                event.getName(),
-                event.getBuilding().getName(),
-                BuildingService.mapAddressToAddressResponse(event.getBuilding().getAddress()),
-                event.getDate(),
-                event.getDescription(),
-                event.getCategory(),
-                event.getStatus()
+            event.getId(),
+            event.getName(),
+            event.getBuilding().getName(),
+            BuildingService.mapAddressToAddressResponse(event.getBuilding().getAddress()),
+            event.getDate(),
+            event.getDescription(),
+            event.getCategory(),
+            event.getStatus()
         );
     }
 
