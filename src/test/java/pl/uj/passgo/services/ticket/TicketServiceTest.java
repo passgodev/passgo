@@ -154,7 +154,7 @@ public class TicketServiceTest {
 	}
 
 	@Test
-	void deleteTicket_shouldDeleteWhenNoOwner() {
+	void deleteTicket_shouldDeleteWhenNoOwnerWithRefund() {
 		// Arrange
 		Ticket ticket = new Ticket();
 		ticket.setId(1L);
@@ -162,7 +162,7 @@ public class TicketServiceTest {
 		when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticket));
 
 		// Act
-		ticketService.deleteTicket(1L);
+		ticketService.deleteTicketWithRefund(1L);
 
 		// Assert
 		verify(ticketRepository).deleteById(1L);

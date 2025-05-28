@@ -156,18 +156,18 @@ public class EventService {
         return mapEventToEventResponse(eventRepository.save(event));
     }
 
-        private static EventResponse mapEventToEventResponse(Event event){
-            return new EventResponse(
-                    event.getId(),
-                    event.getName(),
-                    event.getBuilding().getName(),
-                    BuildingService.mapAddressToAddressResponse(event.getBuilding().getAddress()),
-                    event.getDate(),
-                    event.getDescription(),
-                    event.getCategory(),
-                    event.getStatus()
-            );
-        }
+    private static EventResponse mapEventToEventResponse(Event event){
+        return new EventResponse(
+            event.getId(),
+            event.getName(),
+            event.getBuilding().getName(),
+            BuildingService.mapAddressToAddressResponse(event.getBuilding().getAddress()),
+            event.getDate(),
+            event.getDescription(),
+            event.getCategory(),
+            event.getStatus()
+        );
+    }
 
     private static FullEventResponse mapEventToFullEventResponse(Event event){
         return new FullEventResponse(

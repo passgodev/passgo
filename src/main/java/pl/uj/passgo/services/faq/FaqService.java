@@ -27,9 +27,9 @@ public class FaqService {
     }
 
     public FaqResponse getFaqById(Long faqId) {
-        Faq faq = faqRepository.getFaqById(faqId)
-                            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Faq with id: %d not found", faqId)));
-        return mapFaqToFaqResponse(faq);
+        return faqRepository.getFaqById(faqId)
+                .map(FaqService::mapFaqToFaqResponse)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Faq with id: %d not found", faqId)));
     }
 
     public FaqResponse addFaq(FaqRequest faqRequest) {
@@ -42,7 +42,7 @@ public class FaqService {
         return mapFaqToFaqResponse(faqRepository.save(faq));
     }
 
-    private FaqResponse mapFaqToFaqResponse(Faq faq) {
+    private static FaqResponse mapFaqToFaqResponse(Faq faq) {
         return new FaqResponse(faq.getId(), faq.getQuestion(), faq.getAnswer());
     }
 

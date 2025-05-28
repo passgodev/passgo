@@ -154,13 +154,13 @@ class TicketControllerTest {
     @Test
     void deleteTicket_shouldReturnNoContent() throws Exception {
         // Arrange
-        doNothing().when(ticketService).deleteTicket(1L);
+        doNothing().when(ticketService).deleteTicketWithRefund(1L);
 
         // Act & Assert
         mockMvc.perform(delete("/tickets/1"))
                 .andExpect(status().isNoContent());
 
-        verify(ticketService).deleteTicket(1L);
+        verify(ticketService).deleteTicketWithRefund(1L);
     }
 
     @Test

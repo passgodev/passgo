@@ -160,18 +160,19 @@ public class TicketService {
     }
 
     @Transactional
-    public void deleteTicket(Long id) {
+    public void deleteTicketWithRefund(Long id) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ticket not found"));
 
         boolean hasOwner = ticket.getOwner() != null;
-        if (hasOwner && ticket.getEvent().getDate().isBefore(LocalDateTime.now(clock))) {
+        if (hasOwner && ticket.getEvent().getDate().isAfter(LocalDateTime.now(clock))) {
             processTicketReturn(ticket);
         } else if (hasOwner) {
             ticket.setOwner(null);
             ticketRepository.save(ticket);
         }
 
+        transactionComponentRepository.deleteAllByTicket(ticket);
         ticketRepository.deleteById(id);
     }
 
@@ -203,6 +204,7 @@ public class TicketService {
 
         processTicketReturn(ticket);
     }
+
     private void processTicketReturn(Ticket ticket) {
         Client client = loggedInMemberContextService.isClientLoggedIn().orElseThrow();
         BigDecimal returnPrice = ticket.getPrice();
@@ -261,6 +263,7 @@ public class TicketService {
                 ticketRepository.save(ticket);
             }
         }
+        transactionComponentRepository.deleteAllByTicketIn(tickets);
         ticketRepository.deleteAll(tickets);
     }
 
