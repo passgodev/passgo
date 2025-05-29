@@ -50,7 +50,9 @@ public class WalletOperationService {
         walletHistory.setAmount(topUpWalletRequest.amount());
         walletHistoryRepository.save(walletHistory);
 
-        Client client = loggedInMemberContextService.isClientLoggedIn().orElseThrow();
+        Client client = loggedInMemberContextService.isClientLoggedIn().orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.CONFLICT, "User is not logged in.")
+        );
         var transaction = Transaction.builder()
                 .client(client)
                 .totalPrice(topUpWalletRequest.amount())

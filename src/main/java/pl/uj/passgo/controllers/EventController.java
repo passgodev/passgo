@@ -57,7 +57,7 @@ public class EventController {
         return ResponseEntity.ok(fetchedEvent);
     }
 
-    @GetMapping("/details/{id}")
+    @GetMapping("/{id}/details")
     public ResponseEntity<DetailsEventResponse> getEventDetailsById(@PathVariable Long id) {
         DetailsEventResponse fetchedEvent = eventService.getDetailsAboutEvent(id);
         return ResponseEntity.ok(fetchedEvent);

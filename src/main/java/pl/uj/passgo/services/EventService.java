@@ -36,6 +36,8 @@ import java.util.Optional;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class EventService {
 
+    private final int EVENT_COOLDOWN_HOURS = 10;
+
     private final EventRepository eventRepository;
     private final BuildingRepository buildingRepository;
     private final TicketRepository ticketRepository;
@@ -114,7 +116,7 @@ public class EventService {
             if (eventDate.toLocalDate().equals(date.toLocalDate()) && event.getStatus() == Status.APPROVED) {
                 long hoursDifference = Math.abs(Duration.between(eventDate, date).toHours());
 
-                if (hoursDifference < 10) {
+                if (hoursDifference < EVENT_COOLDOWN_HOURS) {
                     return false;
                 }
             }
