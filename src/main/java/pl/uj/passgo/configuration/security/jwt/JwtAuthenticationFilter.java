@@ -36,13 +36,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		HttpServletResponse response,
 		FilterChain filterChain
 	) throws ServletException, IOException {
-		if (!enabled) {
+		var authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+		if (!enabled && (authHeader == null || !authHeader.startsWith(BEARER_SPACE))) {
 			log.trace("JWT authentication filter is DISABLED");
 			filterChain.doFilter(request, response);
 			return;
 		}
 
-		var authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 		if (authHeader == null || !authHeader.startsWith(BEARER_SPACE)) {
 			filterChain.doFilter(request, response);
 			return;

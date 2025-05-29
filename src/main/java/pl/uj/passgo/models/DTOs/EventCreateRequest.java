@@ -12,6 +12,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EventCreateRequest {
+    private Long organizerId;
     private String name;
     private Long buildingId;
     private LocalDateTime date;

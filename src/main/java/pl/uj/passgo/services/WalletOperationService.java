@@ -73,8 +73,6 @@ public class WalletOperationService {
         walletHistoryRepository.save(walletHistory);
     }
 
-    //TODO: add the following method to the ticket return method when dorian
-    // merges the changes from the pull request (Returning tickets system and stats)
     public void rechargeWalletForTicketReturn(Client client, BigDecimal returnPrice) {
         client.getWallet().setMoney(client.getWallet().getMoney().add(returnPrice));
 

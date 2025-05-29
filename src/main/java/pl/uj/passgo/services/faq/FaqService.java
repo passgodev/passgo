@@ -12,6 +12,7 @@ import pl.uj.passgo.models.Faq;
 import pl.uj.passgo.models.responses.FaqResponse;
 import pl.uj.passgo.repos.faq.FaqRepository;
 
+import java.time.Clock;
 import java.time.LocalDate;
 
 
@@ -19,6 +20,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FaqService {
     private final FaqRepository faqRepository;
+    private final Clock clock;
 
     public Page<FaqResponse> getAllFaqs(Pageable pageable) {
         return faqRepository.findAll(pageable).map(faq -> new FaqResponse(faq.getId(), faq.getQuestion(), faq.getAnswer()));
@@ -26,21 +28,22 @@ public class FaqService {
 
     public FaqResponse getFaqById(Long faqId) {
         return faqRepository.getFaqById(faqId)
-                            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Faq with id: %d not found", faqId)));
+                .map(FaqService::mapFaqToFaqResponse)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Faq with id: %d not found", faqId)));
     }
 
     public FaqResponse addFaq(FaqRequest faqRequest) {
         Faq faq = new Faq();
         faq.setQuestion(faqRequest.question());
         faq.setAnswer(faqRequest.answer());
-        faq.setAddDate(LocalDate.now());
-        faq.setUpdateDate(LocalDate.now());
+        faq.setAddDate(LocalDate.now(clock));
+        faq.setUpdateDate(LocalDate.now(clock));
 
         return mapFaqToFaqResponse(faqRepository.save(faq));
     }
 
-    private FaqResponse mapFaqToFaqResponse(Faq save) {
-        return new FaqResponse(save.getId(), save.getQuestion(), save.getAnswer());
+    private static FaqResponse mapFaqToFaqResponse(Faq faq) {
+        return new FaqResponse(faq.getId(), faq.getQuestion(), faq.getAnswer());
     }
 
     public void deleteFaq(Long faqId) {
@@ -52,7 +55,7 @@ public class FaqService {
 
         faq.setAnswer(faqRequest.answer());
         faq.setQuestion(faqRequest.question());
-        faq.setUpdateDate(LocalDate.now());
+        faq.setUpdateDate(LocalDate.now(clock));
 
         return mapFaqToFaqResponse(faqRepository.save(faq));
     }

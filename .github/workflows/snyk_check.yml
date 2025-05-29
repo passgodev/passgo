@@ -1,0 +1,21 @@
+name: Passgo-snyk-scan
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  snyk:
+    name: Snyk dependency scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup maven
+        run: chmod u+x ./mvnw
+
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/maven@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}

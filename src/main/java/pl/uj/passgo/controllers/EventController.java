@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.uj.passgo.models.DTOs.EventCreateRequest;
@@ -37,6 +38,13 @@ public class EventController {
         return ResponseEntity.ok(events);
     }
 
+    @GetMapping("/{organizerCredentialId}/organizer")
+    public ResponseEntity<List<EventResponse>> getAllOrganizerEvents(@PathVariable("organizerCredentialId") Long organizerCredentialId, @RequestParam(required = false) Status status) {
+        List<EventResponse> events = eventService.getAllOrganizerEvents(organizerCredentialId, status);
+        return ResponseEntity.ok(events);
+    }
+
+    @PreAuthorize("hasRole('ORGANIZER')")
     @PostMapping
     public ResponseEntity<EventResponse> createEvent(@RequestBody EventCreateRequest event){
         EventResponse createdEvent = eventService.createEvent(event);
@@ -55,24 +63,29 @@ public class EventController {
         return ResponseEntity.ok(fetchedEvent);
     }
 
+
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ORGANIZER')")
     @PutMapping("/{id}")
     public ResponseEntity<EventResponse> updateEvent(@RequestBody UpdateEventDto updateEventDto, @PathVariable Long id) {
         EventResponse event = eventService.updateEvent(updateEventDto, id);
         return ResponseEntity.ok(event);
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ORGANIZER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         eventService.deleteEvent(id);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PatchMapping("/{id}/status")
     public ResponseEntity<EventResponse> updateEventStatus(@PathVariable Long id, @RequestParam Status status){
         EventResponse approvedEvent = eventService.updateEventStatus(id, status);
         return ResponseEntity.ok(approvedEvent);
     }
 
+    @PreAuthorize("hasRole('ORGANIZER')")
     @PostMapping("/{id}/image")
     public ResponseEntity<String> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file){
         return ResponseEntity.ok(mediaService.uploadImage(file, id));

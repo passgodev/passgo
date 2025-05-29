@@ -65,7 +65,9 @@ public class JwtAuthenticationConfiguration {
 				authorizeRequests.anyRequest().permitAll();
 			})
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.csrf(AbstractHttpConfigurer::disable);
+			.csrf(AbstractHttpConfigurer::disable)
+			.authenticationProvider(authenticationProvider)
+			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
