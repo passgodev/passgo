@@ -14,6 +14,7 @@ import pl.uj.passgo.models.DTOs.event.UpdateEventDto;
 import pl.uj.passgo.models.DTOs.ticket.TicketResponse;
 import pl.uj.passgo.models.DTOs.weahter.EventWeatherResponse;
 import pl.uj.passgo.models.Status;
+import pl.uj.passgo.models.responses.DetailsEventResponse;
 import pl.uj.passgo.models.responses.EventResponse;
 import pl.uj.passgo.models.responses.FullEventResponse;
 import pl.uj.passgo.services.EventService;
@@ -55,6 +56,13 @@ public class EventController {
         FullEventResponse fetchedEvent = eventService.getFullBuildingById(id);
         return ResponseEntity.ok(fetchedEvent);
     }
+
+    @GetMapping("/details/{id}")
+    public ResponseEntity<DetailsEventResponse> getEventDetailsById(@PathVariable Long id) {
+        DetailsEventResponse fetchedEvent = eventService.getDetailsAboutEvent(id);
+        return ResponseEntity.ok(fetchedEvent);
+    }
+
 
     @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ORGANIZER')")
     @PutMapping("/{id}")
