@@ -61,12 +61,13 @@ System sprzedaży biletów umożliwiający użytkownikom kupowanie i odsprzedawa
 ## Technologie
 - **Backend**: Java + Spring Boot
 - **Budowanie projektu**: Maven
-- **Baza danych**: PostgreSQL (Docker)
+- **Baza danych**: PostgreSQL (Docker), H2
+- **Wersjonowanie bazy danych**: Flyway
 - **Testy**: JUnit, Spring MVC (testowanie endpointów)
 - **API Dokumentacja**: Swagger
 - **Konteneryzacja**: Docker, Docker Compose
-- **Bezpieczeństwo**: *uzupełnij*
-- **Autoryzacja**: *uzupełnij*
+- **Bezpieczeństwo**: Spring Security
+- **Autoryzacja**: JWT tokens
 
 ---
 
@@ -75,6 +76,7 @@ System sprzedaży biletów umożliwiający użytkownikom kupowanie i odsprzedawa
 - ### Automatyczne budowanie
   - Projekt wykorzystuje Maven do budowania aplikacji.
   - Wyniki budowania (pass/fail) są widoczne w repozytorium.
+  - Artefakt w postaci pliku z rozszerzeniem ```jar```
 
 - ### Testy
   - **Jednostkowe** i **integracyjne** (Spring MVC do testowania endpointów)
@@ -91,7 +93,11 @@ System sprzedaży biletów umożliwiający użytkownikom kupowanie i odsprzedawa
 
 ## Bezpieczeństwo
 
-*uzupełnij*
+Wykorzystanie *Spring Security* w celach bezpieczeństwa. 
+Zabezpieczenie wszystkich endpointów aplikacji.
+Implementacja autentykacji w postaci tokenów JWT.
+Implementacja odświeżania wygasłych tokenów.
+Dodanie ról oraz przywileji.
 
 ---
 
@@ -115,7 +121,7 @@ System sprzedaży biletów umożliwiający użytkownikom kupowanie i odsprzedawa
 ---
 
 
-🔗 **Link do repozytorium**: [Repozytorium projektu](https://github.com/Pajtus/passgo)
+🔗 **Link do repozytorium**: [Repozytorium projektu](https://github.com/passgodev/passgo)
 
 ---
 
@@ -187,7 +193,7 @@ System sprzedaży biletów umożliwiający użytkownikom kupowanie i odsprzedawa
     - [x] Tworzenie wydarzeń
     - [x] Anulowanie wydarzeń
     - [x] Edycja, zarządzanie wydarzeń
-    - [ ] Podgląd statystyk wydarzenia
+    - [x] Podgląd statystyk wydarzenia
     - [x] Ustawienie planu obiektu
     - [x] Przed dodaniem wydarzenia dodaj prośbę o wydarzenie o akceptację
 
@@ -195,33 +201,33 @@ System sprzedaży biletów umożliwiający użytkownikom kupowanie i odsprzedawa
     - [x] Zatwierdzanie planów obiektów
     - Zarządzanie użytkownikami i organizatorami
       - [x] Zatwierdzanie kont organizatorów
-    - [ ] Wgląd w statystyki
-    - Zarządzanie wydarzeniami 
+    - [x] Wgląd w statystyki
+    - Zarządzanie wydarzeniami
       - [x] Zatwierdzenia wydarzeń
 
 - [x] Kod źródłowy aplikacji należy utrzymywać na **Githubie** ~~lub Gitlabie~~
 - [x] Kod powinien być automatycznie budowany (~~gradle lub~~ **maven**), a wynik budowania (pass/fail) powinien być widoczny w repozytorium  
 - [x] Kod powinien być automatycznie testowany
-  - [ ] Testowanie na min. dwóch poziomach
-    - [ ] Testy jednostkowe
-    - [ ] Testy interfejsu HHTP
+  - [x] Testowanie na min. dwóch poziomach
+    - [x] Testy jednostkowe
+    - [x] Testy interfejsu HHTP
   - [x] Testowanie powinno być elementem budowania projektu  
-  - [ ] Wyniki testowania powinny być widoczne w repozytorium  
-- [ ] Aplikację należy przetestować wydajnościowo z użyciem np. Gatlinga
-- [ ] Kod powinien być automatycznie skanowany pod kątem bezpieczeństwa (np. Snyk)
+  - [x] Wyniki testowania powinny być widoczne w repozytorium  
+- [x] Aplikację należy przetestować wydajnościowo z użyciem np. Gatlinga
+- [x] Kod powinien być automatycznie skanowany pod kątem bezpieczeństwa (np. Snyk)
 - [x] Dokumentację API należy udostępnić w formie Swaggera  
 - [x] Usługa powinna udostępniać poprawnie skonstruowane REST API, łącznie z obsługą błędów  
-- [ ] Musi być wykorzystywana data i czas, z poprawnym użyciem klasy Clock 
+- [x] Musi być wykorzystywana data i czas, z poprawnym użyciem klasy Clock 
 - [x] Dependency Injection: należy używać wstrzykiwania przez konstruktor  
 - [x] Należy używać bibliotekę do logów
-- [ ] Proces budowania powinien wytwarzać gotowy do wdrożenia artefakt: plik JAR  
+- [x] Proces budowania powinien wytwarzać gotowy do wdrożenia artefakt: plik JAR  
 - [x] Należy dostarczyć pliki: Dockerfile oraz Docker Compose, zawierające kompletne środowisko uruchomieniowe  
 - [x] Usługa powinna zawierać persystencję. Baza danych w odrębnym Dockerfile, połączona poprzez compose  
 - [x] Usługa powinna być monitorowana np. za pomocą ELK. Środowisko monitorujące w osobnym Dockerfile, połączone przez compose 
-- [ ] Usługa powinna korzystać z jakiegoś zewnętrznego API 
+- [x] Usługa powinna korzystać z jakiegoś zewnętrznego API 
 - [x] Usługa powinna być zabezpieczona przynajmniej na podstawowym poziomie. Logowanie basic auth lub autoryzacja Google  
 - [x] Usługa zawiera minimum 3 poziomy uprawnień użytkowników  
 - [x] Użytkownicy powinni mieć ograniczony dostęp do niektórych zasobów (np. tylko swoich)  
-- [ ] Należy przygotować demo serwisu  
+- [x] Należy przygotować demo serwisu  
 - *Wszelkie dodatkowe elementy ustalone z prowadzącym są również obowiązkowe*
 - [x] Użycie narzędzia do wersjonowania bazy danych (flyway)
