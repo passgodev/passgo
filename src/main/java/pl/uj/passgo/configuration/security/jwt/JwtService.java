@@ -39,6 +39,10 @@ public class JwtService {
 		return generateToken(Map.of("memberType", memberCredential.getMemberType(), "memberId", memberCredential.getId()), memberCredential);
 	}
 
+	public String generateToken(MemberCredential memberCredential, Long memberId) {
+		return generateToken(Map.of("memberType", memberCredential.getMemberType(), "memberId", memberId), memberCredential);
+	}
+
 	private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
 		return buildToken(extraClaims, userDetails, expirationDurationMinutes);
 	}

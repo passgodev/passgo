@@ -31,6 +31,9 @@ public class MemberService {
 	private final MemberResponseMapper memberResponseMapper;
 	private final LoggedInMemberContextService loggedInMemberContextService;
 
+	/*
+		Over enginered, split to different method, for different endpoints, like /clients, /organizers
+	 */
 	public MemberResponse getMemberById(Long id, MemberType type) {
 		return switch (type) {
 			case CLIENT -> getClientById(id);
@@ -45,17 +48,18 @@ public class MemberService {
 
 		return switch ( loggedInMemberCredential.getMemberType()) {
 			case CLIENT -> {
-				if ( !Objects.equals(loggedInMemberCredential.getId(), id) ) {
+				var client = clientRepository.findByMemberCredential(loggedInMemberCredential)
+											 .orElseThrow(() -> {
+												 log.error("Could not find client with id {}", id);
+												 log.error("Invalid MemberCredential and Client state in database, credentials can not exist on its own without client and vice versa");
+												 return new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Client with id: %d not found", id));
+											 });
+
+				if ( !Objects.equals(client.getId(), id) ) {
 					throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Logged in client can only fetch its own information");
 				}
 
-				yield clientRepository.findByMemberCredential(loggedInMemberCredential)
-									  .map(memberResponseMapper::toClientMemberResponse)
-									  .orElseThrow(() -> {
-										  log.error("Could not find client with id {}", id);
-										  log.error("Invalid MemberCredential and Client state in database, credentials can not exist on its own without client and vice versa");
-										  return new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Client with id: %d not found", id));
-									  });
+				yield memberResponseMapper.toClientMemberResponse(client);
 			}
 			case ORGANIZER, ADMINISTRATOR -> clientRepository.findById(id)
 															 .map(memberResponseMapper::toClientMemberResponse)

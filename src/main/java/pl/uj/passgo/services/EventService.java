@@ -52,14 +52,12 @@ public class EventService {
                 .toList();
     }
 
-    public List<EventResponse> getAllOrganizerEvents(Long organizerCredentialId , Status status) {
-        Organizer organizer = organizerRepository.findByMemberCredentialId(organizerCredentialId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "No organizer found for the provided member_credential_id: " + organizerCredentialId
-                ));
-
-        Long organizerId = organizer.getId();
+    public List<EventResponse> getAllOrganizerEvents(Long organizerId , Status status) {
+        organizerRepository.findById(organizerId)
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "No organizer found for the provided organizer_id: " + organizerId
+            ));
 
         var organizerEvents = status == null ?
                 eventRepository.findAllByOrganizerId(organizerId)
@@ -78,11 +76,15 @@ public class EventService {
                 ));
 
  
-        if(!thisDateIsFree(event.getDate(), building)){
+        if (!thisDateIsFree(event.getDate(), building)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "There is already an event announced for this date.");
         }
 
-        Organizer organizer = organizerRepository.findByMemberCredentialId(event.getOrganizerId())
+        if (building.getStatus() != Status.APPROVED) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Building is not approved yet");
+        }
+
+        Organizer organizer = organizerRepository.findById(event.getOrganizerId())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         String.format("There is no organizer with id: %d", event.getOrganizerId())

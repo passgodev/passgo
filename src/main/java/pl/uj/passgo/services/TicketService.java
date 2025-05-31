@@ -86,7 +86,9 @@ public class TicketService {
         var ticketsTotalPrice = tickets.stream().map(Ticket::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
 
         // check if client have sufficient amount of money
-        var client = loggedInMemberContextService.isClientLoggedIn().orElseThrow();
+        var client = loggedInMemberContextService.isClientLoggedIn().orElseThrow(() -> {
+            return new ResponseStatusException(HttpStatus.CONFLICT);
+        });
         var clientMoney = client.getWallet().getMoney();
         if (clientMoney.compareTo(ticketsTotalPrice) < 0) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Client money is insufficient");

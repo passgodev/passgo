@@ -75,8 +75,8 @@ public class AuthenticationServiceTest {
 		this.authenticationService = new AuthenticationService(
 			memberCredentialRepository,
 			memberMapper,
-			clientRepository,
 			walletRepository,
+			clientRepository,
 			organizerRepository,
 			authenticationManager,
 			bCryptPasswordEncoder,

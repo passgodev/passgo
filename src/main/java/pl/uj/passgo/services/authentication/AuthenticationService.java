@@ -37,8 +37,8 @@ public class AuthenticationService {
 	private final MemberCredentialRepository memberCredentialRepository;
 
 	private final MemberMapper memberMapper;
-	private final ClientRepository clientRepository;
 	private final WalletRepository walletRepository;
+	private final ClientRepository clientRepository;
 	private final OrganizerRepository organizerRepository;
 
 	private final AuthenticationManager authenticationManager;
@@ -120,7 +120,9 @@ public class AuthenticationService {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, message);
 		}
 
-		var jwtToken = jwtService.generateToken(memberCredential);
+		var logginId = getAppropriateMemberId(memberCredential);
+
+		var jwtToken = jwtService.generateToken(memberCredential, logginId);
 		var refreshToken = refreshTokenService.createRefreshToken(memberCredential);
 
 		return new LoginResponse(refreshToken.getToken(), jwtToken);
@@ -131,9 +133,22 @@ public class AuthenticationService {
 		refreshTokenService.isAfterExpirationDate(refreshToken);
 
 		var memberCredential = refreshToken.getMemberCredential();
-		var jwtToken = jwtService.generateToken(memberCredential);
+		var logginId = getAppropriateMemberId(memberCredential);
+
+		var jwtToken = jwtService.generateToken(memberCredential, logginId);
 
 		return new RefreshTokenResponse(refreshToken.getToken(), jwtToken);
+	}
+
+	private Long getAppropriateMemberId(MemberCredential credential) {
+		var baseMember = switch (credential.getMemberType()) {
+			case CLIENT -> clientRepository.findByMemberCredential(credential);
+			case ORGANIZER -> organizerRepository.findByMemberCredential(credential);
+			default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid member type, admin cannot be specified - todo remake");
+		};
+
+		return baseMember.map(Member::getId)
+						 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "base member not found to retrieve id"));
 	}
 
 	public void logoutMember(LogoutRequest request) {
