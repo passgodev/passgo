@@ -13,6 +13,8 @@ import pl.uj.passgo.models.WalletHistory;
 import pl.uj.passgo.models.member.Client;
 import pl.uj.passgo.repos.WalletHistoryRepository;
 import pl.uj.passgo.repos.WalletRepository;
+import pl.uj.passgo.repos.transaction.TransactionRepository;
+import pl.uj.passgo.services.LoggedInMemberContextService;
 import pl.uj.passgo.services.WalletOperationService;
 
 import java.math.BigDecimal;
@@ -29,6 +31,12 @@ class WalletOperationServiceTest {
 
     @Mock
     private WalletHistoryRepository walletHistoryRepository;
+
+    @Mock
+    private TransactionRepository transactionRepository;
+
+    @Mock
+    private LoggedInMemberContextService loggedInMemberContextService;
 
     @InjectMocks
     private WalletOperationService walletOperationService;
@@ -49,6 +57,7 @@ class WalletOperationServiceTest {
 
         when(walletRepository.findById(walletId)).thenReturn(Optional.of(wallet));
         when(walletRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(loggedInMemberContextService.isClientLoggedIn()).thenReturn(Optional.of(client));
 
         // Act
         WalletDto result = walletOperationService.topUpBalance(walletId, request);
