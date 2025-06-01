@@ -25,8 +25,12 @@ import pl.uj.passgo.models.DTOs.authentication.registration.MemberRegistrationRe
 import pl.uj.passgo.models.DTOs.authentication.registration.OrganizerRegistrationRequest;
 import pl.uj.passgo.models.Wallet;
 import pl.uj.passgo.models.authentication.RefreshToken;
-import pl.uj.passgo.models.member.*;
+import pl.uj.passgo.models.member.Client;
+import pl.uj.passgo.models.member.MemberCredential;
+import pl.uj.passgo.models.member.MemberType;
+import pl.uj.passgo.models.member.Organizer;
 import pl.uj.passgo.repos.WalletRepository;
+import pl.uj.passgo.repos.member.AdministratorRepository;
 import pl.uj.passgo.repos.member.ClientRepository;
 import pl.uj.passgo.repos.member.MemberCredentialRepository;
 import pl.uj.passgo.repos.member.OrganizerRepository;
@@ -56,6 +60,8 @@ public class AuthenticationServiceTest {
 	@Mock
 	private OrganizerRepository organizerRepository;
 	@Mock
+	private AdministratorRepository administratorRepository;
+	@Mock
 	private AuthenticationManager authenticationManager;
 	@Mock
 	private JwtService jwtService;
@@ -76,6 +82,7 @@ public class AuthenticationServiceTest {
 			walletRepository,
 			clientRepository,
 			organizerRepository,
+			administratorRepository,
 			authenticationManager,
 			bCryptPasswordEncoder,
 			jwtService,

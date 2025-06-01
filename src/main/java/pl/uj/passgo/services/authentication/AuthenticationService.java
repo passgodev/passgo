@@ -25,6 +25,7 @@ import pl.uj.passgo.models.member.Member;
 import pl.uj.passgo.models.member.MemberCredential;
 import pl.uj.passgo.models.member.MemberType;
 import pl.uj.passgo.repos.WalletRepository;
+import pl.uj.passgo.repos.member.AdministratorRepository;
 import pl.uj.passgo.repos.member.ClientRepository;
 import pl.uj.passgo.repos.member.MemberCredentialRepository;
 import pl.uj.passgo.repos.member.OrganizerRepository;
@@ -40,6 +41,7 @@ public class AuthenticationService {
 	private final WalletRepository walletRepository;
 	private final ClientRepository clientRepository;
 	private final OrganizerRepository organizerRepository;
+	private final AdministratorRepository administratorRepository;
 
 	private final AuthenticationManager authenticationManager;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -144,7 +146,7 @@ public class AuthenticationService {
 		var baseMember = switch (credential.getMemberType()) {
 			case CLIENT -> clientRepository.findByMemberCredential(credential);
 			case ORGANIZER -> organizerRepository.findByMemberCredential(credential);
-			default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid member type, admin cannot be specified - todo remake");
+			case ADMINISTRATOR -> administratorRepository.findByMemberCredential(credential);
 		};
 
 		return baseMember.map(Member::getId)
