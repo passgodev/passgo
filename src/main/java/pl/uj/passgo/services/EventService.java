@@ -5,14 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.exception.weather.EventWeatherException;
 import pl.uj.passgo.models.*;
 import pl.uj.passgo.models.DTOs.EventCreateRequest;
 import pl.uj.passgo.models.DTOs.event.UpdateEventDto;
-import pl.uj.passgo.models.member.Organizer;
 import pl.uj.passgo.models.DTOs.weahter.EventWeatherRequest;
 import pl.uj.passgo.models.DTOs.weahter.EventWeatherResponse;
+import pl.uj.passgo.models.member.Organizer;
 import pl.uj.passgo.models.responses.DetailsEventResponse;
 import pl.uj.passgo.models.responses.EventResponse;
 import pl.uj.passgo.models.responses.FullEventResponse;
@@ -35,8 +36,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class EventService {
-
-    private final int EVENT_COOLDOWN_HOURS = 10;
+    private static final int EVENT_COOLDOWN_HOURS = 10;
 
     private final EventRepository eventRepository;
     private final BuildingRepository buildingRepository;
@@ -60,14 +60,15 @@ public class EventService {
             ));
 
         var organizerEvents = status == null ?
-                eventRepository.findAllByOrganizerId(organizerId)
-                : eventRepository.findAllByOrganizerIdAndStatus(organizerId, status);
+            eventRepository.findAllByOrganizerId(organizerId)
+            : eventRepository.findAllByOrganizerIdAndStatus(organizerId, status);
 
         return organizerEvents.stream()
                 .map(EventService::mapEventToEventResponse)
                 .toList();
     }
 
+    @Transactional
     public EventResponse createEvent(EventCreateRequest event) {
         Building building = buildingRepository.findById(event.getBuildingId())
                 .orElseThrow(() -> new ResponseStatusException(
@@ -75,7 +76,6 @@ public class EventService {
                         String.format("There is no building with id: %d", event.getBuildingId())
                 ));
 
- 
         if (!thisDateIsFree(event.getDate(), building)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "There is already an event announced for this date.");
         }
@@ -91,27 +91,27 @@ public class EventService {
                 ));
 
         Event builtEvent = Event.builder()
-                .name(event.getName())
-                .building(building)
-                .date(event.getDate())
-                .description(event.getDescription())
-                .category(event.getCategory())
-                .status(Status.PENDING)
-                .organizer(organizer)
-                .build();
+            .name(event.getName())
+            .building(building)
+            .date(event.getDate())
+            .description(event.getDescription())
+            .category(event.getCategory())
+            .status(Status.PENDING)
+            .organizer(organizer)
+            .build();
 
-        Event resposeEvent = eventRepository.save(builtEvent);
-        createAllTickets(building, builtEvent, event.getRowPrices());
-        return mapEventToEventResponse(resposeEvent);
+        Event responseEvent = eventRepository.save(builtEvent);
+        createAllTickets(building, responseEvent, event.getRowPrices());
+        return mapEventToEventResponse(responseEvent);
     }
 
     private boolean thisDateIsFree(LocalDateTime date, Building building){
         List<Event> events = eventRepository.findAll();
 
-        for(var event : events){
-
-            if(!event.getBuilding().getId().equals(building.getId()))
+        for (var event : events) {
+            if (!event.getBuilding().getId().equals(building.getId())) {
                 continue;
+            }
 
             LocalDateTime eventDate = event.getDate();
 
@@ -145,21 +145,23 @@ public class EventService {
 
     private static DetailsEventResponse mapEventToDetailsResponse(Event event) {
         return new DetailsEventResponse(
-                event.getId(),
-                event.getName(),
-                event.getBuilding(),
-                event.getDate(),
-                event.getDescription(),
-                event.getCategory(),
-                event.getStatus()
+            event.getId(),
+            event.getName(),
+            event.getBuilding(),
+            event.getDate(),
+            event.getDescription(),
+            event.getCategory(),
+            event.getStatus()
         );
     }
 
+    @Transactional
     public void deleteEvent(Long id) {
         ticketService.deleteAllTicketsConnectedToEvent(id);
         eventRepository.deleteById(id);
     }
 
+    @Transactional
     public EventResponse updateEvent(UpdateEventDto updateEventDto, Long id) {
         Event event = eventRepository.findById(id)
                 .map(existingEvent -> updateExistingEvent(existingEvent, updateEventDto))
@@ -185,14 +187,14 @@ public class EventService {
                 for(Seat seat : row.getSeats()){
                     tickets.add(
                         Ticket.builder()
-                                .event(event)
-                                .price(rowPrices.get(rowId))
-                                .owner(null)
-                                .sector(sector)
-                                .row(row)
-                                .seat(seat)
-                                .standingArea(sector.getStandingArea())
-                                .build()
+                            .event(event)
+                            .price(rowPrices.get(rowId))
+                            .owner(null)
+                            .sector(sector)
+                            .row(row)
+                            .seat(seat)
+                            .standingArea(sector.getStandingArea())
+                            .build()
                     );
                 }
             }
@@ -200,6 +202,7 @@ public class EventService {
         ticketRepository.saveAll(tickets);
     }
 
+    @Transactional
     public EventResponse updateEventStatus(Long id, Status status) {
         Event event = getEventById(id);
         event.setStatus(status);
@@ -221,13 +224,13 @@ public class EventService {
 
     private static FullEventResponse mapEventToFullEventResponse(Event event){
         return new FullEventResponse(
-                event.getId(),
-                event.getName(),
-                BuildingService.mapBuildingToBuildingResponse(event.getBuilding()),
-                event.getDate(),
-                event.getDescription(),
-                event.getCategory(),
-                event.getStatus()
+            event.getId(),
+            event.getName(),
+            BuildingService.mapBuildingToBuildingResponse(event.getBuilding()),
+            event.getDate(),
+            event.getDescription(),
+            event.getCategory(),
+            event.getStatus()
         );
     }
 
