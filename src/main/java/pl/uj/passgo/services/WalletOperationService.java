@@ -30,7 +30,7 @@ public class WalletOperationService {
     private final TransactionRepository transactionRepository;
 
     private final LoggedInMemberContextService loggedInMemberContextService;
-    private final Clock clock = Clock.systemDefaultZone();
+    private final Clock clock;
 
     @Transactional
     public WalletDto topUpBalance(Long walletId, TopUpWalletRequest topUpWalletRequest) {

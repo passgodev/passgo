@@ -1,8 +1,8 @@
 package pl.uj.passgo.services.wallet;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
@@ -18,9 +18,11 @@ import pl.uj.passgo.services.LoggedInMemberContextService;
 import pl.uj.passgo.services.WalletOperationService;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -38,8 +40,20 @@ class WalletOperationServiceTest {
     @Mock
     private LoggedInMemberContextService loggedInMemberContextService;
 
-    @InjectMocks
+    private final Clock clock = Clock.systemDefaultZone();
+
     private WalletOperationService walletOperationService;
+
+    @BeforeEach
+    public void setUp() {
+        walletOperationService = new WalletOperationService(
+            walletRepository,
+            walletHistoryRepository,
+            transactionRepository,
+            loggedInMemberContextService,
+            clock
+        );
+    }
 
     @Test
     void shouldTopUpBalance_whenAmountIsPositive() {
