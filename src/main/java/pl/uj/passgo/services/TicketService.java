@@ -123,15 +123,31 @@ public class TicketService {
         return new TicketPurchaseResponse(ticketsTotalPrice, tickets.size());
     }
 
-    public Page<Ticket> getAllTickets(Pageable pageable) {
-        return ticketRepository.findAll(pageable);
+    public Page<TicketFullResponse> getAllTickets(Pageable pageable) {
+        return ticketRepository.findAll(pageable).map(this::mapTicketToTicketFullResponse);
+    }
+
+    private TicketFullResponse mapTicketToTicketFullResponse(Ticket ticket) {
+        return TicketFullResponse.builder()
+                .id(ticket.getId())
+                .eventName(ticket.getEvent() != null ? ticket.getEvent().getName() : null)
+                .price(ticket.getPrice())
+                .sectorName(ticket.getSector() != null ? ticket.getSector().getName() : null)
+                .rowNumber(ticket.getRow() != null ? ticket.getRow().getRowNumber() : null)
+                .seatNumber(ticket.getSeat() != null ? ticket.getSeat().getSeatNumber() : null)
+                .standingArea(ticket.getStandingArea())
+                .build();
     }
 
     public Ticket getTicketById(Long id) {
         return ticketRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ticket not found"));
     }
 
-    public Ticket updateTicket(TicketPurchaseRequest ticketRequest, Long id) {
+    public TicketFullResponse getTicketFullResponseById(Long id) {
+        return ticketRepository.findById(id).map(this::mapTicketToTicketFullResponse).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ticket not found"));
+    }
+
+    public TicketFullResponse updateTicket(TicketPurchaseRequest ticketRequest, Long id) {
         Ticket ticket = getTicketById(id);
         ticket.setPrice(ticketRequest.getPrice());
 
@@ -157,8 +173,9 @@ public class TicketService {
         }
 
         ticket.setStandingArea(ticketRequest.getStandingArea());
+        ticketRepository.save(ticket);
 
-        return ticketRepository.save(ticket);
+        return mapTicketToTicketFullResponse(ticket);
     }
 
     @Transactional
@@ -179,21 +196,9 @@ public class TicketService {
     }
 
     public List<TicketFullResponse> getTicketByClientId(Long id) {
-        List<Ticket> tickets = ticketRepository.findAllByOwnerId(id);
-        List<TicketFullResponse> responses = new ArrayList<>();
-        for(var ticket : tickets){
-            responses.add(TicketFullResponse.builder()
-                    .eventName(ticket.getEvent().getName())
-                    .rowNumber(ticket.getRow().getRowNumber())
-                    .seatNumber(ticket.getSeat().getSeatNumber())
-                    .sectorName(ticket.getSector().getName())
-                    .standingArea(ticket.getStandingArea())
-                    .price(ticket.getPrice())
-                    .id(ticket.getId())
-                    .build()
-            );
-        }
-        return responses;
+        return ticketRepository.findAllByOwnerId(id).stream()
+                .map(this::mapTicketToTicketFullResponse)
+                .toList();
     }
 
     @Transactional

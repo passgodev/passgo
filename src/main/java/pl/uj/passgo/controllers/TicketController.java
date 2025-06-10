@@ -32,14 +32,14 @@ public class TicketController {
     private final PDFGenerator pdfGenerator;
 
     @GetMapping
-    public ResponseEntity<Page<Ticket>> getAllTickets(@PageableDefault Pageable pageable) {
-        Page<Ticket> tickets = ticketService.getAllTickets(pageable);
+    public ResponseEntity<Page<TicketFullResponse>> getAllTickets(@PageableDefault Pageable pageable) {
+        var tickets = ticketService.getAllTickets(pageable);
         return ResponseEntity.ok(tickets);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Ticket> getTicketById(@PathVariable("id") Long id) {
-        Ticket ticket = ticketService.getTicketById(id);
+    public ResponseEntity<TicketFullResponse> getTicketById(@PathVariable("id") Long id) {
+        var ticket = ticketService.getTicketFullResponseById(id);
         return ResponseEntity.ok(ticket);
     }
 
@@ -68,15 +68,15 @@ public class TicketController {
         return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
     }
 
-    @PostMapping("/purchase")   // todo: later change this to default post endpoint name
+    @PostMapping("/purchase")
     public ResponseEntity<TicketPurchaseResponse> purchaseTickets(@RequestBody pl.uj.passgo.models.DTOs.ticket.TicketPurchaseRequest tickets) {
         var purchasedTicketsResponse = ticketService.purchaseTickets(tickets);
         return ResponseEntity.ok(purchasedTicketsResponse);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Ticket> updateTicket(@RequestBody TicketPurchaseRequest ticket, @PathVariable Long id) {
-        Ticket updatedTicket = ticketService.updateTicket(ticket, id);
+    public ResponseEntity<TicketFullResponse> updateTicket(@RequestBody TicketPurchaseRequest ticket, @PathVariable Long id) {
+        var updatedTicket = ticketService.updateTicket(ticket, id);
         return ResponseEntity.ok(updatedTicket);
     }
 
