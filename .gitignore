@@ -33,8 +33,11 @@ build/
 .vscode/
 
 ### dotenv file
-.env
-/**.env
+.env*
+/**.env*
+# do not match any '.env' ending with '-example'
+!/**\.env.*\-example
+
 
 # ignore any generated log file ending with .log extension
 *.log

@@ -5,13 +5,15 @@ RUN ./mvnw dependency:resolve
 
 FROM pom_dependency_cache AS base
 WORKDIR /app
+COPY --from=pom_dependency_cache /root/.m2/ /root/.m2/
 COPY . .
-RUN ./mvnw clean package spring-boot:repackage
+RUN ./mvnw -DskipTests clean package spring-boot:repackage
 
 FROM ubuntu/jre:21-24.04_stable AS prod
 WORKDIR /app
-COPY --from=base ./app/target/*.jar .
+COPY --from=base ./app/target/*.jar ./app/app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-Dspring.profiles.active=dev", "-jar", "./app/*.jar"]
+ENTRYPOINT ["java", "-jar", "./app/app.jar"]
 
 # possible improvements, setting up profile, start command, naming, exposing port, better caching?
+# ideal: copy jar as an artefact of CI

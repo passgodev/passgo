@@ -1,20 +1,19 @@
-version: '3.8'
 services:
   db:
     image: postgres:latest
     container_name: postgres_db
     restart: always
     environment:
-      POSTGRES_DB: passgo
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
     ports:
-      - "5432:5432"
+      - '${DATABASE_HOST_PORT}:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./database/pg-init-scripts:/docker-entrypoint-initdb.d
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "user", "-d", "passgo" ]
+      test: ['CMD', 'pg_isready', '-U', '${POSTGRES_USER}', '-d', '${POSTGRES_DB}']
       interval: 5s
       retries: 5
       timeout: 3s
@@ -22,17 +21,25 @@ services:
       - passgo-network
 
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
     container_name: passgo_app
+    env_file:
+      - path: '.env'
+        required: true
+      - path: ${BACKEND_ENV_FILE_PATH}
+        required: false
+    environment:
+      - DB_HOSTNAME=${BACKEND_DATABASE_CONTAINER_HOSTNAME}
+      - SPRING_PROFILES_ACTIVE
     depends_on:
       db:
         condition: service_healthy
     ports:
-      - "9090:8080"
-    env_file:
-      - .env
+      - '${BACKEND_HOST_PORT}:${BACKEND_CONTAINER_PORT}'
     restart: unless-stopped
-    entrypoint: ["/bin/sh", "-c", "echo 'Waiting for DB...'; sleep 2; java -jar app.jar"]
     networks:
       - passgo-network
 
