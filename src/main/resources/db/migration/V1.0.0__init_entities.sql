@@ -1,5 +1,4 @@
 -- File needed for flyway to mangage tables in db
--- todo: break into smaller sql files
 
 create table address
 (
