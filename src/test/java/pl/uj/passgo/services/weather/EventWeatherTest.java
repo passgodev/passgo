@@ -116,7 +116,7 @@ public class EventWeatherTest {
 				"21.15"
 			)
 		};
-	};
+	}
 
 	private static EventWeatherResponse getWeatherResponse() {
 		return new EventWeatherResponse(
@@ -130,6 +130,6 @@ public class EventWeatherTest {
 				"Celsius"
 			)
 		);
-	};
+	}
 
 }
