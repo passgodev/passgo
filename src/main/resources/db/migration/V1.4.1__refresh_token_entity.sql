@@ -8,4 +8,6 @@ CREATE TABLE "refresh_token"
     token uuid not null,
     member_credential_id bigint not null references member_credential(id),
     expires_at timestamp not null
-)
+);
+
+ALTER SEQUENCE "refresh_token_id_seq" OWNED BY refresh_token.id;

@@ -1,2 +1,2 @@
-ALTER TABLE faq
+ALTER TABLE seat
     ADD COLUMN seat_number BIGINT NOT NULL;
