@@ -7,6 +7,8 @@
         <file>./logging/passgo.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>./logging/archive/passgo-arch-%d{yyyy-MM-dd}.log</fileNamePattern>
+<!--            <fileNamePattern>./logging/archive/passgo%d{yyyy-MM-dd_HH-mm}.log</fileNamePattern>-->
+            <fileNamePattern>./logging/archive/passgo%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>2</maxHistory>
         </rollingPolicy>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
