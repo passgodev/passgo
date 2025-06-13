@@ -101,7 +101,7 @@ class EventServiceTest {
         Organizer organizer = new Organizer();
         organizer.setId(1L);
 
-        when(organizerRepository.findByMemberCredentialId(organizerCredentialId))
+        when(organizerRepository.findById(organizerCredentialId))
                 .thenReturn(Optional.of(organizer));
 
         Building building = mock(Building.class);
@@ -121,7 +121,7 @@ class EventServiceTest {
 
         // Assert
         assertEquals(1, result.size());
-        verify(organizerRepository).findByMemberCredentialId(organizerCredentialId);
+        verify(organizerRepository).findById(organizerCredentialId);
         verify(eventRepository).findAllByOrganizerId(organizer.getId());
         verify(eventRepository, never()).findAllByOrganizerIdAndStatus(any(), any());
     }
@@ -134,7 +134,7 @@ class EventServiceTest {
         Organizer organizer = new Organizer();
         organizer.setId(1L);
 
-        when(organizerRepository.findByMemberCredentialId(organizerCredentialId))
+        when(organizerRepository.findById(organizerCredentialId))
                 .thenReturn(Optional.of(organizer));
 
         Building building = mock(Building.class);
@@ -154,7 +154,7 @@ class EventServiceTest {
 
         // Assert
         assertEquals(1, result.size());
-        verify(organizerRepository).findByMemberCredentialId(organizerCredentialId);
+        verify(organizerRepository).findById(organizerCredentialId);
         verify(eventRepository).findAllByOrganizerIdAndStatus(organizer.getId(), status);
         verify(eventRepository, never()).findAllByOrganizerId(any());
     }
@@ -163,7 +163,7 @@ class EventServiceTest {
     void shouldThrowException_whenOrganizerNotFound() {
         // Arrange
         Long id = 1L;
-        when(organizerRepository.findByMemberCredentialId(id)).thenReturn(Optional.empty());
+        when(organizerRepository.findById(id)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(ResponseStatusException.class, () -> eventService.getAllOrganizerEvents(id, null));
@@ -179,11 +179,12 @@ class EventServiceTest {
 
         when(building.getName()).thenReturn("Test Building");
         when(building.getAddress()).thenReturn(mock(Address.class));
+        when(building.getStatus()).thenReturn(Status.APPROVED);
         when(savedEvent.getBuilding()).thenReturn(building);
         when(request.getBuildingId()).thenReturn(10L);
         when(request.getOrganizerId()).thenReturn(20L);
         when(buildingRepository.findById(10L)).thenReturn(Optional.of(building));
-        when(organizerRepository.findByMemberCredentialId(20L)).thenReturn(Optional.of(organizer));
+        when(organizerRepository.findById(  20L)).thenReturn(Optional.of(organizer));
         when(eventRepository.save(any(Event.class))).thenReturn(savedEvent);
 
         // Act

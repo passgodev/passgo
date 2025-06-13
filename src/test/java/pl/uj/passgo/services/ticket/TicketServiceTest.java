@@ -124,15 +124,15 @@ public class TicketServiceTest {
 		ticket.setId(1L);
 		ticket.setPrice(BigDecimal.valueOf(20));
 
-		Seat seat = new Seat().builder()
+		Seat seat = Seat.builder()
 				.id(1L)
 				.seatNumber(10L)
 				.build();
-		Row row = new Row().builder()
+		Row row = Row.builder()
 				.id(1L)
 				.rowNumber(5L)
 				.build();
-		Sector sector = new Sector().builder()
+		Sector sector = Sector.builder()
 				.id(1L)
 				.name("A1")
 				.build();
@@ -322,10 +322,10 @@ public class TicketServiceTest {
 		updated.setOwnerId(500L);
 
 		// Act
-		Ticket result = ticketService.updateTicket(updated, 1L);
+		TicketFullResponse result = ticketService.updateTicket(updated, 1L);
 
 		// Assert
 		assertEquals(BigDecimal.valueOf(25), result.getPrice());
-		assertTrue(result.getStandingArea());
+		assertTrue(result.isStandingArea());
 	}
 }

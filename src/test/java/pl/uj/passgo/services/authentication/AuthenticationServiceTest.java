@@ -27,8 +27,10 @@ import pl.uj.passgo.models.Wallet;
 import pl.uj.passgo.models.authentication.RefreshToken;
 import pl.uj.passgo.models.member.Client;
 import pl.uj.passgo.models.member.MemberCredential;
+import pl.uj.passgo.models.member.MemberType;
 import pl.uj.passgo.models.member.Organizer;
 import pl.uj.passgo.repos.WalletRepository;
+import pl.uj.passgo.repos.member.AdministratorRepository;
 import pl.uj.passgo.repos.member.ClientRepository;
 import pl.uj.passgo.repos.member.MemberCredentialRepository;
 import pl.uj.passgo.repos.member.OrganizerRepository;
@@ -58,6 +60,8 @@ public class AuthenticationServiceTest {
 	@Mock
 	private OrganizerRepository organizerRepository;
 	@Mock
+	private AdministratorRepository administratorRepository;
+	@Mock
 	private AuthenticationManager authenticationManager;
 	@Mock
 	private JwtService jwtService;
@@ -78,6 +82,7 @@ public class AuthenticationServiceTest {
 			walletRepository,
 			clientRepository,
 			organizerRepository,
+			administratorRepository,
 			authenticationManager,
 			bCryptPasswordEncoder,
 			jwtService,
@@ -215,14 +220,18 @@ public class AuthenticationServiceTest {
 		var loginRequest = new LoginRequest("login", "password");
 		var memberCredential = new MemberCredential();
 		memberCredential.setActive(true);
+		memberCredential.setMemberType(MemberType.CLIENT);
+		var returnedMember = new Client();
+		returnedMember.setId(1L);
 
 //		doNothing().when(authenticationManager).authenticate(any());
 		when(memberCredentialRepository.findByLogin(anyString()))
 			.thenReturn(Optional.of(memberCredential));
-		when(jwtService.generateToken(any(MemberCredential.class)))
+		when(jwtService.generateToken(any(MemberCredential.class), anyLong()))
 			.thenReturn("JwtTokenTest");
 		when(refreshTokenService.createRefreshToken(any()))
 			.thenReturn(createRefreshToken(1L, memberCredential));
+		when(clientRepository.findByMemberCredential(any(MemberCredential.class))).thenReturn(Optional.of(returnedMember));
 
 		// act
 		var response = authenticationService.loginMember(loginRequest);
@@ -262,13 +271,17 @@ public class AuthenticationServiceTest {
 		// arrange
 		var refreshTokenRequest = new RefreshTokenRequest(UUID.randomUUID());
 		var memberCredential = new MemberCredential();
+		memberCredential.setMemberType(MemberType.CLIENT);
 		var refreshToken = createRefreshToken(1L, memberCredential);
+		var returnedMember = new Client();
+		returnedMember.setId(1L);
 		when(refreshTokenService.getByToken(any(UUID.class)))
 			.thenReturn(refreshToken);
 		doNothing().when(refreshTokenService)
 				   .isAfterExpirationDate(any(RefreshToken.class));
-		when(jwtService.generateToken(any(MemberCredential.class)))
+		when(jwtService.generateToken(any(MemberCredential.class), anyLong()))
 			.thenReturn("JwtTokenTest");
+		when(clientRepository.findByMemberCredential(any(MemberCredential.class))).thenReturn(Optional.of(returnedMember));
 
 		// act
 		var refreshTokenResponse = authenticationService.refreshToken(refreshTokenRequest);

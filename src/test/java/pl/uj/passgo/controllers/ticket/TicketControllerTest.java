@@ -39,7 +39,7 @@ class TicketControllerTest {
     @Test
     void getAllTickets_shouldReturnPage() throws Exception {
         // Arrange
-        Page<Ticket> page = new PageImpl<>(List.of(new Ticket()));
+        Page<TicketFullResponse> page = new PageImpl<>(List.of(new TicketFullResponse()));
         when(ticketService.getAllTickets(any(Pageable.class))).thenReturn(page);
 
         // Act & Assert
@@ -54,16 +54,16 @@ class TicketControllerTest {
     @Test
     void getTicketById_shouldReturnTicket() throws Exception {
         // Arrange
-        Ticket ticket = new Ticket();
+        TicketFullResponse ticket = new TicketFullResponse();
         ticket.setId(1L);
-        when(ticketService.getTicketById(1L)).thenReturn(ticket);
+        when(ticketService.getTicketFullResponseById(1L)).thenReturn(ticket);
 
         // Act & Assert
         mockMvc.perform(get("/tickets/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1));
 
-        verify(ticketService).getTicketById(1L);
+        verify(ticketService).getTicketFullResponseById(1L);
     }
 
     @Test
@@ -135,7 +135,7 @@ class TicketControllerTest {
     @Test
     void updateTicket_shouldReturnUpdatedTicket() throws Exception {
         // Arrange
-        Ticket updated = new Ticket();
+        TicketFullResponse updated = new TicketFullResponse();
         updated.setId(1L);
         when(ticketService.updateTicket(any(), eq(1L))).thenReturn(updated);
 

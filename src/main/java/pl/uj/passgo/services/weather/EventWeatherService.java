@@ -59,9 +59,9 @@ public class EventWeatherService implements WeatherService<EventWeatherRequest, 
 		uriBuilder.queryParam("limit", "1");
 
 		var uri = uriBuilder.build().toUri();
-		log.info("Sending uri to foreign service, uri: {}", uri);
 		var response = callExternalRestServiceGetMethod(uri, NominationWeahterResponse[].class);
 
+		// We are interested only in first returned record, foreign api, does not provide cleaner way to retrieve first element
 		if (response.getBody() != null && response.getBody().length > 0) {
 			var firstRecord = response.getBody()[0];
 			return firstRecord;
@@ -96,7 +96,6 @@ public class EventWeatherService implements WeatherService<EventWeatherRequest, 
 			.queryParam("current_weather", true);
 
 		var uri = uriBuilder.build().toUri();
-		log.info("Sending uri to foreign service, uri: {}", uri);
 		var response = callExternalRestServiceGetMethod(uri, EventWeatherResponse.class);
 
 		return response.getBody();
@@ -104,6 +103,7 @@ public class EventWeatherService implements WeatherService<EventWeatherRequest, 
 
 	private <T> ResponseEntity<T> callExternalRestServiceGetMethod(URI uri, Class<T> responseType) throws EventWeatherException {
 		try {
+			log.info("Sending uri to foreign service, uri: {}", uri);
 			return restTemplate.getForEntity(uri, responseType);
 		} catch ( RestClientException e ) {
 			log.error("Call to external service (uri: {}) failed, exception: {}", uri, e.getMessage());

@@ -40,7 +40,7 @@ class WalletServiceTest {
         // Arrange
         Long clientId = 1L;
         Long walletId = 1L;
-        Client client = new Client().builder()
+        Client client = Client.builder()
                 .id(clientId)
                 .firstName("firstName")
                 .lastName("lastName")

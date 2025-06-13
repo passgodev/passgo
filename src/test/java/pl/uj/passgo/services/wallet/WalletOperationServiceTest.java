@@ -1,8 +1,8 @@
 package pl.uj.passgo.services.wallet;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
@@ -13,12 +13,16 @@ import pl.uj.passgo.models.WalletHistory;
 import pl.uj.passgo.models.member.Client;
 import pl.uj.passgo.repos.WalletHistoryRepository;
 import pl.uj.passgo.repos.WalletRepository;
+import pl.uj.passgo.repos.transaction.TransactionRepository;
+import pl.uj.passgo.services.LoggedInMemberContextService;
 import pl.uj.passgo.services.WalletOperationService;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -30,15 +34,33 @@ class WalletOperationServiceTest {
     @Mock
     private WalletHistoryRepository walletHistoryRepository;
 
-    @InjectMocks
+    @Mock
+    private TransactionRepository transactionRepository;
+
+    @Mock
+    private LoggedInMemberContextService loggedInMemberContextService;
+
+    private final Clock clock = Clock.systemDefaultZone();
+
     private WalletOperationService walletOperationService;
+
+    @BeforeEach
+    public void setUp() {
+        walletOperationService = new WalletOperationService(
+            walletRepository,
+            walletHistoryRepository,
+            transactionRepository,
+            loggedInMemberContextService,
+            clock
+        );
+    }
 
     @Test
     void shouldTopUpBalance_whenAmountIsPositive() {
         // Arrange
         Long clientId = 1L;
         Long walletId = 1L;
-        Client client = new Client().builder()
+        Client client = Client.builder()
                 .id(clientId)
                 .firstName("firstName")
                 .lastName("lastName")
@@ -49,6 +71,7 @@ class WalletOperationServiceTest {
 
         when(walletRepository.findById(walletId)).thenReturn(Optional.of(wallet));
         when(walletRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(loggedInMemberContextService.isClientLoggedIn()).thenReturn(Optional.of(client));
 
         // Act
         WalletDto result = walletOperationService.topUpBalance(walletId, request);
