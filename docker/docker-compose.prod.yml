@@ -1,0 +1,42 @@
+services:
+  backend:
+    container_name: passgo_backend_prod
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: prod
+    env_file:
+      - ../env/.env.prod
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    ports:
+      - '${BACKEND_HOST_PORT}:${BACKEND_CONTAINER_PORT}'
+    networks:
+      - passgo-backend
+    depends_on:
+      - db
+
+  db:
+    image: postgres:17
+    container_name: passgo_db_prod
+    env_file:
+      - ../database/.env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - '${DATABASE_HOST_PORT}:${DATABASE_CONTAINER_PORT}'
+    networks:
+      - passgo-backend
+    healthcheck:
+      test: [ 'CMD', 'pg_isready' ]
+      interval: 5s
+      retries: 5
+      timeout: 3s
+
+# add logs volume
+volumes:
+  pgdata:
+
+networks:
+  passgo-backend:
+    driver: bridge
