@@ -19,13 +19,14 @@ import pl.uj.passgo.repos.member.MemberCredentialRepository;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class JwtConfiguration {
 	private final MemberCredentialRepository memberCredentialRepository;
+	public static final String JwtUserDetailsServiceName = "jwtUserDetailsService";
 
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
 		return authenticationConfiguration.getAuthenticationManager();
 	}
 
-	@Bean
+	@Bean(name = JwtUserDetailsServiceName)
 	public UserDetailsService userDetailsService() {
 		return userLogin -> memberCredentialRepository.findByLogin(userLogin)
 													  .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User has not been found in the databse"));

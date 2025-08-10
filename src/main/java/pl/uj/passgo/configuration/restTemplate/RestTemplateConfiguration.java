@@ -1,4 +1,4 @@
-package pl.uj.passgo.configuration.security;
+package pl.uj.passgo.configuration.restTemplate;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

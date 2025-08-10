@@ -23,8 +23,10 @@ public class MemberCredential implements UserDetails {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_credential_id_seq")
 	@SequenceGenerator(name = "member_credential_id_seq", allocationSize = 1)
 	private Long id;
+
 	@Column(name = "login", length = 32, nullable = false, unique = true)
 	private String login;
+
 	@Column(name = "password", nullable = false)
 	private String password;
 
