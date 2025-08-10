@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: ${APP_NAME:dev_flyway_profile}
+  datasource:
+    url: ${app.database.url}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  level:
+    org.springframework: debug
+
+app:
+  database:
+    url: jdbc:h2:mem:${DB_NAME}

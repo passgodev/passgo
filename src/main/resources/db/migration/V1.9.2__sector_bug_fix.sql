@@ -1,2 +1,2 @@
-alter table sector
-    drop constraint ukgt10yoxplooy0sueukkysbjrr;
+ALTER TABLE sector
+    DROP CONSTRAINT IF EXISTS sector_building_id_fkey;

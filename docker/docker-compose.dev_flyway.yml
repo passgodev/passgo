@@ -1,0 +1,22 @@
+services:
+  app:
+    container_name: passgo_backend_dev
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: dev
+    env_file:
+      - ../env/.env.dev_flyway
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev_flyway
+    ports:
+      - '${BACKEND_HOST_PORT}:${BACKEND_CONTAINER_PORT}'
+    networks:
+      - passgo-backend
+
+volumes:
+  pgdata:
+
+networks:
+  passgo-backend:
+    driver: bridge
