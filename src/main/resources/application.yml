@@ -2,21 +2,27 @@ spring:
   application:
     name: ${APP_NAME:default_profile}
   profiles:
+    default: local
     active: ${SPRING_PROFILES_ACTIVE:local}
   datasource:
     name: ${DB_NAME}
-    url: ${app.database.url}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
     hibernate:
       ddl-auto: none
+  h2:
+    console:
+      enabled: false
+  flyway:
+    enabled: false
 
 server:
   port: ${SERVER_PORT}
+  servlet:
+    context-path: /rest-api
 
 app:
   database:
@@ -24,4 +30,4 @@ app:
   configuration:
     security:
       enabled: true
-  upload-dir: 'uploads'
+  upload-dir: uploads

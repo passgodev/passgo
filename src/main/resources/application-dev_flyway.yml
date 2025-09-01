@@ -1,15 +1,25 @@
 spring:
   application:
     name: ${APP_NAME:dev_flyway_profile}
+  config:
+    import: optional:file:env/.env.dev_flyway[.properties]
   datasource:
     url: ${app.database.url}
+    driver-class-name: org.h2.Driver
   jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
     show-sql: true
     hibernate:
       ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  flyway:
+    enabled: true
 
 logging:
   level:
@@ -17,4 +27,7 @@ logging:
 
 app:
   database:
-    url: jdbc:h2:mem:${DB_NAME}
+    url: jdbc:h2:mem:${DB_NAME};INIT=CREATE USER IF NOT EXISTS APP_USER PASSWORD '${DB_PASSWORD}'
+  configuration:
+    security:
+      enabled: true

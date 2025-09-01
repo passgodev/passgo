@@ -37,7 +37,7 @@ public class EventExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionMessageResponse> handleException(Exception ex) {
         log.debug("Unhandled exception stack trace.\nMessage: {}\nStackTrace: {}", ex.getMessage(), Arrays.toString(ex.getStackTrace()));
-        log.error("Unhandled exception captured, returning status code 500");
+        log.error("Unhandled exception captured, returning status code 500\\nMessage: {}\\nStackTrace: {}", ex.getMessage(), Arrays.toString(ex.getStackTrace()));
         var response = new ExceptionMessageResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }

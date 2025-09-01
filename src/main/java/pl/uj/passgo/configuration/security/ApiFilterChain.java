@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
@@ -38,9 +39,7 @@ import java.util.List;
 public class ApiFilterChain {
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationRequestFilter jwtAuthenticationRequestFilter;
-
     private final List<String> allowedOrigins;
-
 
     @Autowired
     public ApiFilterChain(
@@ -51,7 +50,6 @@ public class ApiFilterChain {
     ) {
         this.userDetailsService = userDetailsService;
         this.jwtAuthenticationRequestFilter = jwtAuthenticationRequestFilter;
-
         this.allowedOrigins = allowedOrigins;
     }
 
@@ -69,7 +67,6 @@ public class ApiFilterChain {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
 
     @Bean
     @Order(1)
@@ -103,7 +100,7 @@ public class ApiFilterChain {
     }
 
     @Bean
-    @Order(1)
+    @Order(2)
     @ConditionalOnProperty(name = "app.configuration.security.enabled", havingValue = "true", matchIfMissing = true)
     public SecurityFilterChain swaggerSecurityFilterChain(HttpSecurity http) throws Exception {
         log.trace("SecurityFilterChain configured, allow /swagger-ui/**");
@@ -126,7 +123,8 @@ public class ApiFilterChain {
     }
 
     @Bean
-    @Order(1)
+    @Order(3)
+    @Profile("dev")
     @ConditionalOnProperty(name = "app.configuration.security.enabled", havingValue = "true", matchIfMissing = true)
     public SecurityFilterChain h2ConsoleSecurityFilterChain(HttpSecurity http) throws Exception {
         log.trace("SecurityFilterChain configured, allow /h2-console/**, other deny");
@@ -149,7 +147,7 @@ public class ApiFilterChain {
     }
 
     @Bean
-    @Order(Ordered.LOWEST_PRECEDENCE)
+    @Order(Ordered.LOWEST_PRECEDENCE - 1)
     @ConditionalOnProperty(name = "app.configuration.security.enabled", havingValue = "true", matchIfMissing = true)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         log.warn("SecurityFilterChain configured, default other deny");

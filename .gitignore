@@ -49,3 +49,8 @@ uploads/**/*
 # Ale NIE ignoruj .gitkeep
 !uploads/buildings/.gitkeep
 !uploads/events/.gitkeep
+
+# ignore '.pem' files
+**/*.pem
+# do not ignore '.pem' example files
+!**/*.pem.example

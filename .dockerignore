@@ -1,0 +1,20 @@
+# Do not copy env files
+env/
+**/.env*
+!**/.env*example
+
+# Do not copy docker config
+docker/
+
+# Do not copy ide configuration files
+.idea/
+
+# Do not copy git files
+.git/
+
+# Do not copy elk as it is separate project
+elk/
+logging/
+
+# Do not store db config files
+database/
