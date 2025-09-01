@@ -1,0 +1,60 @@
+services:
+  backend:
+    container_name: passgo_backend_prod
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: prod
+    env_file:
+      - ../env/.env.prod
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    ports:
+      - '8080'
+    networks:
+      - passgo-backend
+    depends_on:
+      - db
+
+  backend_https:
+    container_name: passgo_backend_prod_https
+    image: nginx:1.29
+    ports:
+      - "${BACKEND_HOST_HTTP_PORT}:80"
+      - "${BACKEND_HOST_HTTPS_PORT}:443"
+    volumes:
+#      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../nginx/nginx.conf.template:/etc/nginx/templates/nginx.conf.template:ro
+      - ../nginx/ssl:/etc/nginx/ssl:ro
+    environment:
+      - BACKEND_SERVICE_NAME=${BACKEND_SERVICE_NAME}
+      - BACKEND_CONTAINER_PORT=${BACKEND_CONTAINER_PORT}
+    depends_on:
+      - backend
+    networks:
+      - passgo-backend
+
+  db:
+    image: postgres:17
+    container_name: passgo_db_prod_https
+    env_file:
+      - ../database/.env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - '${DATABASE_HOST_PORT}:${DATABASE_CONTAINER_PORT}'
+    networks:
+      - passgo-backend
+    healthcheck:
+      test: [ 'CMD', 'pg_isready' ]
+      interval: 5s
+      retries: 5
+      timeout: 3s
+
+# add logs volume
+volumes:
+  pgdata:
+
+networks:
+  passgo-backend:
+    driver: bridge

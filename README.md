@@ -82,6 +82,16 @@ System sprzedaży biletów umożliwiający użytkownikom kupowanie i odsprzedawa
   - **Jednostkowe** i **integracyjne** (Spring MVC do testowania endpointów)
   - Testy uruchamiane automatycznie podczas procesu budowania
 
+- ### Instrukcja uruchomienia aplikacji
+  - w folderze `docker/` stworz plik dla uruchamianego profilu (bez rozszerzenia `.example`)
+  - w folderze `env/` stworz plik dla uruchamianego profilu (bez rozszerzenia `.example`)
+  - Użyj makefile do uruchomienia profilu, twoja ścieżka powinna wyglądać: `<somthing>/docker/`
+  - Uruchamiane profile sterujemy za pomocą zmiennej `ENV`
+    1. `make build ENV=dev`
+    2. `make up ENV=dev`
+    3. `make down ENV=dev`
+  - **Ważne**, po skończonej pracy, zamknij aplikacje za pomocą komendy `make down ENV=dev`
+
 ---
 
 ## API i dokumentacja
