@@ -24,10 +24,10 @@ public class RefreshTokenService {
 	public RefreshTokenService(
 		RefreshTokenRepository refreshTokenRepository,
 		@Value("${JWT_REFRESH_TOKEN_DURATION}")
-		Long expirationDurationMinutes
+		Duration expirationDurationMinutes
 	) {
 		this.refreshTokenRepository = refreshTokenRepository;
-		this.expirationDuration = Duration.ofMinutes(expirationDurationMinutes);
+		this.expirationDuration = expirationDurationMinutes;
 	}
 
 	public RefreshToken getByToken(UUID token) {

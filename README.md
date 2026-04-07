@@ -78,6 +78,55 @@ System sprzedaży biletów umożliwiający użytkownikom kupowanie i odsprzedawa
   - Wyniki budowania (pass/fail) są widoczne w repozytorium.
   - Artefakt w postaci pliku z rozszerzeniem ```jar```
 
+- ### Uruchamianie serwera lokalnie (Maven Wrapper)
+
+  Projekt zawiera Maven Wrapper — nie wymaga zainstalowanego Mavena.
+
+  **Profil `local`** używa bazy H2 w pamięci (bez Dockera) i wyłącza JWT:
+  ```bash
+  ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
+  ```
+
+  **Profil `dev`** wymaga uruchomionej bazy PostgreSQL (np. przez Docker Compose):
+  ```bash
+  ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev,dev_flyway
+  ```
+
+  Na Windows użyj `mvnw.cmd` zamiast `./mvnw`.
+
+- ### Uruchamianie przez Docker Compose
+
+Przed zbuduj aplikację komendą maven powyżej, jako że Dockewrfile kopiuje pliki z folderu `target/`
+
+  Uruchamia aplikację razem z bazą PostgreSQL:
+  ```bash
+  docker-compose up --build
+  ```
+
+  Aplikacja będzie dostępna pod adresem `http://localhost:9090`.
+
+  Aby zatrzymać i usunąć kontenery:
+  ```bash
+  docker-compose down
+  ```
+
+- ### Logowanie jako administrator
+
+  Przy pierwszym uruchomieniu `AdminInitializer` automatycznie tworzy konto admina (jeśli żaden nie istnieje).
+
+  Wyślij żądanie `POST /auth/login` z body:
+  ```json
+  {
+    "login": "admin",
+    "password": "admin"
+  }
+  ```
+
+  W odpowiedzi otrzymasz token JWT, który należy dołączać do kolejnych żądań jako nagłówek:
+  ```
+  Authorization: Bearer <token>
+  ```
+
 - ### Testy
   - **Jednostkowe** i **integracyjne** (Spring MVC do testowania endpointów)
   - Testy uruchamiane automatycznie podczas procesu budowania

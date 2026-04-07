@@ -1,0 +1,159 @@
+{
+  "info": {
+    "name": "PassGo",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "hostname", "value": "http://localhost" },
+    { "key": "port",     "value": "9090" },
+    { "key": "pathPrefix", "value": "/rest-api" },
+    { "key": "jwtToken",   "value": "" },
+    { "key": "refreshToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Signup - Client",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{hostname}}:{{port}}{{pathPrefix}}/auth/signup?member=CLIENT",
+              "host": ["{{hostname}}"],
+              "port": "{{port}}",
+              "path": ["{{pathPrefix}}", "auth", "signup"],
+              "query": [{ "key": "member", "value": "CLIENT" }]
+            },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"credentials\": {\n    \"login\": \"testuser\",\n    \"password\": \"secret123\",\n    \"email\": \"test@example.com\"\n  },\n  \"firstName\": \"Jan\",\n  \"lastName\": \"Kowalski\",\n  \"birthDate\": \"1990-01-15\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Signup - Organizer",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{hostname}}:{{port}}{{pathPrefix}}/auth/signup?member=ORGANIZER",
+              "host": ["{{hostname}}"],
+              "port": "{{port}}",
+              "path": ["{{pathPrefix}}", "auth", "signup"],
+              "query": [{ "key": "member", "value": "ORGANIZER" }]
+            },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"credentials\": {\n    \"login\": \"organizer1\",\n    \"password\": \"secret123\",\n    \"email\": \"organizer@example.com\"\n  },\n  \"firstName\": \"Anna\",\n  \"lastName\": \"Nowak\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "pm.collectionVariables.set('jwtToken', json.token);",
+                  "pm.collectionVariables.set('refreshToken', json.refreshToken);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{hostname}}:{{port}}{{pathPrefix}}/auth/login",
+              "host": ["{{hostname}}"],
+              "port": "{{port}}",
+              "path": ["{{pathPrefix}}", "auth", "login"]
+            },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"testuser\",\n  \"password\": \"secret123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "pm.collectionVariables.set('jwtToken', json.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{hostname}}:{{port}}{{pathPrefix}}/auth/refresh",
+              "host": ["{{hostname}}"],
+              "port": "{{port}}",
+              "path": ["{{pathPrefix}}", "auth", "refresh"]
+            },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{hostname}}:{{port}}{{pathPrefix}}/auth/logout",
+              "host": ["{{hostname}}"],
+              "port": "{{port}}",
+              "path": ["{{pathPrefix}}", "auth", "logout"]
+            },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Protected",
+      "item": [
+        {
+          "name": "Get Member by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{hostname}}:{{port}}{{pathPrefix}}/members/1?type=CLIENT",
+              "host": ["{{hostname}}"],
+              "port": "{{port}}",
+              "path": ["{{pathPrefix}}", "members", "1"],
+              "query": [{ "key": "type", "value": "CLIENT" }]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{jwtToken}}", "type": "string" }]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

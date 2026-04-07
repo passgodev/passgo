@@ -1,0 +1,28 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  profiles:
+    default: local
+  application:
+    name: ${PROJECT_NAME}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+  flyway:
+    enabled: false
+
+server:
+  port: 8080
+  servlet:
+    context-path: /rest-api
+
+springdoc:
+  swagger-ui:
+    enabled: false
+
+app:
+  configuration:
+    security:
+      enabled: true
+  upload-dir: uploads

@@ -27,7 +27,7 @@ jobs:
       - name: Build with Maven
         env:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          JWT_DURATION_MIN: ${{ secrets.JWT_DURATION_MIN }}
+          JWT_TOKEN_DURATION: ${{ secrets.JWT_TOKEN_DURATION }}
           JWT_REFRESH_TOKEN_DURATION: ${{ secrets.JWT_REFRESH_TOKEN_DURATION }}
         run: ./mvnw --batch-mode --update-snapshots verify
 

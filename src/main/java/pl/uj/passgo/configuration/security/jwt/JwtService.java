@@ -5,14 +5,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import pl.uj.passgo.models.member.MemberCredential;
 
 import java.security.Key;
-import java.util.Collections;
+import java.time.Duration;
 import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
@@ -21,22 +20,14 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 	private final String secretKey;
-	private final long expirationDurationMinutes;
+	private final Duration expirationDurationMinutes;
 
 	public JwtService(
 		@Value("${JWT_SECRET}") String secretKey,
-		@Value("${JWT_DURATION_MIN}") long expirationDurationMinutes
+		@Value("${JWT_TOKEN_DURATION}") Duration expirationDuration
 	) {
 		this.secretKey = secretKey;
-		this.expirationDurationMinutes = expirationDurationMinutes;
-	}
-
-	public String generateToken(UserDetails userDetails) {
-		return generateToken(Collections.emptyMap(), userDetails);
-	}
-
-	public String generateToken(MemberCredential memberCredential) {
-		return generateToken(Map.of("memberType", memberCredential.getMemberType(), "memberId", memberCredential.getId()), memberCredential);
+		this.expirationDurationMinutes = expirationDuration;
 	}
 
 	public String generateToken(MemberCredential memberCredential, Long memberId) {
@@ -47,12 +38,12 @@ public class JwtService {
 		return buildToken(extraClaims, userDetails, expirationDurationMinutes);
 	}
 
-	private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expirationTimeInMinutes) {
+	private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, Duration expirationTimeInMinutes) {
 		return Jwts.builder()
 			.setClaims(extraClaims)
 			.setSubject(userDetails.getUsername())
 			.setIssuedAt(new Date(System.currentTimeMillis()))
-			.setExpiration(new Date(System.currentTimeMillis() + expirationTimeInMinutes * DateUtils.MILLIS_PER_MINUTE))
+			.setExpiration(new Date(System.currentTimeMillis() + expirationTimeInMinutes.toMillis()))
 			.signWith(getSignKey(), SignatureAlgorithm.HS256)
 			.compact();
 	}

@@ -30,9 +30,8 @@ services:
     ports:
       - "9090:8080"
     env_file:
-      - .env
+      - ./.env
     restart: unless-stopped
-    entrypoint: ["/bin/sh", "-c", "echo 'Waiting for DB...'; sleep 2; java -jar app.jar"]
     networks:
       - passgo-network
 
@@ -41,4 +40,5 @@ volumes:
 
 networks:
   passgo-network:
+    name: passgo-network
     driver: bridge

@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${app.db.hostname}:${app.db.port}/${POSTGRES_DB}
+    username: ${PG_PASSGO_USER}
+    password: ${PG_PASSGO_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  flyway:
+    enabled: false
+
+app:
+  configuration:
+    security:
+      enabled: false
