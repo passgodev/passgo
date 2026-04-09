@@ -13,7 +13,7 @@ import pl.uj.passgo.repos.WalletRepository;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class WalletService {
 
     private final WalletRepository walletRepository;

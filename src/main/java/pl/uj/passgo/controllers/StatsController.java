@@ -12,7 +12,7 @@ import pl.uj.passgo.services.StatsService;
 
 @RestController
 @RequestMapping("/stats")
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class StatsController {
 
     private final StatsService statsService;

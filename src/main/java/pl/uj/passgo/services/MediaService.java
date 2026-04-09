@@ -27,7 +27,7 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class MediaService {
 
     private final ProjectInfoAutoConfiguration projectInfoAutoConfiguration;

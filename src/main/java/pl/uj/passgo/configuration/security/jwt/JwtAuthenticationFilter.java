@@ -21,7 +21,7 @@ import java.io.IOException;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private static final String BEARER_SPACE = "Bearer ";
 

@@ -22,7 +22,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class WalletOperationService {
 
     private final WalletRepository walletRepository;

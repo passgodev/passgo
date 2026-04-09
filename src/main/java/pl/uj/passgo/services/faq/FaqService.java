@@ -17,7 +17,7 @@ import java.time.LocalDate;
 
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class FaqService {
     private final FaqRepository faqRepository;
     private final Clock clock;

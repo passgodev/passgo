@@ -34,7 +34,7 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class EventService {
     private static final int EVENT_COOLDOWN_HOURS = 10;
 
