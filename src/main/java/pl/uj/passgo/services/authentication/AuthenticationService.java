@@ -33,7 +33,7 @@ import pl.uj.passgo.repos.member.OrganizerRepository;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class AuthenticationService {
 	private final MemberCredentialRepository memberCredentialRepository;
 

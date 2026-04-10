@@ -20,7 +20,7 @@ import pl.uj.passgo.services.authentication.AuthenticationService;
 
 @RestController
 @RequestMapping("/auth")
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class AuthenticationController {
 	private final AuthenticationService authenticationService;
 

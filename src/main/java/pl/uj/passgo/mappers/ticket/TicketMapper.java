@@ -10,7 +10,7 @@ import pl.uj.passgo.models.Ticket;
 
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class TicketMapper {
 	private final EventMapper eventMapper;
 	private final ClientMapper clientMapper;

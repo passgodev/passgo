@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/transactions")
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class TransactionController {
 	private final TransactionService transactionService;
 

@@ -16,7 +16,7 @@ import pl.uj.passgo.repos.member.MemberCredentialRepository;
 
 
 @Configuration
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class JwtConfiguration {
 	private final MemberCredentialRepository memberCredentialRepository;
 

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class BuildingService {
 
     private final BuildingRepository buildingRepository;
