@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/wallets")
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class WalletController {
 
     private final WalletService walletService;

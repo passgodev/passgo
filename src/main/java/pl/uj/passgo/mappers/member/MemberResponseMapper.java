@@ -12,7 +12,7 @@ import pl.uj.passgo.models.responses.member.OrganizerMemberResponse;
 
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class MemberResponseMapper {
 	private final ClientMapper clientMapper;
 	private final OrganizerMapper organizerMapper;

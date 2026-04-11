@@ -10,7 +10,7 @@ import pl.uj.passgo.repos.EventRepository;
 import pl.uj.passgo.repos.TicketRepository;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class StatsService {
 
     private final EventService eventService;

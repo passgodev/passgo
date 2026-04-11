@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Slf4j
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class JwtAuthenticationConfiguration {
 	private final AuthenticationProvider authenticationProvider;
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;

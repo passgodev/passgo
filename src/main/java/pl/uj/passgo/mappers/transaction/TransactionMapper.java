@@ -16,7 +16,7 @@ import java.util.List;
 
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class TransactionMapper {
 	private final ClientMapper clientMapper;
 	private final TicketMapper ticketMapper;

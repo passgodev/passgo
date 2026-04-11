@@ -24,7 +24,7 @@ import java.util.Objects;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class MemberService {
 	private final ClientRepository clientRepository;
 	private final OrganizerRepository organizerRepository;

@@ -16,7 +16,7 @@ import pl.uj.passgo.services.faq.FaqService;
 
 @RestController
 @RequestMapping("/faqs")
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class FaqController {
     private final FaqService faqService;
 

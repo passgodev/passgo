@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class AdminInitializer implements CommandLineRunner {
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final Clock clock;

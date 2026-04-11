@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/buildings")
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class BuildingController {
 
     private final BuildingService buildingService;

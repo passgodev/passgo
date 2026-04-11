@@ -17,7 +17,7 @@ import pl.uj.passgo.services.member.MemberService;
 
 @RestController
 @RequestMapping("/members")
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class MemberController {
 	private final MemberService memberService;
 

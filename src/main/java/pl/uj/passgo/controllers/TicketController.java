@@ -25,7 +25,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/tickets")
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class TicketController {
 
     private final TicketService ticketService;
