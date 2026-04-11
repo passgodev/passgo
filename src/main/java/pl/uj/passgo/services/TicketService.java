@@ -1,5 +1,6 @@
 package pl.uj.passgo.services;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -10,16 +11,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.models.*;
 import pl.uj.passgo.models.DTOs.TicketPurchaseRequest;
-import pl.uj.passgo.models.DTOs.ticket.TicketFullResponse;
-import pl.uj.passgo.models.DTOs.ticket.TicketInfoDto;
-import pl.uj.passgo.models.DTOs.ticket.TicketResponse;
+import pl.uj.passgo.models.DTOs.ticket.*;
+import pl.uj.passgo.models.enums.TicketStatus;
 import pl.uj.passgo.models.member.Client;
 import pl.uj.passgo.models.enums.TransactionType;
 import pl.uj.passgo.repos.*;
 import pl.uj.passgo.repos.member.ClientRepository;
 
 import java.util.List;
-import pl.uj.passgo.models.DTOs.ticket.TicketPurchaseResponse;
+
 import pl.uj.passgo.models.transaction.Transaction;
 import pl.uj.passgo.models.transaction.TransactionComponent;
 import pl.uj.passgo.repos.EventRepository;
@@ -50,7 +50,10 @@ public class TicketService {
     private final RowRepository rowRepository;
     private final ClientRepository clientRepository;
     private final WalletOperationService walletOperationService;
-
+    private final LoggedInMemberContextService loggedInMemberContextService;
+    private final TransactionRepository transactionRepository;
+    private final TransactionComponentRepository transactionComponentRepository;
+    private final Clock clock;
 
     private static void checkIfAllTicketsExist(List<Ticket> tickets, List<Long> ticketToBuyIds) {
         var validTicketsMap = new HashMap<>(tickets.stream().collect(Collectors.toMap(Ticket::getId, Function.identity())));
@@ -67,20 +70,34 @@ public class TicketService {
         }
     }
 
-    private final LoggedInMemberContextService loggedInMemberContextService;
-    private final Clock clock;
-    private final TransactionRepository transactionRepository;
-    private final TransactionComponentRepository transactionComponentRepository;
+    private static void checkIfAllTicketsHaveStatus(List<Ticket> tickets, @NotNull TicketStatus status) {
+        boolean allTicketsHaveStatus = tickets.stream().allMatch(ticket -> status.equals(ticket.getStatus()));
+        if (!allTicketsHaveStatus) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provided tickets: are not for sale");
+        }
+    }
 
     @Transactional
-    public TicketPurchaseResponse purchaseTickets(
-        pl.uj.passgo.models.DTOs.ticket.TicketPurchaseRequest ticketsPurchaseRequest
-    ) {
-        var ticketsToBuyIds = ticketsPurchaseRequest.ticketIds();
-        var tickets = ticketRepository.getTicketsByIdIn(ticketsToBuyIds);
-        checkIfAllTicketsExist(tickets, ticketsToBuyIds);
+    public TicketPurchaseResponse orderTickets(List<Long> ticketIds) {
+        List<Ticket> tickets = ticketRepository.getTicketsByIdIn(ticketIds);
+        checkIfAllTicketsExist(tickets, ticketIds);
         checkIfTicketsAreNotAlreadyBought(tickets);
 
+        return purchaseTickets(tickets);
+    }
+
+    @Transactional
+    public TicketPurchaseResponse orderOfferedTickets(List<Long> ticketIds) {
+        List<Ticket> tickets = ticketRepository.getTicketsByIdIn(ticketIds);
+        checkIfAllTicketsExist(tickets, ticketIds);
+        checkIfTicketsAreNotAlreadyBought(tickets);
+        checkIfAllTicketsHaveStatus(tickets, TicketStatus.FOR_SALE);
+
+        return purchaseTickets(tickets);
+    }
+
+    @Transactional
+    public TicketPurchaseResponse purchaseTickets(List<Ticket> tickets) {
         // calculate tickets total price
         var ticketsTotalPrice = tickets.stream().map(Ticket::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -97,7 +114,10 @@ public class TicketService {
         walletOperationService.chargeWalletForTicketPurchase(client, ticketsTotalPrice);
 
         // perform assignment of client to tickets
-        tickets.forEach(ticket -> ticket.setOwner(client));
+        tickets.forEach(ticket -> {
+            ticket.setOwner(client);
+            ticket.setStatus(TicketStatus.ASSIGNED);
+        });
 
         // create transaction and transaction components
         var transaction = Transaction.builder()

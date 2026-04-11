@@ -1,0 +1,84 @@
+package pl.uj.passgo.services;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import pl.uj.passgo.mappers.event.EventMapper;
+import pl.uj.passgo.models.DTOs.SaleInfoDto;
+import pl.uj.passgo.models.DTOs.ticket.FlatSaleRow;
+import pl.uj.passgo.models.DTOs.ticket.TicketForSale;
+import pl.uj.passgo.models.DTOs.ticket.TicketPurchaseResponse;
+import pl.uj.passgo.models.Ticket;
+import pl.uj.passgo.models.TicketSale;
+import pl.uj.passgo.models.enums.TicketSaleStatus;
+import pl.uj.passgo.models.enums.TicketStatus;
+import pl.uj.passgo.models.member.Client;
+import pl.uj.passgo.repos.TicketRepository;
+import pl.uj.passgo.repos.ticket_sale.TicketSaleRepository;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class TicketSaleService {
+
+    private final TicketService ticketService;
+    private final LoggedInMemberContextService loggedInMemberContextService;
+    private final TicketSaleRepository ticketSaleRepository;
+    private final EventMapper eventMapper;
+    private final TicketRepository ticketRepository;
+
+    public void offerTicket(Long ticketId, BigDecimal price) {
+        Ticket ticket = ticketService.getTicketById(ticketId);
+        Client seller = loggedInMemberContextService.isClientLoggedIn().orElseThrow();
+
+        TicketSale ticketSale = TicketSale.builder()
+                .ticket(ticket)
+                .seller(seller)
+                .buyer(null)
+                .status(TicketSaleStatus.ACTIVE)
+                .price(price)
+                .build();
+
+        ticket.setStatus(TicketStatus.FOR_SALE);
+        ticket.setOwner(null);
+
+        ticketRepository.save(ticket);
+        ticketSaleRepository.save(ticketSale);
+    }
+
+    public List<SaleInfoDto> getTicketsForSale(Long eventId) {
+        List<FlatSaleRow> flatRows = ticketSaleRepository.findFlatSaleData(eventId);
+
+        return flatRows.stream()
+                .collect(Collectors.groupingBy(
+                        FlatSaleRow::event,
+                        Collectors.mapping(row -> new TicketForSale(
+                                row.ticketSaleId(),
+                                row.ticketId(),
+                                row.originalPrice(),
+                                row.actualPrice(),
+                                row.sectorName()
+                        ), Collectors.toList())
+                ))
+                .entrySet().stream()
+                .map(entry -> new SaleInfoDto(
+                        eventMapper.toEventDto(entry.getKey()),
+                        entry.getValue()
+                ))
+                .toList();
+    }
+
+    @Transactional
+    public TicketPurchaseResponse orderOfferedTickets(List<Long> ticketIds) {
+        ticketSaleRepository.deleteByTicketIdIn(ticketIds);
+        return ticketService.orderOfferedTickets(ticketIds);
+
+        // TODO: Dla audytu można by było wykorzystać buyerId i inne statusy
+        //  żeby nie usuwać tych ticket_sale ale na razie chyba można to tak zostawi
+    }
+}

@@ -13,6 +13,7 @@ import pl.uj.passgo.models.DTOs.event.UpdateEventDto;
 import pl.uj.passgo.models.DTOs.weahter.EventWeatherRequest;
 import pl.uj.passgo.models.DTOs.weahter.EventWeatherResponse;
 import pl.uj.passgo.models.enums.Status;
+import pl.uj.passgo.models.enums.TicketStatus;
 import pl.uj.passgo.models.member.Organizer;
 import pl.uj.passgo.models.responses.DetailsEventResponse;
 import pl.uj.passgo.models.responses.EventResponse;
@@ -187,6 +188,7 @@ public class EventService {
                 for(Seat seat : row.getSeats()){
                     tickets.add(
                         Ticket.builder()
+                            .status(TicketStatus.AVAILABLE)
                             .event(event)
                             .price(rowPrices.get(rowId))
                             .owner(null)

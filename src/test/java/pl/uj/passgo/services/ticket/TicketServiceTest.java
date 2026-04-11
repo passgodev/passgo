@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.uj.passgo.models.*;
 import pl.uj.passgo.models.DTOs.TicketPurchaseRequest;
+import pl.uj.passgo.models.DTOs.ticket.BulkTicketPurchaseRequest;
 import pl.uj.passgo.models.DTOs.ticket.TicketFullResponse;
 import pl.uj.passgo.models.DTOs.ticket.TicketInfoDto;
 import pl.uj.passgo.models.DTOs.ticket.TicketResponse;
@@ -78,9 +79,9 @@ public class TicketServiceTest {
 				clientRepository,
 				walletOperationService,
 				loggedInMemberContextService,
-				fixedClock,
 				transactionRepository,
-				transactionComponentRepository
+				transactionComponentRepository,
+                fixedClock
 		);
 	}
 
@@ -97,8 +98,6 @@ public class TicketServiceTest {
 		var client = new Client();
 		client.setWallet(wallet);
 
-		pl.uj.passgo.models.DTOs.ticket.TicketPurchaseRequest ticketsPurchaseRequest = new pl.uj.passgo.models.DTOs.ticket.TicketPurchaseRequest(List.of(1L));
-
 		when(ticketRepository.getTicketsByIdIn(List.of(1L))).thenReturn(List.of(ticket));
 		when(loggedInMemberContextService.isClientLoggedIn()).thenReturn(Optional.of(client));
 		doAnswer(invocation -> {
@@ -107,7 +106,7 @@ public class TicketServiceTest {
 		}).when(walletOperationService).chargeWalletForTicketPurchase(any(Client.class), any(BigDecimal.class));
 		when(transactionRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 		// Act
-		var response = ticketService.purchaseTickets(ticketsPurchaseRequest);
+		var response = ticketService.orderTickets(List.of(1L));
 
 		// Assert
 		Assertions.assertAll(

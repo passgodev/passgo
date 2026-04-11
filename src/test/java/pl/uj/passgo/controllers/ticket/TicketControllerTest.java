@@ -129,7 +129,7 @@ class TicketControllerTest {
                         .content(jsonRequest))
                 .andExpect(status().isOk());
 
-        verify(ticketService).purchaseTickets(any());
+        verify(ticketService).orderTickets(any());
     }
 
     @Test
