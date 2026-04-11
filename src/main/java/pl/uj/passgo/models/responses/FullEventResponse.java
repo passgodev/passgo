@@ -1,5 +1,5 @@
 package pl.uj.passgo.models.responses;
-import pl.uj.passgo.models.Status;
+import pl.uj.passgo.models.enums.Status;
 import pl.uj.passgo.models.responses.building.BuildingResponse;
 
 import java.time.LocalDateTime;

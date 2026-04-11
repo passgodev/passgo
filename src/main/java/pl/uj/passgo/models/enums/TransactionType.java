@@ -1,4 +1,4 @@
-package pl.uj.passgo.models.transaction;
+package pl.uj.passgo.models.enums;
 
 public enum TransactionType {
     PURCHASE,

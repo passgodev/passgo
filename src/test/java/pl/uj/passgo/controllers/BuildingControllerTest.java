@@ -8,9 +8,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import pl.uj.passgo.models.DTOs.buildingRequests.BuildingRequest;
-import pl.uj.passgo.models.Status;
+import pl.uj.passgo.models.enums.Status;
 import pl.uj.passgo.models.responses.building.BuildingResponse;
-import pl.uj.passgo.models.responses.building.FullBuildingResponse;
 import pl.uj.passgo.services.BuildingService;
 
 import java.util.List;

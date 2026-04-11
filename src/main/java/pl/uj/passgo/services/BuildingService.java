@@ -1,7 +1,6 @@
 package pl.uj.passgo.services;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -10,6 +9,7 @@ import pl.uj.passgo.models.DTOs.AddressRequest;
 import pl.uj.passgo.models.DTOs.buildingRequests.BuildingRequest;
 import pl.uj.passgo.models.DTOs.buildingRequests.RowRequest;
 import pl.uj.passgo.models.DTOs.buildingRequests.SectorRequest;
+import pl.uj.passgo.models.enums.Status;
 import pl.uj.passgo.models.responses.building.*;
 import pl.uj.passgo.repos.BuildingRepository;
 

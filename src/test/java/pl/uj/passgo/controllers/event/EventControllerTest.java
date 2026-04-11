@@ -15,7 +15,7 @@ import pl.uj.passgo.models.DTOs.event.ImageDto;
 import pl.uj.passgo.models.DTOs.event.UpdateEventDto;
 import pl.uj.passgo.models.DTOs.ticket.TicketResponse;
 import pl.uj.passgo.models.DTOs.weahter.EventWeatherResponse;
-import pl.uj.passgo.models.Status;
+import pl.uj.passgo.models.enums.Status;
 import pl.uj.passgo.models.responses.EventResponse;
 import pl.uj.passgo.models.responses.FullEventResponse;
 import pl.uj.passgo.services.EventService;

@@ -1,7 +1,6 @@
 package pl.uj.passgo.services;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +11,7 @@ import pl.uj.passgo.models.Wallet;
 import pl.uj.passgo.models.WalletHistory;
 import pl.uj.passgo.models.member.Client;
 import pl.uj.passgo.models.transaction.Transaction;
-import pl.uj.passgo.models.transaction.TransactionType;
+import pl.uj.passgo.models.enums.TransactionType;
 import pl.uj.passgo.repos.WalletHistoryRepository;
 import pl.uj.passgo.repos.WalletRepository;
 import pl.uj.passgo.repos.transaction.TransactionRepository;

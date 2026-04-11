@@ -1,7 +1,6 @@
 package pl.uj.passgo.controllers;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,7 @@ import pl.uj.passgo.models.DTOs.event.ImageDto;
 import pl.uj.passgo.models.DTOs.event.UpdateEventDto;
 import pl.uj.passgo.models.DTOs.ticket.TicketResponse;
 import pl.uj.passgo.models.DTOs.weahter.EventWeatherResponse;
-import pl.uj.passgo.models.Status;
+import pl.uj.passgo.models.enums.Status;
 import pl.uj.passgo.models.responses.DetailsEventResponse;
 import pl.uj.passgo.models.responses.EventResponse;
 import pl.uj.passgo.models.responses.FullEventResponse;

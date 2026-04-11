@@ -1,6 +1,6 @@
 package pl.uj.passgo.models.responses.building;
 
-import pl.uj.passgo.models.Status;
+import pl.uj.passgo.models.enums.Status;
 
 public record BuildingResponse(
         Long id,

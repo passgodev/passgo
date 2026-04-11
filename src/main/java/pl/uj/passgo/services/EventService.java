@@ -2,7 +2,6 @@ package pl.uj.passgo.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +12,7 @@ import pl.uj.passgo.models.DTOs.EventCreateRequest;
 import pl.uj.passgo.models.DTOs.event.UpdateEventDto;
 import pl.uj.passgo.models.DTOs.weahter.EventWeatherRequest;
 import pl.uj.passgo.models.DTOs.weahter.EventWeatherResponse;
+import pl.uj.passgo.models.enums.Status;
 import pl.uj.passgo.models.member.Organizer;
 import pl.uj.passgo.models.responses.DetailsEventResponse;
 import pl.uj.passgo.models.responses.EventResponse;

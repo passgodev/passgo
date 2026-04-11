@@ -12,6 +12,7 @@ import pl.uj.passgo.models.DTOs.EventCreateRequest;
 import pl.uj.passgo.models.DTOs.event.UpdateEventDto;
 import pl.uj.passgo.models.DTOs.weahter.EventWeatherRequest;
 import pl.uj.passgo.models.DTOs.weahter.EventWeatherResponse;
+import pl.uj.passgo.models.enums.Status;
 import pl.uj.passgo.models.member.Organizer;
 import pl.uj.passgo.models.responses.EventResponse;
 import pl.uj.passgo.repos.BuildingRepository;
