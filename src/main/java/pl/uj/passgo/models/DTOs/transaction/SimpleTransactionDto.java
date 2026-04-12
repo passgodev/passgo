@@ -4,12 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.uj.passgo.models.DTOs.member.ClientDto;
-import pl.uj.passgo.models.transaction.TransactionType;
+import pl.uj.passgo.models.enums.TransactionType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Builder

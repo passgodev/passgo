@@ -12,11 +12,11 @@ import pl.uj.passgo.models.DTOs.AddressRequest;
 import pl.uj.passgo.models.DTOs.buildingRequests.BuildingRequest;
 import pl.uj.passgo.models.DTOs.buildingRequests.RowRequest;
 import pl.uj.passgo.models.DTOs.buildingRequests.SectorRequest;
+import pl.uj.passgo.models.enums.Status;
 import pl.uj.passgo.models.responses.building.BuildingResponse;
 import pl.uj.passgo.models.responses.building.FullBuildingResponse;
 import pl.uj.passgo.repos.BuildingRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

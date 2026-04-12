@@ -3,6 +3,7 @@ package pl.uj.passgo.models;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import pl.uj.passgo.models.enums.Status;
 
 import java.util.ArrayList;
 import java.util.List;

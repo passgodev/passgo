@@ -2,7 +2,6 @@ package pl.uj.passgo.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,7 @@ import pl.uj.passgo.models.DTOs.ticket.TicketFullResponse;
 import pl.uj.passgo.models.DTOs.ticket.TicketInfoDto;
 import pl.uj.passgo.models.DTOs.ticket.TicketResponse;
 import pl.uj.passgo.models.member.Client;
-import pl.uj.passgo.models.transaction.TransactionType;
+import pl.uj.passgo.models.enums.TransactionType;
 import pl.uj.passgo.repos.*;
 import pl.uj.passgo.repos.member.ClientRepository;
 

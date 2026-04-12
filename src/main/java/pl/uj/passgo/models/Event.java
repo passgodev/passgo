@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.uj.passgo.models.enums.Status;
 import pl.uj.passgo.models.member.Organizer;
 
 import java.time.LocalDateTime;

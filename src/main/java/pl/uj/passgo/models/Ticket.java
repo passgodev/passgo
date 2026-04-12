@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.uj.passgo.models.enums.TicketStatus;
 import pl.uj.passgo.models.member.Client;
 
 import java.math.BigDecimal;
@@ -46,4 +47,8 @@ public class Ticket {
     @ManyToOne
     @JoinColumn(name = "client_id")
     private Client owner;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private TicketStatus status;
 }

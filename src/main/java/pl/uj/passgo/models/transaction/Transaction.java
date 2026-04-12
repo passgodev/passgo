@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import pl.uj.passgo.models.enums.TransactionType;
 import pl.uj.passgo.models.member.Client;
 
 import java.math.BigDecimal;

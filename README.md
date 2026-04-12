@@ -1,5 +1,3 @@
-# info for lab's professor: checkout dev branch
-
 # PassGo
 Kupuj oraz odsprzedawaj bilety na wybrane wydarzenia w twoim mieście.
 
