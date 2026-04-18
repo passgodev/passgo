@@ -1,10 +1,7 @@
 package pl.uj.passgo.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import pl.uj.passgo.models.member.Client;
 
 import java.math.BigDecimal;
@@ -12,7 +9,8 @@ import java.math.BigDecimal;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "wallet")
 public class Wallet {

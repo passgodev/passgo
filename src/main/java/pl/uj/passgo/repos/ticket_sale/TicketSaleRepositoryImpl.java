@@ -21,7 +21,7 @@ public class TicketSaleRepositoryImpl implements TicketSaleRepositoryCriteriaApi
     private EntityManager entityManager;
 
     @Override
-    public List<FlatSaleRow> findFlatSaleData(Long eventId) {
+    public List<FlatSaleRow> findFlatSaleData(Long eventId, Long userId) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<FlatSaleRow> query = cb.createQuery(FlatSaleRow.class);
         Root<TicketSale> ticketSale = query.from(TicketSale.class);
@@ -40,6 +40,7 @@ public class TicketSaleRepositoryImpl implements TicketSaleRepositoryCriteriaApi
         ));
 
         query.where(cb.equal(ticketSale.get("status"), TicketSaleStatus.ACTIVE));
+        query.where(cb.notEqual(ticketSale.get("seller_id"), userId));
 
         if (eventId != null) {
             query.where(cb.equal(event.get("id"), eventId));

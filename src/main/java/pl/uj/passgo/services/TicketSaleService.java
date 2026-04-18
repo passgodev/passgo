@@ -52,7 +52,8 @@ public class TicketSaleService {
     }
 
     public List<SaleInfoDto> getTicketsForSale(Long eventId) {
-        List<FlatSaleRow> flatRows = ticketSaleRepository.findFlatSaleData(eventId);
+        Client user = loggedInMemberContextService.isClientLoggedIn().orElseThrow();
+        List<FlatSaleRow> flatRows = ticketSaleRepository.findFlatSaleData(eventId, user.getId());
 
         return flatRows.stream()
                 .collect(Collectors.groupingBy(
@@ -74,11 +75,8 @@ public class TicketSaleService {
     }
 
     @Transactional
-    public TicketPurchaseResponse orderOfferedTickets(List<Long> ticketIds) {
-        ticketSaleRepository.deleteByTicketIdIn(ticketIds);
-        return ticketService.orderOfferedTickets(ticketIds);
-
-        // TODO: Dla audytu można by było wykorzystać buyerId i inne statusy
-        //  żeby nie usuwać tych ticket_sale ale na razie chyba można to tak zostawi
+    public TicketPurchaseResponse orderOfferedTickets(List<Long> ticketSaleIds) {
+        List<TicketSale> ticketSales = ticketSaleRepository.getTicketSaleByIdIn(ticketSaleIds);
+        return ticketService.orderTicketsOnSale(ticketSales);
     }
 }

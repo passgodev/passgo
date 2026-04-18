@@ -64,23 +64,20 @@ public class WalletOperationService {
         return new WalletDto(wallet.getId(), wallet.getMoney());
     }
 
-    public void chargeWalletForTicketPurchase(Client client, BigDecimal ticketsTotalPrice) {
-        client.getWallet().setMoney(client.getWallet().getMoney().subtract(ticketsTotalPrice));
+    public void createWalletHistoryEntry(Client client, BigDecimal operationPrice, String operationDescription) {
+        Wallet wallet = client.getWallet();
+        BigDecimal clientMoney = wallet.getMoney();
+        BigDecimal clientMoneyAfterOperation = clientMoney.add(operationPrice);
 
+        if (clientMoneyAfterOperation.compareTo(BigDecimal.ZERO) < 0) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Operation is not possible.");
+        }
+
+        wallet.setMoney(clientMoneyAfterOperation);
         WalletHistory walletHistory = new WalletHistory();
-        walletHistory.setWallet(client.getWallet());
-        walletHistory.setAmount(ticketsTotalPrice.negate());
-        walletHistory.setDescription("Ticket Purchase");
-        walletHistoryRepository.save(walletHistory);
-    }
-
-    public void rechargeWalletForTicketReturn(Client client, BigDecimal returnPrice) {
-        client.getWallet().setMoney(client.getWallet().getMoney().add(returnPrice));
-
-        WalletHistory walletHistory = new WalletHistory();
-        walletHistory.setWallet(client.getWallet());
-        walletHistory.setAmount(returnPrice);
-        walletHistory.setDescription("Ticket Return");
+        walletHistory.setWallet(wallet);
+        walletHistory.setAmount(operationPrice);
+        walletHistory.setDescription(operationDescription);
         walletHistoryRepository.save(walletHistory);
     }
 }

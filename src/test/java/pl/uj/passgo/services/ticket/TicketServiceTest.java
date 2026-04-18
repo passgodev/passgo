@@ -103,7 +103,7 @@ public class TicketServiceTest {
 		doAnswer(invocation -> {
 			client.getWallet().setMoney(BigDecimal.ZERO);
 			return null;
-		}).when(walletOperationService).chargeWalletForTicketPurchase(any(Client.class), any(BigDecimal.class));
+		}).when(walletOperationService).createWalletHistoryEntry(any(Client.class), any(BigDecimal.class), any(String.class));
 		when(transactionRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 		// Act
 		var response = ticketService.orderTickets(List.of(1L));
@@ -219,7 +219,7 @@ public class TicketServiceTest {
 
 		// Assert
 		assertNull(ticket.getOwner());
-		verify(walletOperationService).rechargeWalletForTicketReturn(eq(client), eq(BigDecimal.TEN));
+		verify(walletOperationService).createWalletHistoryEntry(eq(client), eq(BigDecimal.TEN), eq("Ticket Return"));
 		verify(transactionComponentRepository).save(any());
 	}
 
@@ -280,7 +280,7 @@ public class TicketServiceTest {
 		ticketService.deleteAllTicketsConnectedToEvent(1L);
 
 		// Assert
-		verify(walletOperationService).rechargeWalletForTicketReturn(any(), any());
+		verify(walletOperationService).createWalletHistoryEntry(any(), any(), any());
 		verify(ticketRepository).deleteAll(any());
 	}
 

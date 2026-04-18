@@ -79,10 +79,9 @@ public class TicketController {
         return ResponseEntity.ok(purchasedTicketsResponse);
     }
 
-    //TODO: do zmiany (trzeba przeciez przeniść kase z sellera na buyera - nie można używwać tej samej metody)
     @PostMapping("/purchase-on-sale")
-    public ResponseEntity<TicketPurchaseResponse> purchaseTicketsOnSale(@RequestBody BulkTicketPurchaseRequest tickets) {
-        var purchasedTicketResponse = ticketResellService.orderOfferedTickets(tickets.ticketIds());
+    public ResponseEntity<TicketPurchaseResponse> purchaseTicketsOnSale(@RequestBody BulkTicketOnSalePurchaseRequest ticketSales) {
+        var purchasedTicketResponse = ticketResellService.orderOfferedTickets(ticketSales.ticketSaleIds());
         return ResponseEntity.ok(purchasedTicketResponse);
     }
 
