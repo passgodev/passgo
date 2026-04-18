@@ -50,5 +50,6 @@ public class Ticket {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private TicketStatus status;
+    @Builder.Default
+    private TicketStatus status = TicketStatus.AVAILABLE;
 }

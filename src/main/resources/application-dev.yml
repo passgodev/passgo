@@ -4,6 +4,9 @@ spring:
     username: ${PG_PASSGO_USER}
     password: ${PG_PASSGO_PASSWORD}
     driver-class-name: org.postgresql.Driver
+    hikari:                                 # NEW: Configures the connection pool
+      isolate-internal-queries: true        # NEW: Helps DevTools clean up locks
+      connection-timeout: 20000             # NEW: Fails fast if the DB is actually down
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
