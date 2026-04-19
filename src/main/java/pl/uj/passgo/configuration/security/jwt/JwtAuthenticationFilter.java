@@ -49,7 +49,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 
 		var requestJwtToken = authHeader.substring(BEARER_SPACE.length());
-		var userLogin = jwtService.extractUserLogin(requestJwtToken);
+		String userLogin = null;
+		try {
+			userLogin = jwtService.extractUserLogin(requestJwtToken);
+		} catch (Exception e) {
+			log.error("Invalid JWT token", e);
+		}
 		var authentication = SecurityContextHolder.getContext().getAuthentication();
 
 		if ( userLogin != null && authentication == null ) {

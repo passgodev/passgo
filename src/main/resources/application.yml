@@ -13,6 +13,9 @@ spring:
     enabled: false
   lifecycle:                                # NEW: Adds a timeout for graceful shutdown
     timeout-per-shutdown-phase: 10s         # NEW
+  devtools:
+    livereload:
+      enabled: false
 
 server:
   port: 8080

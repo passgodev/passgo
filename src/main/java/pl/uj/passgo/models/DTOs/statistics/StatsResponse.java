@@ -1,4 +1,4 @@
-package pl.uj.passgo.models.DTOs;
+package pl.uj.passgo.models.DTOs.statistics;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

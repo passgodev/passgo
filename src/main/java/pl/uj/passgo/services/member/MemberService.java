@@ -10,11 +10,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.mappers.member.MemberResponseMapper;
+import pl.uj.passgo.models.member.Member;
 import pl.uj.passgo.models.member.MemberType;
 import pl.uj.passgo.models.member.Organizer;
+import pl.uj.passgo.models.member.request.UpdateMemberDataRequest;
 import pl.uj.passgo.models.responses.member.ClientMemberResponse;
 import pl.uj.passgo.models.responses.member.MemberResponse;
 import pl.uj.passgo.models.responses.member.OrganizerMemberResponse;
+import pl.uj.passgo.repos.member.AdministratorRepository;
 import pl.uj.passgo.repos.member.ClientRepository;
 import pl.uj.passgo.repos.member.OrganizerRepository;
 import pl.uj.passgo.services.LoggedInMemberContextService;
@@ -28,6 +31,7 @@ import java.util.Objects;
 public class MemberService {
 	private final ClientRepository clientRepository;
 	private final OrganizerRepository organizerRepository;
+	private final AdministratorRepository administratorRepository;
 	private final MemberResponseMapper memberResponseMapper;
 	private final LoggedInMemberContextService loggedInMemberContextService;
 
@@ -106,4 +110,30 @@ public class MemberService {
 		organizer.getMemberCredential().setActive(true);
 		return organizer;
 	}
+
+	@Transactional
+    public void updateMemberData(UpdateMemberDataRequest request) {
+		if (request == null) {
+			log.error("UpdateMemberDataRequest is null");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "UpdateMemberDataRequest is null");
+		}
+
+		var loggedMember = loggedInMemberContextService.getLoggedInMemberCredential();
+
+		Member member = switch ( loggedMember.getMemberType() ) {
+			case CLIENT -> clientRepository.findByMemberCredential(loggedMember)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
+			case ORGANIZER -> organizerRepository.findByMemberCredential(loggedMember)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Organizer not found"));
+			case ADMINISTRATOR ->  administratorRepository.findByMemberCredential(loggedMember)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Administrator not found"));
+		};
+
+		if (request.firstName() != null) {
+			member.setFirstName(request.firstName());
+		}
+		if (request.lastName() != null) {
+			member.setLastName(request.lastName());
+		}
+    }
 }
