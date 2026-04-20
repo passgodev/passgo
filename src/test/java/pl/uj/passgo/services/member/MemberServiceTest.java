@@ -18,6 +18,7 @@ import pl.uj.passgo.mappers.organizer.OrganizerMapper;
 import pl.uj.passgo.models.member.MemberCredential;
 import pl.uj.passgo.models.member.MemberType;
 import pl.uj.passgo.models.member.Organizer;
+import pl.uj.passgo.repos.member.AdministratorRepository;
 import pl.uj.passgo.repos.member.ClientRepository;
 import pl.uj.passgo.repos.member.OrganizerRepository;
 import pl.uj.passgo.services.LoggedInMemberContextService;
@@ -35,6 +36,8 @@ public class MemberServiceTest {
 	@Mock
 	private OrganizerRepository organizerRepository;
 	@Mock
+	private AdministratorRepository administratorRepository;
+	@Mock
 	private LoggedInMemberContextService loggedInMemberContextService;
 
 	private final ClientMapper clientMapper = new ClientMapper();
@@ -48,6 +51,7 @@ public class MemberServiceTest {
 		this.memberService = new MemberService(
 			clientRepository,
 			organizerRepository,
+			administratorRepository,
 			memberResponseMapper,
 			loggedInMemberContextService
 		);
