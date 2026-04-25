@@ -13,13 +13,16 @@ import pl.uj.passgo.models.DTOs.event.UpdateEventDto;
 import pl.uj.passgo.models.DTOs.weahter.EventWeatherRequest;
 import pl.uj.passgo.models.DTOs.weahter.EventWeatherResponse;
 import pl.uj.passgo.models.enums.Status;
-import pl.uj.passgo.models.member.Organizer;
+import pl.uj.passgo.models.event.Event;
+import pl.uj.passgo.models.event.EventOrganizer;
 import pl.uj.passgo.models.responses.DetailsEventResponse;
 import pl.uj.passgo.models.responses.EventResponse;
 import pl.uj.passgo.models.responses.FullEventResponse;
 import pl.uj.passgo.repos.BuildingRepository;
-import pl.uj.passgo.repos.EventRepository;
+import pl.uj.passgo.repos.event.EventOrganizerRepository;
+import pl.uj.passgo.repos.event.EventRepository;
 import pl.uj.passgo.repos.TicketRepository;
+import pl.uj.passgo.repos.member.AdministratorRepository;
 import pl.uj.passgo.repos.member.OrganizerRepository;
 import pl.uj.passgo.services.weather.EventWeatherService;
 
@@ -43,9 +46,13 @@ public class EventService {
     private final TicketRepository ticketRepository;
     private final TicketService ticketService;
     private final OrganizerRepository organizerRepository;
+    private final AdministratorRepository administratorRepository;
+    private final EventOrganizerRepository eventOrganizerRepository;
     private final EventWeatherService weatherService;
+    private final LoggedInMemberContextService loggedInMemberContextService;
 
     public List<EventResponse> getAllEvents(Status status) {
+        log.info("Getting all events with status:", status);
         var events = status == null ? eventRepository.findAll() : eventRepository.findByStatus(status);
         return events.stream()
                 .map(EventService::mapEventToEventResponse)
@@ -53,15 +60,18 @@ public class EventService {
     }
 
     public List<EventResponse> getAllOrganizerEvents(Long organizerId , Status status) {
-        organizerRepository.findById(organizerId)
+        var loggedMemberType = loggedInMemberContextService.getLoggedMemberType();
+        log.info("Getting all events for organizer_id: {}, organizer_type: {}", organizerId, loggedMemberType);
+
+        eventOrganizerRepository.findByOrganizerIdAndOrganizerTypeEquals(organizerId, loggedMemberType)
             .orElseThrow(() -> new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "No organizer found for the provided organizer_id: " + organizerId
             ));
 
         var organizerEvents = status == null ?
-            eventRepository.findAllByOrganizerId(organizerId)
-            : eventRepository.findAllByOrganizerIdAndStatus(organizerId, status);
+            eventRepository.findAllByEventOrganizer(organizerId, loggedMemberType)
+            : eventRepository.findAllByEventOrganizerAndStatus(organizerId, loggedMemberType, status);
 
         return organizerEvents.stream()
                 .map(EventService::mapEventToEventResponse)
@@ -84,23 +94,30 @@ public class EventService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Building is not approved yet");
         }
 
-        Organizer organizer = organizerRepository.findById(event.getOrganizerId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        String.format("There is no organizer with id: %d", event.getOrganizerId())
-                ));
+        var loggedMemberType = loggedInMemberContextService.getLoggedMemberType();
+        var eventOrganizerOpt = eventOrganizerRepository.findByOrganizerIdAndOrganizerTypeEquals(event.getOrganizerId(), loggedMemberType);
+        final EventOrganizer eventOrganizer;
+        if (eventOrganizerOpt.isEmpty()) {
+            log.info("Creating new EventOrganizer for organizer_id: {}, organizer_type: {}");
+            var newEventOrganizer = new EventOrganizer(event.getOrganizerId(), loggedMemberType);
+            eventOrganizer = eventOrganizerRepository.save(newEventOrganizer);
+        } else {
+            log.info("Using existing EventOrganizer for organizer_id: {}, organizer_type: {}", event.getOrganizerId(), loggedMemberType);
+            eventOrganizer = eventOrganizerOpt.get();
+        }
 
-        Event builtEvent = Event.builder()
+        var createdEvent = Event.builder()
             .name(event.getName())
             .building(building)
             .date(event.getDate())
             .description(event.getDescription())
             .category(event.getCategory())
             .status(Status.PENDING)
-            .organizer(organizer)
+            .eventOrganizer(eventOrganizer)
             .build();
 
-        Event responseEvent = eventRepository.save(builtEvent);
+
+        Event responseEvent = eventRepository.save(createdEvent);
         createAllTickets(building, responseEvent, event.getRowPrices());
         return mapEventToEventResponse(responseEvent);
     }

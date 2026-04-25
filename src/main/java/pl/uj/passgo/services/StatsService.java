@@ -11,8 +11,8 @@ import pl.uj.passgo.models.DTOs.statistics.EventTicketCount;
 import pl.uj.passgo.models.DTOs.statistics.FullStatsResponse;
 import pl.uj.passgo.models.DTOs.statistics.StatsFilter;
 import pl.uj.passgo.models.DTOs.statistics.StatsResponse;
-import pl.uj.passgo.models.Event;
-import pl.uj.passgo.repos.EventRepository;
+import pl.uj.passgo.models.event.Event;
+import pl.uj.passgo.repos.event.EventRepository;
 import pl.uj.passgo.repos.TicketRepository;
 
 import java.time.LocalDateTime;
