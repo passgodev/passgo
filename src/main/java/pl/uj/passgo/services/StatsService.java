@@ -53,6 +53,7 @@ public class StatsService {
                     .ticketsNumber(counts.total())
                     .availableTickets(counts.available())
                     .arenaOccupancy(counts.total() == 0 ? 0.0 : (double) purchased / counts.total() * 100)
+                    .date(event.getDate().toLocalDate())
                     .build();
         });
 

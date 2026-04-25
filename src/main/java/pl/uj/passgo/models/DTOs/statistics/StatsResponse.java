@@ -5,6 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,4 +19,5 @@ public class StatsResponse {
     private Long ticketsNumber;
     private Long availableTickets;
     private Double arenaOccupancy;
+    private LocalDate date;
 }
