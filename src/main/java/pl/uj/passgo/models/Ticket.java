@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import pl.uj.passgo.models.enums.TicketStatus;
+import pl.uj.passgo.models.event.Event;
 import pl.uj.passgo.models.member.Client;
 
 import java.math.BigDecimal;
