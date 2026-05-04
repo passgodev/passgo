@@ -1,6 +1,7 @@
 package pl.uj.passgo.models.DTOs.ticket;
 
-import pl.uj.passgo.models.Event;
+
+import pl.uj.passgo.models.event.Event;
 
 import java.math.BigDecimal;
 

@@ -2,8 +2,10 @@ package pl.uj.passgo.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.mappers.event.EventMapper;
 import pl.uj.passgo.models.DTOs.SaleInfoDto;
 import pl.uj.passgo.models.DTOs.ticket.FlatSaleRow;
@@ -14,11 +16,13 @@ import pl.uj.passgo.models.TicketSale;
 import pl.uj.passgo.models.enums.TicketSaleStatus;
 import pl.uj.passgo.models.enums.TicketStatus;
 import pl.uj.passgo.models.member.Client;
+import pl.uj.passgo.models.member.Member;
 import pl.uj.passgo.repos.TicketRepository;
 import pl.uj.passgo.repos.ticket_sale.TicketSaleRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -34,7 +38,10 @@ public class TicketSaleService {
 
     public void offerTicket(Long ticketId, BigDecimal price) {
         Ticket ticket = ticketService.getTicketById(ticketId);
-        Client seller = loggedInMemberContextService.isClientLoggedIn().orElseThrow();
+        Client seller = loggedInMemberContextService.isClientLoggedIn()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not logged in"));
+
+        validateTicketResell(ticket, seller);
 
         TicketSale ticketSale = TicketSale.builder()
                 .ticket(ticket)
@@ -49,6 +56,19 @@ public class TicketSaleService {
 
         ticketRepository.save(ticket);
         ticketSaleRepository.save(ticketSale);
+    }
+
+    private void validateTicketResell(Ticket ticket, Client seller) {
+        if (ticket.getStatus() != TicketStatus.ASSIGNED) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ticket is not assigned");
+        }
+        Long ownerId = Optional.ofNullable(ticket.getOwner())
+                .map(Member::getId)
+                .orElse(null);
+
+        if (ownerId == null || !ownerId.equals(seller.getId())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ticket does not belong to user");
+        }
     }
 
     public List<SaleInfoDto> getTicketsForSale(Long eventId) {

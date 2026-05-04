@@ -108,7 +108,7 @@ public class TicketService {
     }
 
     @Transactional
-    public TicketPurchaseResponse purchaseTickets(List<Ticket> tickets) {
+    private TicketPurchaseResponse purchaseTickets(List<Ticket> tickets) {
         // calculate tickets total price
         var ticketsTotalPrice = tickets.stream().map(Ticket::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
 
