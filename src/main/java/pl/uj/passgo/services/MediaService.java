@@ -2,22 +2,18 @@ package pl.uj.passgo.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionProperties;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolverSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import pl.uj.passgo.models.Building;
 import pl.uj.passgo.models.DTOs.event.ImageDto;
-import pl.uj.passgo.models.Event;
-import pl.uj.passgo.repos.EventRepository;
+import pl.uj.passgo.models.event.Event;
+import pl.uj.passgo.repos.event.EventRepository;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Files;

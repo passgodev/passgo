@@ -6,6 +6,8 @@ import pl.uj.passgo.models.DTOs.authentication.registration.OrganizerRegistratio
 import pl.uj.passgo.models.member.Client;
 import pl.uj.passgo.models.member.Organizer;
 
+import java.time.LocalDate;
+
 
 @Service
 public class MemberMapper {
@@ -15,7 +17,8 @@ public class MemberMapper {
 		client.setFirstName(request.firstName());
 		client.setLastName(request.lastName());
 		client.setEmail(request.getCredentials().email());
-		client.setBirthDate(request.birthDate());
+//		client.setBirthDate(request.birthDate());
+        client.setBirthDate(LocalDate.of(2000, 7, 22));
 
 		return client;
 	}

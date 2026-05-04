@@ -1,9 +1,12 @@
-package pl.uj.passgo.models;
+package pl.uj.passgo.models.event;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import pl.uj.passgo.models.Building;
 import pl.uj.passgo.models.enums.Status;
-import pl.uj.passgo.models.member.Organizer;
 
 import java.time.LocalDateTime;
 
@@ -44,6 +47,6 @@ public class Event {
     private String imagePath = null;
 
     @ManyToOne
-    @JoinColumn(name = "organizer_id", referencedColumnName = "id")
-    private Organizer organizer;
+    @JoinColumn(name = "event_organizer_id")
+    private EventOrganizer eventOrganizer;
 }

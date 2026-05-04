@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import pl.uj.passgo.exception.MemberCredentialNotFoundException;
 import pl.uj.passgo.models.member.Client;
 import pl.uj.passgo.models.member.MemberCredential;
+import pl.uj.passgo.models.member.MemberType;
 import pl.uj.passgo.repos.member.ClientRepository;
 import pl.uj.passgo.repos.member.MemberCredentialRepository;
 import pl.uj.passgo.repos.member.OrganizerRepository;
@@ -51,5 +52,9 @@ public class LoggedInMemberContextService {
 
 	public MemberCredential getLoggedInMemberCredential() {
 		return getMemberCredential();
+	}
+
+	public MemberType getLoggedMemberType() {
+		return getMemberCredential().getMemberType();
 	}
 }

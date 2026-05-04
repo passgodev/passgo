@@ -13,13 +13,17 @@ import pl.uj.passgo.models.DTOs.event.UpdateEventDto;
 import pl.uj.passgo.models.DTOs.weahter.EventWeatherRequest;
 import pl.uj.passgo.models.DTOs.weahter.EventWeatherResponse;
 import pl.uj.passgo.models.enums.Status;
+import pl.uj.passgo.models.event.Event;
+import pl.uj.passgo.models.member.MemberType;
 import pl.uj.passgo.models.member.Organizer;
 import pl.uj.passgo.models.responses.EventResponse;
 import pl.uj.passgo.repos.BuildingRepository;
-import pl.uj.passgo.repos.EventRepository;
+import pl.uj.passgo.repos.event.EventOrganizerRepository;
+import pl.uj.passgo.repos.event.EventRepository;
 import pl.uj.passgo.repos.TicketRepository;
 import pl.uj.passgo.repos.member.OrganizerRepository;
 import pl.uj.passgo.services.EventService;
+import pl.uj.passgo.services.LoggedInMemberContextService;
 import pl.uj.passgo.services.TicketService;
 import pl.uj.passgo.services.weather.EventWeatherService;
 
@@ -47,6 +51,12 @@ class EventServiceTest {
 
     @Mock
     private OrganizerRepository organizerRepository;
+
+    @Mock
+    private EventOrganizerRepository eventOrganizerRepository;
+
+    @Mock
+    private LoggedInMemberContextService loggedInMemberContextService;
 
     @Mock
     private EventWeatherService weatherService;
@@ -99,11 +109,14 @@ class EventServiceTest {
     void shouldReturnAllOrganizerEvents_whenStatusIsNull() {
         // Arrange
         Long organizerCredentialId = 1L;
+        MemberType memberType = MemberType.ORGANIZER;
         Organizer organizer = new Organizer();
         organizer.setId(1L);
 
         when(organizerRepository.findById(organizerCredentialId))
                 .thenReturn(Optional.of(organizer));
+        when(loggedInMemberContextService.getLoggedMemberType())
+                .thenReturn(memberType);
 
         Building building = mock(Building.class);
         when(building.getName()).thenReturn("Test Building");
@@ -114,7 +127,7 @@ class EventServiceTest {
 
         List<Event> events = List.of(event);
 
-        when(eventRepository.findAllByOrganizerId(organizer.getId()))
+        when(eventRepository.findAllByEventOrganizer(organizer.getId(), memberType))
                 .thenReturn(events);
 
         // Act
@@ -123,8 +136,8 @@ class EventServiceTest {
         // Assert
         assertEquals(1, result.size());
         verify(organizerRepository).findById(organizerCredentialId);
-        verify(eventRepository).findAllByOrganizerId(organizer.getId());
-        verify(eventRepository, never()).findAllByOrganizerIdAndStatus(any(), any());
+        verify(eventRepository).findAllByEventOrganizer(organizer.getId(), memberType);
+        verify(eventRepository, never()).findAllByEventOrganizerAndStatus(any(), any(), any());
     }
 
     @Test
@@ -132,11 +145,14 @@ class EventServiceTest {
         // Arrange
         Long organizerCredentialId = 1L;
         Status status = Status.PENDING;
+        MemberType memberType = MemberType.ORGANIZER;
         Organizer organizer = new Organizer();
         organizer.setId(1L);
 
         when(organizerRepository.findById(organizerCredentialId))
                 .thenReturn(Optional.of(organizer));
+        when(loggedInMemberContextService.getLoggedMemberType())
+                .thenReturn(memberType);
 
         Building building = mock(Building.class);
         when(building.getName()).thenReturn("Test Building");
@@ -147,7 +163,7 @@ class EventServiceTest {
 
         List<Event> events = List.of(event);
 
-        when(eventRepository.findAllByOrganizerIdAndStatus(organizer.getId(), status))
+        when(eventRepository.findAllByEventOrganizerAndStatus(organizer.getId(), memberType, status))
                 .thenReturn(events);
 
         // Act
@@ -156,8 +172,8 @@ class EventServiceTest {
         // Assert
         assertEquals(1, result.size());
         verify(organizerRepository).findById(organizerCredentialId);
-        verify(eventRepository).findAllByOrganizerIdAndStatus(organizer.getId(), status);
-        verify(eventRepository, never()).findAllByOrganizerId(any());
+        verify(eventRepository).findAllByEventOrganizerAndStatus(organizer.getId(), memberType, status);
+        verify(eventRepository, never()).findAllByEventOrganizer(any(), any());
     }
 
     @Test

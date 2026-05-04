@@ -2,7 +2,7 @@ package pl.uj.passgo.mappers.event;
 
 import org.springframework.stereotype.Service;
 import pl.uj.passgo.models.DTOs.event.EventDto;
-import pl.uj.passgo.models.Event;
+import pl.uj.passgo.models.event.Event;
 
 
 @Service

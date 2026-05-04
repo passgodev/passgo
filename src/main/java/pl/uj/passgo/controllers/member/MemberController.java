@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.uj.passgo.models.member.MemberType;
+import pl.uj.passgo.models.member.request.UpdateMemberDataRequest;
 import pl.uj.passgo.models.responses.member.MemberResponse;
 import pl.uj.passgo.models.responses.member.OrganizerMemberResponse;
 import pl.uj.passgo.services.member.MemberService;
@@ -32,6 +33,12 @@ public class MemberController {
 	public ResponseEntity<Page<MemberResponse>> getMembers(@RequestParam(value = "type") MemberType type, @PageableDefault Pageable pageable) {
 		var membersResponse = memberService.getMembersByType(type, pageable);
 		return ResponseEntity.ok(membersResponse);
+	}
+
+	@PatchMapping
+	public ResponseEntity<Void> updateMemberData(@RequestBody UpdateMemberDataRequest request) {
+		memberService.updateMemberData(request);
+		return ResponseEntity.ok().build();
 	}
 
 	@PreAuthorize("hasRole('ADMINISTRATOR')")

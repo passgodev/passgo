@@ -3,6 +3,7 @@ package pl.uj.passgo.models;
 import jakarta.persistence.*;
 import lombok.*;
 import pl.uj.passgo.models.enums.TicketStatus;
+import pl.uj.passgo.models.event.Event;
 import pl.uj.passgo.models.member.Client;
 
 import java.math.BigDecimal;
@@ -48,5 +49,6 @@ public class Ticket {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private TicketStatus status;
+    @Builder.Default
+    private TicketStatus status = TicketStatus.AVAILABLE;
 }

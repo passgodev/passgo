@@ -11,9 +11,15 @@ spring:
     show-sql: false
   flyway:
     enabled: false
+  lifecycle:                                # NEW: Adds a timeout for graceful shutdown
+    timeout-per-shutdown-phase: 10s         # NEW
+  devtools:
+    livereload:
+      enabled: false
 
 server:
   port: 8080
+  shutdown: graceful                        # NEW: Tells Tomcat to shut down gracefully
   servlet:
     context-path: /rest-api
 

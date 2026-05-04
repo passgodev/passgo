@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import pl.uj.passgo.models.DTOs.statistics.EventTicketCount;
 import pl.uj.passgo.models.DTOs.ticket.TicketInfoDto;
 import pl.uj.passgo.models.Ticket;
 
@@ -12,7 +13,6 @@ import java.util.List;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
-
 	List<Ticket> getTicketsByIdIn(Collection<Long> ids);
     List<Ticket> findAllByOwnerId(Long id);
     long countByEventId(Long eventId);
@@ -20,18 +20,28 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     List<Ticket> findAllByEventIdAndOwnerIsNull(Long eventId);
     List<Ticket> findAllByEventId(Long eventId);
 
-    @Query(
-    """
-        SELECT new pl.uj.passgo.models.DTOs.ticket.TicketInfoDto(
-            t.sector.name,
-            t.row.rowNumber,
-            COUNT(t.id),
-            t.price
-        )
-        FROM Ticket t
-        WHERE t.event.id = :eventId
-        GROUP BY t.sector.name, t.row.rowNumber, t.price
-    """
+    @Query("""
+    SELECT new pl.uj.passgo.models.DTOs.statistics.EventTicketCount(
+        t.event.id,
+        COUNT(t.id),
+        SUM(CASE WHEN t.owner IS NULL THEN 1L ELSE 0L END)
     )
+    FROM Ticket t
+    WHERE t.event.id IN :eventIds
+    GROUP BY t.event.id
+""")
+    List<EventTicketCount> countTicketsByEventIds(@Param("eventIds") List<Long> eventIds);
+
+    @Query("""
+    SELECT new pl.uj.passgo.models.DTOs.ticket.TicketInfoDto(
+        t.sector.name,
+        t.row.rowNumber,
+        COUNT(t.id),
+        t.price
+    )
+    FROM Ticket t
+    WHERE t.event.id = :eventId
+    GROUP BY t.sector.name, t.row.rowNumber, t.price
+""")
     List<TicketInfoDto> getTicketSummaryByEvent(@Param("eventId") Long eventId);
 }

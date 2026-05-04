@@ -43,7 +43,7 @@ public class EventController {
         return ResponseEntity.ok(events);
     }
 
-    @PreAuthorize("hasRole('ORGANIZER')")
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ORGANIZER')")
     @PostMapping
     public ResponseEntity<EventResponse> createEvent(@RequestBody EventCreateRequest event){
         EventResponse createdEvent = eventService.createEvent(event);
@@ -84,7 +84,7 @@ public class EventController {
         return ResponseEntity.ok(approvedEvent);
     }
 
-    @PreAuthorize("hasRole('ORGANIZER')")
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ORGANIZER')")
     @PostMapping("/{id}/image")
     public ResponseEntity<String> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file){
         return ResponseEntity.ok(mediaService.uploadImage(file, id));

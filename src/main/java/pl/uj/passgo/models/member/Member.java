@@ -33,4 +33,5 @@ public class Member {
     @OneToOne
     @JoinColumn(name = "member_credential_id", referencedColumnName = "id", nullable = false, unique = true)
     private MemberCredential memberCredential;
+
 }
