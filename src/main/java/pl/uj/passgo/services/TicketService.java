@@ -79,10 +79,12 @@ public class TicketService {
         }
     }
 
-    private static void checkIfAllSalesAreNotUserSales(List<TicketSale> ticketSales, Client client) {
-        boolean allSalesAreNotUserSales = ticketSales.stream().noneMatch(ts -> ts.getSeller().getId().equals(client.getId()));
-        if (!allSalesAreNotUserSales) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provided ticket sales: can not purchase your own sale");
+    private static void checkIfUserIsPurchasingOwnSales(List<TicketSale> ticketSales, Client client) {
+        boolean isUserPurchasingOwnSale = ticketSales.stream()
+                .anyMatch(ts -> ts.getSeller().getId().equals(client.getId()));
+
+        if (isUserPurchasingOwnSale) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You cannot purchase your own ticket sale");
         }
     }
 
@@ -102,13 +104,13 @@ public class TicketService {
 
         checkIfTicketsAreNotAlreadyBought(tickets);
         checkIfAllTicketsHaveStatus(tickets, TicketStatus.FOR_SALE);
-        checkIfAllSalesAreNotUserSales(ticketSales, client);
+        checkIfUserIsPurchasingOwnSales(ticketSales, client);
 
         return purchaseTicketsOnSale(ticketSales, client);
     }
 
     @Transactional
-    private TicketPurchaseResponse purchaseTickets(List<Ticket> tickets) {
+    public TicketPurchaseResponse purchaseTickets(List<Ticket> tickets) {
         // calculate tickets total price
         var ticketsTotalPrice = tickets.stream().map(Ticket::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
 
