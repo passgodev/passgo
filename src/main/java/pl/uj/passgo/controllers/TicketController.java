@@ -1,11 +1,13 @@
 package pl.uj.passgo.controllers;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.*;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,23 +15,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.uj.passgo.models.DTOs.SaleInfoDto;
 import pl.uj.passgo.models.DTOs.TicketPurchaseRequest;
-import pl.uj.passgo.models.DTOs.ticket.TicketFullResponse;
-import pl.uj.passgo.models.DTOs.ticket.TicketInfoDto;
+import pl.uj.passgo.models.DTOs.ticket.*;
 import pl.uj.passgo.services.PDFGenerator;
-import pl.uj.passgo.models.DTOs.ticket.TicketPurchaseResponse;
 import pl.uj.passgo.models.Ticket;
+import pl.uj.passgo.services.TicketSaleService;
 import pl.uj.passgo.services.TicketService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/tickets")
 @RequiredArgsConstructor
+@Validated
 public class TicketController {
 
     private final TicketService ticketService;
     private final PDFGenerator pdfGenerator;
+    private final TicketSaleService ticketResellService;
 
     @GetMapping
     public ResponseEntity<Page<TicketFullResponse>> getAllTickets(@PageableDefault Pageable pageable) {
@@ -69,9 +74,15 @@ public class TicketController {
     }
 
     @PostMapping("/purchase")
-    public ResponseEntity<TicketPurchaseResponse> purchaseTickets(@RequestBody pl.uj.passgo.models.DTOs.ticket.TicketPurchaseRequest tickets) {
-        var purchasedTicketsResponse = ticketService.purchaseTickets(tickets);
+    public ResponseEntity<TicketPurchaseResponse> purchaseTickets(@RequestBody BulkTicketPurchaseRequest tickets) {
+        var purchasedTicketsResponse = ticketService.orderTickets(tickets.ticketIds());
         return ResponseEntity.ok(purchasedTicketsResponse);
+    }
+
+    @PostMapping("/purchase-on-sale")
+    public ResponseEntity<TicketPurchaseResponse> purchaseTicketsOnSale(@RequestBody BulkTicketOnSalePurchaseRequest ticketSales) {
+        var purchasedTicketResponse = ticketResellService.orderOfferedTickets(ticketSales.ticketSaleIds());
+        return ResponseEntity.ok(purchasedTicketResponse);
     }
 
     @PutMapping("/{id}")
@@ -90,5 +101,17 @@ public class TicketController {
     public ResponseEntity<String> returnTicket(@PathVariable Long id){
         ticketService.returnTicket(id);
         return ResponseEntity.ok(String.format("Ticket with id: %d was succesfully returned", id));
+    }
+
+    @PostMapping("/{id}/re-sell")
+    public ResponseEntity<Void> resellTicket(@PathVariable Long id, @RequestParam @NotNull @Min(0) BigDecimal price) {
+        ticketResellService.offerTicket(id, price);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/for-sale")
+    public ResponseEntity<List<SaleInfoDto>> getTicketsForSale(@RequestParam(required = false) Long eventId) {
+        List<SaleInfoDto> saleInfo = ticketResellService.getTicketsForSale(eventId);
+        return ResponseEntity.ok(saleInfo);
     }
 }

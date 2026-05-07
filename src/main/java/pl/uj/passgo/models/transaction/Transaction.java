@@ -1,10 +1,7 @@
 package pl.uj.passgo.models.transaction;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import pl.uj.passgo.models.enums.TransactionType;
 import pl.uj.passgo.models.member.Client;
@@ -17,7 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "transaction")
 public class Transaction {

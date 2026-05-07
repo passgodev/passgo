@@ -1,5 +1,6 @@
 package pl.uj.passgo.services;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import pl.uj.passgo.models.*;
 import pl.uj.passgo.models.DTOs.TicketPurchaseRequest;
+import pl.uj.passgo.models.DTOs.ticket.*;
+import pl.uj.passgo.models.enums.TicketSaleStatus;
+import pl.uj.passgo.models.enums.TicketStatus;
 import pl.uj.passgo.models.DTOs.ticket.TicketFullResponse;
 import pl.uj.passgo.models.DTOs.ticket.TicketInfoDto;
 import pl.uj.passgo.models.DTOs.ticket.TicketResponse;
@@ -19,8 +23,8 @@ import pl.uj.passgo.models.enums.TransactionType;
 import pl.uj.passgo.repos.*;
 import pl.uj.passgo.repos.member.ClientRepository;
 
-import java.util.List;
-import pl.uj.passgo.models.DTOs.ticket.TicketPurchaseResponse;
+import java.util.*;
+
 import pl.uj.passgo.models.transaction.Transaction;
 import pl.uj.passgo.models.transaction.TransactionComponent;
 import pl.uj.passgo.repos.event.EventRepository;
@@ -32,9 +36,6 @@ import pl.uj.passgo.repos.transaction.TransactionRepository;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -51,7 +52,10 @@ public class TicketService {
     private final RowRepository rowRepository;
     private final ClientRepository clientRepository;
     private final WalletOperationService walletOperationService;
-
+    private final LoggedInMemberContextService loggedInMemberContextService;
+    private final TransactionRepository transactionRepository;
+    private final TransactionComponentRepository transactionComponentRepository;
+    private final Clock clock;
 
     private static void checkIfAllTicketsExist(List<Ticket> tickets, List<Long> ticketToBuyIds) {
         var validTicketsMap = new HashMap<>(tickets.stream().collect(Collectors.toMap(Ticket::getId, Function.identity())));
@@ -68,20 +72,45 @@ public class TicketService {
         }
     }
 
-    private final LoggedInMemberContextService loggedInMemberContextService;
-    private final Clock clock;
-    private final TransactionRepository transactionRepository;
-    private final TransactionComponentRepository transactionComponentRepository;
+    private static void checkIfAllTicketsHaveStatus(List<Ticket> tickets, @NotNull TicketStatus status) {
+        boolean allTicketsHaveStatus = tickets.stream().allMatch(ticket -> status.equals(ticket.getStatus()));
+        if (!allTicketsHaveStatus) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provided tickets: are not for sale");
+        }
+    }
+
+    private static void checkIfUserIsPurchasingOwnSales(List<TicketSale> ticketSales, Client client) {
+        boolean isUserPurchasingOwnSale = ticketSales.stream()
+                .anyMatch(ts -> ts.getSeller().getId().equals(client.getId()));
+
+        if (isUserPurchasingOwnSale) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You cannot purchase your own ticket sale");
+        }
+    }
 
     @Transactional
-    public TicketPurchaseResponse purchaseTickets(
-        pl.uj.passgo.models.DTOs.ticket.TicketPurchaseRequest ticketsPurchaseRequest
-    ) {
-        var ticketsToBuyIds = ticketsPurchaseRequest.ticketIds();
-        var tickets = ticketRepository.getTicketsByIdIn(ticketsToBuyIds);
-        checkIfAllTicketsExist(tickets, ticketsToBuyIds);
+    public TicketPurchaseResponse orderTickets(List<Long> ticketIds) {
+        List<Ticket> tickets = ticketRepository.getTicketsByIdIn(ticketIds);
+        checkIfAllTicketsExist(tickets, ticketIds);
         checkIfTicketsAreNotAlreadyBought(tickets);
 
+        return purchaseTickets(tickets);
+    }
+
+    @Transactional
+    public TicketPurchaseResponse orderTicketsOnSale(List<TicketSale> ticketSales) {
+        Client client = loggedInMemberContextService.isClientLoggedIn().orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT));
+        List<Ticket> tickets = ticketSales.stream().map(TicketSale::getTicket).toList();
+
+        checkIfTicketsAreNotAlreadyBought(tickets);
+        checkIfAllTicketsHaveStatus(tickets, TicketStatus.FOR_SALE);
+        checkIfUserIsPurchasingOwnSales(ticketSales, client);
+
+        return purchaseTicketsOnSale(ticketSales, client);
+    }
+
+    @Transactional
+    public TicketPurchaseResponse purchaseTickets(List<Ticket> tickets) {
         // calculate tickets total price
         var ticketsTotalPrice = tickets.stream().map(Ticket::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -95,10 +124,13 @@ public class TicketService {
         }
 
         // decrease client's wallet money amount and save result to wallet history
-        walletOperationService.chargeWalletForTicketPurchase(client, ticketsTotalPrice);
+        walletOperationService.createWalletHistoryEntry(client, ticketsTotalPrice.negate(), "Ticket Purchase");
 
         // perform assignment of client to tickets
-        tickets.forEach(ticket -> ticket.setOwner(client));
+        tickets.forEach(ticket -> {
+            ticket.setOwner(client);
+            ticket.setStatus(TicketStatus.ASSIGNED);
+        });
 
         // create transaction and transaction components
         var transaction = Transaction.builder()
@@ -121,6 +153,76 @@ public class TicketService {
         transactionComponentRepository.saveAll(transactionComponents);
 
         return new TicketPurchaseResponse(ticketsTotalPrice, tickets.size());
+    }
+
+    @Transactional
+    public TicketPurchaseResponse purchaseTicketsOnSale(List<TicketSale> ticketSales, Client client) {
+        BigDecimal ticketsTotalPrice = ticketSales.stream()
+                .map(TicketSale::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal clientMoney = client.getWallet().getMoney();
+        if (clientMoney.compareTo(ticketsTotalPrice) < 0) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Client money is insufficient");
+        }
+
+        LocalDateTime now = LocalDateTime.now(clock);
+        List<TransactionComponent> allTransactionComponents = new ArrayList<>();
+        walletOperationService.createWalletHistoryEntry(client, ticketsTotalPrice.negate(), "Ticket Purchase (Bulk)");
+
+        Transaction buyerTransaction = Transaction.builder()
+                .client(client)
+                .totalPrice(ticketsTotalPrice)
+                .completedAt(now)
+                .transactionType(TransactionType.PURCHASE)
+                .build();
+
+        Transaction savedBuyerTransaction = transactionRepository.save(buyerTransaction);
+        Map<Client, List<TicketSale>> salesGroupedBySeller = ticketSales.stream()
+                .collect(Collectors.groupingBy(TicketSale::getSeller));
+
+        for (Map.Entry<Client, List<TicketSale>> entry : salesGroupedBySeller.entrySet()) {
+            Client seller = entry.getKey();
+            List<TicketSale> sellerTickets = entry.getValue();
+
+            BigDecimal sellerTotalEarnings = sellerTickets.stream()
+                    .map(TicketSale::getPrice)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            walletOperationService.createWalletHistoryEntry(seller, sellerTotalEarnings, "Ticket Sale (Grouped)");
+
+            Transaction sellerTransaction = Transaction.builder()
+                    .client(seller)
+                    .totalPrice(sellerTotalEarnings)
+                    .completedAt(now)
+                    .transactionType(TransactionType.SALE)
+                    .build();
+            Transaction savedSellerTransaction = transactionRepository.save(sellerTransaction);
+
+            for (TicketSale ticketSale : sellerTickets) {
+                Ticket ticket = ticketSale.getTicket();
+                ticket.setOwner(client);
+                ticket.setStatus(TicketStatus.ASSIGNED);
+
+                ticketSale.setBuyer(client);
+                ticketSale.setStatus(TicketSaleStatus.FINISHED);
+
+                // ticket relation with buyer
+                allTransactionComponents.add(TransactionComponent.builder()
+                        .transaction(savedBuyerTransaction)
+                        .ticket(ticket)
+                        .build());
+
+                // ticket relation with seller
+                allTransactionComponents.add(TransactionComponent.builder()
+                        .transaction(savedSellerTransaction)
+                        .ticket(ticket)
+                        .build());
+            }
+        }
+
+        transactionComponentRepository.saveAll(allTransactionComponents);
+        return new TicketPurchaseResponse(ticketsTotalPrice, ticketSales.size());
     }
 
     public Page<TicketFullResponse> getAllTickets(Pageable pageable) {
@@ -217,7 +319,8 @@ public class TicketService {
         BigDecimal returnPrice = ticket.getPrice();
 
         ticket.setOwner(null);
-        walletOperationService.rechargeWalletForTicketReturn(client, returnPrice);
+        ticket.setStatus(TicketStatus.AVAILABLE);
+        walletOperationService.createWalletHistoryEntry(client, returnPrice, "Ticket Return");
 
         var transaction = Transaction.builder()
                 .client(client)

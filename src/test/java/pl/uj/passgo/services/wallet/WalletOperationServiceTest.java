@@ -105,7 +105,7 @@ class WalletOperationServiceTest {
         client.setWallet(wallet);
 
         // Act
-        walletOperationService.chargeWalletForTicketPurchase(client, price);
+        walletOperationService.createWalletHistoryEntry(client, price.negate(), "Ticket Purchase");
 
         // Assert
         assertEquals(BigDecimal.valueOf(80), client.getWallet().getMoney());
@@ -126,7 +126,7 @@ class WalletOperationServiceTest {
         client.setWallet(wallet);
 
         // Act
-        walletOperationService.rechargeWalletForTicketReturn(client, returnPrice);
+        walletOperationService.createWalletHistoryEntry(client, returnPrice, "Ticket Return");
 
         // Assert
         assertEquals(BigDecimal.valueOf(100), client.getWallet().getMoney());

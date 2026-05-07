@@ -1,16 +1,17 @@
 package pl.uj.passgo.models.event;
 
 import jakarta.persistence.*;
+import lombok.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import pl.uj.passgo.models.Building;
 import pl.uj.passgo.models.enums.Status;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor

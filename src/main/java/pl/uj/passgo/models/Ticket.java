@@ -1,10 +1,7 @@
 package pl.uj.passgo.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import pl.uj.passgo.models.enums.TicketStatus;
 import pl.uj.passgo.models.event.Event;
 import pl.uj.passgo.models.member.Client;
@@ -13,7 +10,8 @@ import java.math.BigDecimal;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
 @Builder
 @Table(name = "ticket")

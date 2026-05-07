@@ -19,7 +19,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     long countByEventIdAndOwnerIsNull(Long eventId);
     List<Ticket> findAllByEventIdAndOwnerIsNull(Long eventId);
     List<Ticket> findAllByEventId(Long eventId);
-    
+
     @Query("""
     SELECT new pl.uj.passgo.models.DTOs.statistics.EventTicketCount(
         t.event.id,

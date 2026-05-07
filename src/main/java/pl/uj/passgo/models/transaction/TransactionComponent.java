@@ -1,17 +1,15 @@
 package pl.uj.passgo.models.transaction;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import pl.uj.passgo.models.Ticket;
 
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "transaction_component")
 public class TransactionComponent {

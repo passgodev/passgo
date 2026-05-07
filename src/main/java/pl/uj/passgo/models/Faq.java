@@ -1,9 +1,7 @@
 package pl.uj.passgo.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CurrentTimestamp;
 
 import java.time.LocalDate;
@@ -11,7 +9,8 @@ import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "faq")
 public class Faq {
